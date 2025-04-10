@@ -49,3 +49,61 @@ h1:focus {
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
 }
+
+.brogrammer-widget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 300px;
+    font-family: sans-serif;
+    z-index: 1000;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+.chat-header {
+    background-color: #1e3a8a;
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 10px 10px 0 0;
+    display: flex;
+    justify-content: space-between;
+}
+
+.chat-icon {
+    font-size: 18px;
+}
+
+.chat-body {
+    padding: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.chat-messages {
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.chat-input-container {
+    display: flex;
+    gap: 5px;
+}
+
+.chat-input {
+    flex: 1;
+    padding: 5px;
+}
+
+.chat-button {
+    padding: 5px 10px;
+    background-color: #1e3a8a;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
