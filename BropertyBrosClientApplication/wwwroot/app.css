@@ -52,7 +52,7 @@ h1:focus {
 
 .brogrammer-widget {
     position: fixed;
-    bottom: 20px;
+    bottom: 0px;
     right: 20px;
     width: 300px;
     font-family: sans-serif;
