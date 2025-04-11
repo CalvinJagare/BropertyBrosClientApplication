@@ -5,9 +5,8 @@
 @rendermode InteractiveServer
 
 @* Author: Calvin, AI *@
-<h3>TestPage</h3>
+<h3>Read Page</h3>
 
-<p>Test page for testing purposes.</p>
 
 <h1>Get All Categories</h1>
 @if (categories == null)
@@ -24,7 +23,7 @@ else
     </ul>
 }
 
-<h1>Get Categories by Id</h1>
+<h1>Get Category by Id</h1>
 
 <input type="number" @bind="categoryId" placeholder="Enter Category ID" />
 <button class="btn btn-primary" @onclick="GetCategory">Get Category</button>
