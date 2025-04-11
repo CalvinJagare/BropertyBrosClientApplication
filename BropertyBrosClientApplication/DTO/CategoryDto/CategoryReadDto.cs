@@ -1,6 +1,6 @@
 ﻿namespace BropertyBrosClientApplication.DTO.CategoryDto
 {
-    //Author: Calvin
+    //Author: Calvin, Daniel, Emil
     public class CategoryReadDto
     {
         public int Id { get; set; }
