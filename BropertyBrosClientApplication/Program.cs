@@ -1,6 +1,7 @@
 using BropertyBrosClientApplication.Components;
 using BropertyBrosClientApplication.Components.Account;
 using BropertyBrosClientApplication.Data;
+using BropertyBrosClientApplication.Services;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -41,7 +42,11 @@ namespace BropertyBrosClientApplication
 
             builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
-            builder.Services.AddHttpClient();
+            builder.Services.AddHttpClient("BropertyBrosApi2.0", client =>
+            {
+                client.BaseAddress = new Uri("https://localhost:7151/");
+            });
+            builder.Services.AddScoped<CategoryService>();
 
             var app = builder.Build();
 

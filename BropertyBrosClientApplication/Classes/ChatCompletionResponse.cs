@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
+//Author: Emil
 public class ChatCompletionResponse
 {
     [JsonPropertyName("id")]

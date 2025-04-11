@@ -1,0 +1,76 @@
+﻿@page "/testpagecreate"
+@using BropertyBrosClientApplication.DTO.CategoryDto
+@using BropertyBrosClientApplication.Services
+@inject CategoryService CategoryService
+@rendermode InteractiveServer
+
+@* Author: AI *@
+<h1>Create Category</h1>
+
+<input type="text" @bind="newCategory.CategoryName" placeholder="Enter Category Name" />
+<button class="btn btn-primary" @onclick="CreateCategory">Create Category</button>
+
+@if (isLoading)
+{
+    <p>Loading...</p>
+}
+else if (createdCategory != null)
+{
+    <div class="mt-3">
+        <h2>Category Created</h2>
+        <p><strong>ID:</strong> @createdCategory.Id</p>
+        <p><strong>Name:</strong> @createdCategory.CategoryName</p>
+    </div>
+}
+else if (hasTried && createdCategory == null)
+{
+    <p>Failed to create category.</p>
+}
+
+@code {
+    private List<CategoryReadDto>? categories;
+    private CategoryCreateDto newCategory = new CategoryCreateDto();
+    private CategoryReadDto? createdCategory;
+    private bool isLoading = false;
+    private bool hasTried = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            categories = await CategoryService.GetAllCategoryAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading categories: {ex.Message}");
+        }
+    }
+
+    private async Task CreateCategory()
+    {
+        if (string.IsNullOrWhiteSpace(newCategory.CategoryName))
+        {
+            Console.WriteLine("Category name cannot be empty.");
+            return;
+        }
+
+        isLoading = true;
+        hasTried = true;
+        createdCategory = null;
+        StateHasChanged();
+
+        try
+        {
+            createdCategory = await CategoryService.CreateCategoryAsync(newCategory);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error creating category: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+}
