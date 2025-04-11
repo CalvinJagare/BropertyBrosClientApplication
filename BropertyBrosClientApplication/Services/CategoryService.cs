@@ -14,57 +14,42 @@ namespace BropertyBrosClientApplication.Services
             _httpClient = clientFactory.CreateClient("BropertyApi2.0");
         }
 
-        public async Task<List<CategoryReadDto>> GetAllCategoryAsync()
+        private async Task<T> SendRequestAsync<T>(Func<Task<HttpResponseMessage>> httpRequest)
         {
-            var response = await _httpClient.GetAsync("https://localhost:7151/api/Category");
+            var response = await httpRequest();
+            response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();
-            var categoryReadDtos = JsonSerializer.Deserialize<List<CategoryReadDto>>(content, new JsonSerializerOptions
+            return JsonSerializer.Deserialize<T>(content, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
-            });
-            return categoryReadDtos!;
+            })!;
+        }
+
+        public async Task<List<CategoryReadDto>> GetAllCategoryAsync()
+        {
+            return await SendRequestAsync<List<CategoryReadDto>>(() => _httpClient.GetAsync("https://localhost:7151/api/Category"));
         }
 
         public async Task<CategoryReadDto> GetCategoryByIdAsync(int id)
         {
-            var response = await _httpClient.GetAsync($"https://localhost:7151/api/Category/{id}");
-            var content = await response.Content.ReadAsStringAsync();
-            var categoryReadDto = JsonSerializer.Deserialize<CategoryReadDto>(content, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-            return categoryReadDto!;
+            return await SendRequestAsync<CategoryReadDto>(() => _httpClient.GetAsync($"https://localhost:7151/api/Category/{id}"));
         }
 
         public async Task<CategoryReadDto> CreateCategoryAsync(CategoryCreateDto categoryCreateDto)
         {
-            var response = await _httpClient.PostAsJsonAsync("https://localhost:7151/api/Category", categoryCreateDto);
-            var content = await response.Content.ReadAsStringAsync();
-            var createdCategoryReadDto = JsonSerializer.Deserialize<CategoryReadDto>(content, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-            return createdCategoryReadDto!;
+            return await SendRequestAsync<CategoryReadDto>(() => _httpClient.PostAsJsonAsync("https://localhost:7151/api/Category", categoryCreateDto));
         }
 
         public async Task<CategoryReadDto> UpdateCategoryAsync(int id, CategoryCreateDto categoryUpdateDto)
         {
-            var response = await _httpClient.PutAsJsonAsync($"https://localhost:7151/api/Category/{id}", categoryUpdateDto);
-            var content = await response.Content.ReadAsStringAsync();
-            var updatedCategoryReadDto = JsonSerializer.Deserialize<CategoryReadDto>(content, new JsonSerializerOptions
-            {
-                PropertyNameCaseInsensitive = true
-            });
-            return updatedCategoryReadDto!;
+            return await SendRequestAsync<CategoryReadDto>(() => _httpClient.PutAsJsonAsync($"https://localhost:7151/api/Category/{id}", categoryUpdateDto));
         }
 
         public async Task DeleteCategoryAsync(int id)
         {
             var response = await _httpClient.DeleteAsync($"https://localhost:7151/api/Category/{id}");
-            if (!response.IsSuccessStatusCode)
-            {
-                throw new Exception("Failed to delete category");
-            }
+            response.EnsureSuccessStatusCode();
         }
+
     }
 }
