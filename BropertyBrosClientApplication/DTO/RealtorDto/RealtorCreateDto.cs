@@ -1,4 +1,4 @@
-﻿namespace BropertyBrosApi2._0.DTOs.Realtor
+﻿namespace BropertyBrosClientApplication.DTO.Realtor
 {
     //Author: Calvin, Daniel, Emil
     public class RealtorCreateDto

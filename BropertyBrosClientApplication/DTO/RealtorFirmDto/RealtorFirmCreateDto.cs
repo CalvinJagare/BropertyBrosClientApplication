@@ -1,4 +1,4 @@
-﻿namespace BropertyBrosApi2._0.DTOs.RealtorFirm
+﻿namespace BropertyBrosClientApplication.DTO.RealtorFirm
 {
     public class RealtorFirmCreateDto
     {
