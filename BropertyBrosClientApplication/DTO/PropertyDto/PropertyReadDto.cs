@@ -1,4 +1,4 @@
-﻿namespace BropertyBrosApi2._0.DTOs.Properties
+﻿namespace BropertyBrosClientApplication.DTO.Properties
 {
     //Author: Calvin, Daniel, Emil
     public class PropertyReadDto

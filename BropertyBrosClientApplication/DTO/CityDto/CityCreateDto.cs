@@ -1,4 +1,4 @@
-﻿namespace BropertyBrosApi2._0.DTOs.City
+﻿namespace BropertyBrosClientApplication.DTO.City
 {
     //Author: Calvin, Daniel, Emil
     public class CityCreateDto
