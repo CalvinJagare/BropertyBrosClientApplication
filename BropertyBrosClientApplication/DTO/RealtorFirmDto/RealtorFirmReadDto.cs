@@ -1,6 +1,6 @@
-﻿using BropertyBrosApi2._0.DTOs.Realtor;
+﻿using BropertyBrosClientApplication.DTO.Realtor;
 
-namespace BropertyBrosApi2._0.DTOs.RealtorFirm
+namespace BropertyBrosClientApplication.DTO.RealtorFirm
 {
     //Author: Calvin, Daniel, Emil
     public class RealtorFirmReadDto
