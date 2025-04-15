@@ -1,4 +1,4 @@
-﻿using BropertyBrosApi2._0.DTOs.Properties;
+﻿using BropertyBrosClientApplication.DTO.Properties;
 using System.Text.Json;
 
 namespace BropertyBrosClientApplication.Services
@@ -24,7 +24,7 @@ namespace BropertyBrosClientApplication.Services
             })!;
         }
 
-        public async Task<List<PropertyReadDto>> GetAllPropertyAsync()
+        public async Task<List<PropertyReadDto>> GetAllPropertiesAsync()
         {
             return await SendRequestAsync<List<PropertyReadDto>>(() => _httpClient.GetAsync("https://localhost:7151/api/Property"));
         }

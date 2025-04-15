@@ -1,4 +1,6 @@
-﻿namespace BropertyBrosClientApplication.DTO.Properties
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace BropertyBrosClientApplication.DTO.Properties
 {
     //Author: Calvin, Daniel, Emil
     public class PropertyCreateDto
@@ -13,6 +15,7 @@
         public string? Description { get; set; }
         public int NumberOfRooms { get; set; }
         public int BuildYear { get; set; }
+        [BindProperty]
         public virtual List<string> ImageUrls { get; set; } = new List<string>();
 
         public int RealtorId { get; set; }
