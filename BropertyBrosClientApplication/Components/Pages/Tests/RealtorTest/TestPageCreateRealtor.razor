@@ -1,36 +1,52 @@
 ﻿@page "/testpagecreaterealtor"
-@using BropertyBrosClientApplication.DTO.RealtorDto
+@using BropertyBrosClientApplication.DTO.Realtor
+@using BropertyBrosClientApplication.DTO.RealtorFirm
 @using BropertyBrosClientApplication.Services
+@* @inject RealtorFirmService realtorFirmService; *@
 @inject RealtorService realtorService
 @rendermode InteractiveServer
 
 @* Author: Emil, AI *@
 <h1>Create Realtor</h1>
 
-<input type="text" @bind="newCategory.CategoryName" placeholder="Enter Category Name" />
-<button class="btn btn-primary" @onclick="CreateCategory">Create Category</button>
+<input type="text" @bind="newRealtor.FirstName" placeholder="Enter realtor first name" />
+<input type="text" @bind="newRealtor.LastName" placeholder="Enter realtor last name" />
+<input type="text" @bind="newRealtor.PhoneNumber" placeholder="Enter realtor phone number" />
+<input type="text" @bind="newRealtor.Email" placeholder="Enter realtor email" />
+<input type="text" @bind="newRealtor.ProfileUrl" placeholder="Enter realtor profile url" />
+<input type="number" @bind="newRealtor.RealtorFirmId" placeholder="Enter realtorfirm id" />
+<button class="btn btn-primary" @onclick="CreateRealtor">Create Realtor</button>
 
 @if (isLoading)
 {
     <p>Loading...</p>
 }
-else if (createdCategory != null)
+else if (createdRealtor != null)
 {
     <div class="mt-3">
-        <h2>Category Created</h2>
-        <p><strong>ID:</strong> @createdCategory.Id</p>
-        <p><strong>Name:</strong> @createdCategory.CategoryName</p>
+        <h2>Realtor created</h2>
+        <p><strong>ID:</strong> @createdRealtor.Id</p>
+        <p><strong>Name:</strong> @createdRealtor.FirstName @createdRealtor.LastName</p>
     </div>
 }
-else if (hasTried && createdCategory == null)
+else if (hasTried && createdRealtor == null)
 {
-    <p>Failed to create category.</p>
+    <p>Failed to create realtor.</p>
+}
+
+@if (realtors.Count > 0)
+{
+    foreach (var r in realtors)
+    {
+        <p>@r.FirstName @r.LastName</p>
+    }
 }
 
 @code {
-    private List<RealtorReadDto>? categories;
-    private RealtorCreateDto newCategory = new RealtorCreateDto();
-    private CategoryReadDto? createdCategory;
+    // private List<RealtorFirmReadDto> realtorFirms;
+    private List<RealtorReadDto> realtors = new();
+    private RealtorCreateDto newRealtor = new RealtorCreateDto();
+    private RealtorReadDto? createdRealtor;
     private bool isLoading = false;
     private bool hasTried = false;
 
@@ -38,34 +54,55 @@ else if (hasTried && createdCategory == null)
     {
         try
         {
-            categories = await CategoryService.GetAllCategoryAsync();
+            realtors = await realtorService.GetAllRealtorsAsync();
+            // realtorFirms = await realtorFirmService.GetAllRealtorFirmsAsync();
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error loading categories: {ex.Message}");
+            Console.WriteLine($"Error loading realtors: {ex.Message}");
         }
     }
 
-    private async Task CreateCategory()
+    private async Task CreateRealtor()
     {
-        if (string.IsNullOrWhiteSpace(newCategory.CategoryName))
+        if (string.IsNullOrWhiteSpace(newRealtor.FirstName))
         {
-            Console.WriteLine("Category name cannot be empty.");
+            Console.WriteLine("First name cannot be empty.");
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(newRealtor.LastName))
+        {
+            Console.WriteLine("Last name cannot be empty.");
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(newRealtor.PhoneNumber))
+        {
+            Console.WriteLine("Phone number cannot be empty.");
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(newRealtor.Email))
+        {
+            Console.WriteLine("Email cannot be empty.");
+            return;
+        }
+        if (string.IsNullOrWhiteSpace(newRealtor.ProfileUrl))
+        {
+            Console.WriteLine("Profile url cannot be empty.");
             return;
         }
 
         isLoading = true;
         hasTried = true;
-        createdCategory = null;
+        createdRealtor = null;
         StateHasChanged();
 
         try
         {
-            createdCategory = await CategoryService.CreateCategoryAsync(newCategory);
+            createdRealtor = await realtorService.CreateRealtorAsync(newRealtor);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error creating category: {ex.Message}");
+            Console.WriteLine($"Error creating realtor: {ex.Message}");
         }
         finally
         {

@@ -1,0 +1,98 @@
+﻿@page "/testpageupdaterealtor"
+@using BropertyBrosClientApplication.DTO.Realtor
+@using BropertyBrosClientApplication.Services
+@inject RealtorService realtorService
+@rendermode InteractiveServer
+
+@* Author: Calvin, AI *@
+<h1>Update Realtor</h1>
+
+<div>
+    <label for="realtorId">Realtor ID:</label>
+    <input id="realtorId" @bind="realtorId" type="number" />
+    <button @onclick="LoadRealtor">Load Realtor</button>
+</div>
+
+@if (IsLoading)
+{
+    <p>Loading...</p>
+}
+else if (realtorToUpdate != null)
+{
+    <EditForm Model="realtorToUpdate" OnValidSubmit="UpdateCategory">
+        <div>
+            <label for="firstName">First Name:</label>
+            <input id="firstName" @bind="realtorToUpdate.FirstName" />
+            <label for="lastName">Last Name:</label>
+            <input id="lastName" @bind="realtorToUpdate.LastName" />
+            <label for="phoneNumber">Phone number:</label>
+            <input id="phoneNumber" @bind="realtorToUpdate.PhoneNumber" />
+            <label for="email">Email:</label>
+            <input id="email" @bind="realtorToUpdate.Email" />
+            <label for="profileUrl">Profile Url:</label>
+            <input id="profileUrl" @bind="realtorToUpdate.ProfileUrl" />
+            <label for="firm">Firm ID:</label>
+            <input id="firm" @bind="realtorToUpdate.RealtorFirmId" />
+        </div>
+        <button type="submit">Update</button>
+    </EditForm>
+}
+else if (ErrorMessage != null)
+{
+    <p style="color: red;">@ErrorMessage</p>
+}
+
+@code {
+    private int realtorId;
+    private RealtorCreateDto realtorToUpdate = new();
+    private bool IsLoading = false;
+    private string? ErrorMessage;
+
+    private async Task LoadRealtor()
+    {
+        try
+        {
+            IsLoading = true;
+            ErrorMessage = null;
+
+            var realtor = await realtorService.GetRealtorByIdAsync(realtorId);
+            realtorToUpdate = new RealtorCreateDto
+                {
+                    FirstName = realtor.FirstName,
+                    LastName = realtor.LastName,
+                    PhoneNumber = realtor.PhoneNumber,
+                    Email = realtor.Email,
+                    ProfileUrl = realtor.ProfileUrl,
+                    RealtorFirmId = realtor.RealtorFirmId
+                };
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Failed to load realtor: {ex.Message}";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async Task UpdateCategory()
+    {
+        try
+        {
+            IsLoading = true;
+            ErrorMessage = null;
+
+            await realtorService.UpdateRealtorAsync(realtorId, realtorToUpdate);
+            ErrorMessage = "Realtor updated successfully!";
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Failed to update Realtor: {ex.Message}";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+}
