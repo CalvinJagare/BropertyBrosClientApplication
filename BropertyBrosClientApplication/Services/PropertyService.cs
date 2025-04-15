@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace BropertyBrosClientApplication.Services
 {
-    //Author: Daniel, Calvin
+    //Author: Daniel, Calvin, Emil
     public class PropertyService
     {
         private readonly HttpClient _httpClient;
@@ -47,6 +47,11 @@ namespace BropertyBrosClientApplication.Services
         {
             var response = await _httpClient.DeleteAsync($"https://localhost:7151/api/Property/{id}");
             response.EnsureSuccessStatusCode();
+        }
+
+        public async Task<List<PropertyReadDto>> GetPropertiesByRealtor(int realtorId)
+        {
+            return await SendRequestAsync<List<PropertyReadDto>>(() => _httpClient.GetAsync($"https://localhost:7151/api/Property/GetPropertiesByRealtor/{realtorId}"));
         }
     }
 }
