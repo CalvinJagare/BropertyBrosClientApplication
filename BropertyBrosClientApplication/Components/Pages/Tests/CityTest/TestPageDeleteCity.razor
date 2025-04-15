@@ -1,0 +1,53 @@
+﻿@page "/testpagedeletecity"
+@using BropertyBrosClientApplication.DTO.City
+@using BropertyBrosClientApplication.Services
+@inject CityService CityService
+@rendermode InteractiveServer
+
+@* Author: Arlind *@
+<h1>Delete City</h1>
+
+<label>City ID:</label>
+<input type="number" @bind="cityId" placeholder="Enter City ID" />
+<button class="btn btn-danger" @onclick="DeleteCity">Delete</button>
+
+@if (isLoading)
+{
+    <p>Deleting...</p>
+}
+else if (deleteSuccess)
+{
+    <p class="text-success">City deleted successfully!</p>
+}
+else if (hasTried && !deleteSuccess)
+{
+    <p class="text-danger">Failed to delete city (may not exist).</p>
+}
+
+@code {
+    private int cityId;
+    private bool isLoading = false;
+    private bool hasTried = false;
+    private bool deleteSuccess = false;
+
+    private async Task DeleteCity()
+    {
+        isLoading = true;
+        hasTried = true;
+        deleteSuccess = false;
+
+        try
+        {
+            await CityService.DeleteCityAsync(cityId);
+            deleteSuccess = true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error deleting city: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+}
