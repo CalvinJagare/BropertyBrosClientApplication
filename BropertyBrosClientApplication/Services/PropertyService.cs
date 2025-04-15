@@ -15,9 +15,9 @@ namespace BropertyBrosClientApplication.Services
 
         private async Task<T> SendRequestAsync<T>(Func<Task<HttpResponseMessage>> httpRequest)
         {
-            var respone = await httpRequest();
-            respone.EnsureSuccessStatusCode();
-            var content = await respone.Content.ReadAsStringAsync();
+            var response = await httpRequest();
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<T>(content, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
