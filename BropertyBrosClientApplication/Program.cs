@@ -47,6 +47,7 @@ namespace BropertyBrosClientApplication
                 client.BaseAddress = new Uri("https://localhost:7151/");
             });
             builder.Services.AddScoped<CategoryService>();
+            builder.Services.AddScoped<PropertyService>();
 
             var app = builder.Build();
 

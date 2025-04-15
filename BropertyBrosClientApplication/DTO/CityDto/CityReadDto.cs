@@ -1,6 +1,4 @@
-﻿using BropertyBrosClientApplication.DTO.Properties;
-
-namespace BropertyBrosClientApplication.DTO.City
+﻿namespace BropertyBrosClientApplication.DTO.City
 {
     //Author: Calvin, Daniel, Emil
     public class CityReadDto
