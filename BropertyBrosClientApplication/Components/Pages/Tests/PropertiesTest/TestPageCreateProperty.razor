@@ -89,14 +89,11 @@ else if (hasTried && createdProperty == null)
 	{
 		try
 		{
-			properties = await PropertyService.GetAllPropertiesAsync();
-			newProperty.RealtorId = 6;
-			newProperty.CityId = 2;
-			newProperty.CategoryId = 1;
+			properties= await PropertyService.GetAllPropertiesAsync();
 		}
 		catch (Exception ex)
 		{
-			Console.WriteLine($"Error loading categories: {ex.Message}");
+			Console.WriteLine($"Error loading data: {ex.Message}");
 		}
 	}
 
@@ -109,8 +106,8 @@ else if (hasTried && createdProperty == null)
 
 		try
 		{	
-			newProperty.RealtorId = 6;
-			newProperty.CityId = 2;
+			newProperty.RealtorId = 1;
+			newProperty.CityId = 1;
 			newProperty.CategoryId = 1;
 
 			createdProperty = await PropertyService.CreatePropertyAsync(newProperty);
@@ -131,6 +128,6 @@ else if (hasTried && createdProperty == null)
 		if (newProperty.ImageUrls == null)
 			newProperty.ImageUrls = new List<string>();
 
-		newProperty.ImageUrls.Add(string.Empty);
+		newProperty.ImageUrls.Add("thisIsATestIMGUrl");
 	}
 }
