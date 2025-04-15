@@ -1,5 +1,4 @@
-﻿using BropertyBrosApi2._0.DTOs.City;
-using BropertyBrosClientApplication.DTO.City;
+﻿using BropertyBrosClientApplication.DTO.City;
 using System.Net.Http.Json;
 using System.Text.Json;
 
