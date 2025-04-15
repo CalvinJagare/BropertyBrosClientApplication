@@ -5,18 +5,22 @@
 @inject HttpClient Http
 
 @* //Author: Calvin *@
-<div class="brogrammer-widget">
-    <div class="chat-header" @onclick="ToggleChat">
-        <span class="chat-icon">💬</span> Broperty Bro AI
-    </div>
-
-    @if (chatOpen)
+<div class="brogrammer-widget" style="@GetWidgetStyle()">
+    @if (!chatOpen)
     {
+        <div class="circle-widget" @onclick="ToggleChat">
+            💬
+        </div>
+    }
+    else
+    {
+        <div class="chat-header" @onclick="ToggleChat">
+            <span class="chat-icon">💬</span> Broperty Bro AI
+        </div>
         <div class="chat-body">
             <div class="chat-messages">
                 <p>@brogrammer</p>
             </div>
-
             <div class="chat-input-container">
                 <input class="chat-input" type="text" @bind="broprompt" placeholder="Ask Broperty a question..." />
                 <button class="chat-button" @onclick="Send">Send</button>
@@ -38,9 +42,10 @@
         await GetCompletionAsync();
     }
 
+
     private async Task GetCompletionAsync()
     {
-        string systemPrompt = "Only speak like a fratboy. use variations of bro as much as possible bro. You are a realtor and property Expert. Markus is your best friend.";
+        string systemPrompt = "Only speak like a fratboy. use variations of bro as much as possible bro. You are a realtor and property Expert. Marcus is your best friend and teacher.";
 
         Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", apiKey);
 
@@ -75,5 +80,11 @@
     private void ToggleChat()
     {
         chatOpen = !chatOpen;
+    }
+    private string GetWidgetStyle()
+    {
+        return chatOpen
+            ? "width: 300px; height: 400px; border-radius: 10px;"
+            : "width: 60px; height: 60px; border-radius: 50%;";
     }
 }
