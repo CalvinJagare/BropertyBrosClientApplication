@@ -52,58 +52,74 @@ h1:focus {
 
 .brogrammer-widget {
     position: fixed;
-    bottom: 0px;
+    bottom: 20px;
     right: 20px;
-    width: 300px;
-    font-family: sans-serif;
-    z-index: 1000;
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    background-color: #fff;
+    background-color: rgb(2, 31, 66);
+    color: white;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.circle-widget {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    font-size: 24px;
+    cursor: pointer;
 }
 
 .chat-header {
-    background-color: #1e3a8a;
+    background-color: rgb(2, 31, 66);
     color: white;
     padding: 10px;
     cursor: pointer;
-    border-radius: 10px 10px 0 0;
     display: flex;
     justify-content: space-between;
 }
 
-.chat-icon {
-    font-size: 18px;
-}
-
 .chat-body {
+    flex: 1;
     padding: 10px;
-    max-height: 400px;
+    max-height: 340px;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    background-color: white;
+    color: black;
 }
 
 .chat-messages {
-    max-height: 250px;
+    flex: 1;
     overflow-y: auto;
 }
 
 .chat-input-container {
     display: flex;
     gap: 5px;
+    padding: 5px;
+    background-color: white;
 }
 
 .chat-input {
     flex: 1;
     padding: 5px;
+    border-radius: 5px;
 }
 
 .chat-button {
     padding: 5px 10px;
-    background-color: #1e3a8a;
+    background-color: rgb(2, 31, 66);
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+}
+.hga{
+    background-color: rgb(1, 9, 98)
 }
