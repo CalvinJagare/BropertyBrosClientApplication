@@ -9,31 +9,31 @@
 
 <input type="number" @bind="propertySearchDto.MinPrice" placeholder="Enter minimum price" />
 <input type="number" @bind="propertySearchDto.MaxPrice" placeholder="Enter maximum price" />
-
+<br />
 <input type="number" @bind="propertySearchDto.MinMonthlyFee" placeholder="Enter minimum monthly fee" />
 <input type="number" @bind="propertySearchDto.MaxMonthlyFee" placeholder="Enter maximum monthly fee" />
-
+<br />
 <input type="number" @bind="propertySearchDto.MinYearlyFee" placeholder="Enter minimum yearly fee" />
 <input type="number" @bind="propertySearchDto.MaxYearlyFee" placeholder="Enter maximum yearly fee" />
-
+<br />
 <input type="number" @bind="propertySearchDto.MinLivingAreaKvm" placeholder="Enter minimum living area (kvm)" />
 <input type="number" @bind="propertySearchDto.MaxLivingAreaKvm" placeholder="Enter maximum living area (kvm)" />
-
+<br />
 <input type="number" @bind="propertySearchDto.MinAncillaryAreaKvm" placeholder="Enter minimum ancillary area (kvm)" />
 <input type="number" @bind="propertySearchDto.MaxAncillaryAreaKvm" placeholder="Enter maximum ancillary area (kvm)" />
-
+<br />
 <input type="number" @bind="propertySearchDto.MinLandAreaKvm" placeholder="Enter minimum land area (kvm)" />
 <input type="number" @bind="propertySearchDto.MaxLandAreaKvm" placeholder="Enter maximum land area (kvm)" />
-
+<br />
 <input type="number" @bind="propertySearchDto.MinNumberOfRooms" placeholder="Enter minimum number of rooms" />
 <input type="number" @bind="propertySearchDto.MaxNumberOfRooms" placeholder="Enter maximum number of rooms" />
-
+<br />
 <input type="number" @bind="propertySearchDto.MinBuildYear" placeholder="Enter minimum build year" />
 <input type="number" @bind="propertySearchDto.MaxBuildYear" placeholder="Enter maximum build year" />
-
+<br />
 <input type="number" @bind="propertySearchDto.CityId" placeholder="Enter city ID" />
 <input type="number" @bind="propertySearchDto.CategoryId" placeholder="Enter category ID" />
-
+<br />
 <button @onclick="GetPropertiesBySearch">Search</button>
 
 @if (isLoading)
