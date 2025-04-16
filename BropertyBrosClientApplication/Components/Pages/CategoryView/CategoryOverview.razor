@@ -1,0 +1,48 @@
+﻿@page "/categoryoverview"
+@using BropertyBrosClientApplication.DTO.CategoryDto
+@using BropertyBrosClientApplication.Services
+@inject CategoryService CategoryService
+
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="container">
+        <h1 class="dashboard-title text-center mb-4">Categories Overview</h1>
+
+        @if (categories == null)
+        {
+            <p class="text-center">Loading...</p>
+        }
+        else if (!categories.Any())
+        {
+            <p class="text-center">No categories found.</p>
+        }
+        else
+        {
+            <div class="row g-4">
+                @foreach (var category in categories)
+                {
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title text-center">
+                                    <NavLink class="text-decoration-none text-primary" href="/updatecategory">
+                                        @category.CategoryName
+                                    </NavLink>
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<CategoryReadDto>? categories;
+
+    protected override async Task OnInitializedAsync()
+    {
+        categories = await CategoryService.GetAllCategoryAsync();
+    }
+}
+
