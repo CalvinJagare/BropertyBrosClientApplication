@@ -49,6 +49,7 @@ namespace BropertyBrosClientApplication.Services
             response.EnsureSuccessStatusCode();
         }
 
+        // Author: Emil
         public async Task<List<PropertyReadDto>> GetPropertiesByRealtor(int realtorId)
         {
             return await SendRequestAsync<List<PropertyReadDto>>(() => _httpClient.GetAsync($"https://localhost:7151/api/Property/GetPropertiesByRealtor/{realtorId}"));
