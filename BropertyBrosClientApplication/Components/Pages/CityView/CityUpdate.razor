@@ -3,6 +3,7 @@
 @using BropertyBrosClientApplication.Services
 @inject CityService CityService
 @inject NavigationManager NavigationManager
+@rendermode InteractiveServer
 
 @* Author: Arlind *@
 
@@ -56,6 +57,9 @@
                 }
             }
         </div>
+        <div class="text-center mt-3">
+            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+        </div>
     </div>
 </div>
 
@@ -99,6 +103,11 @@
             await CityService.UpdateCityAsync(selectedCityId.Value, selectedCity);
             NavigationManager.NavigateTo("/cityoverview");
         }
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/admindashboard");
     }
 }
 

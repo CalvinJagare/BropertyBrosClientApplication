@@ -2,6 +2,8 @@
 @using BropertyBrosClientApplication.DTO.City
 @using BropertyBrosClientApplication.Services
 @inject CityService CityService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
 
 @* Author: Arlind *@
 
@@ -36,6 +38,9 @@
                 }
             </div>
         }
+        <div class="text-center mt-3">
+            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+        </div>
     </div>
 </div>
 
@@ -45,5 +50,10 @@
     protected override async Task OnInitializedAsync()
     {
         cities = await CityService.GetAllCitiesAsync();
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/admindashboard");
     }
 }

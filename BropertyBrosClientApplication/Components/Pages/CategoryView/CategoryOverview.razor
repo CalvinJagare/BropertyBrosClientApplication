@@ -2,6 +2,8 @@
 @using BropertyBrosClientApplication.DTO.CategoryDto
 @using BropertyBrosClientApplication.Services
 @inject CategoryService CategoryService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
 
 @* Author: Calvin *@
 
@@ -36,6 +38,9 @@
                 }
             </div>
         }
+        <div class="text-center mt-3">
+            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+        </div>
     </div>
 </div>
 
@@ -45,6 +50,11 @@
     protected override async Task OnInitializedAsync()
     {
         categories = await CategoryService.GetAllCategoryAsync();
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/admindashboard");
     }
 }
 

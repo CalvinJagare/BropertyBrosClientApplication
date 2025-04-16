@@ -57,6 +57,9 @@
                 }
             }
         </div>
+        <div class="text-center mt-3">
+            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+        </div>
     </div>
 </div>
 
@@ -104,5 +107,10 @@
             await CategoryService.UpdateCategoryAsync(selectedCategoryId.Value, selectedCategory);
             NavigationManager.NavigateTo("/categoryoverview");
         }
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/admindashboard");
     }
 }

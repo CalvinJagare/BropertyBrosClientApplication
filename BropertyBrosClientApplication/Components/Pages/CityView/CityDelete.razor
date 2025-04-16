@@ -4,6 +4,7 @@
 @inject CityService CityService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
 
 @* Author: Arlind *@
 
@@ -30,7 +31,7 @@
                 </div>
 
                 <div class="text-center mb-3">
-                    <button class="btn btn-danger" @onclick="ConfirmDelete" disabled="@(selectedCityId == null)">
+                    <button class="btn btn-danger" @onclick="ConfirmDelete">
                         Delete Selected City
                     </button>
                 </div>
@@ -40,6 +41,9 @@
                     <p class="text-danger text-center">@deleteMessage</p>
                 }
             }
+        </div>
+        <div class="text-center mt-3">
+            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
         </div>
     </div>
 </div>
@@ -71,5 +75,10 @@
                 }
             }
         }
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/admindashboard");
     }
 }

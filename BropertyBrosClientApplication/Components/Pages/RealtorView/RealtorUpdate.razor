@@ -3,6 +3,7 @@
 @using BropertyBrosClientApplication.Services
 @inject RealtorService RealtorService
 @inject NavigationManager NavigationManager
+@rendermode InteractiveServer
 
 @* Author: Emil *@
 @* Behöver Fixa ID Intag för Firms *@
@@ -81,6 +82,9 @@
                 }
             }
         </div>
+        <div class="text-center mt-3">
+            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+        </div>
     </div>
 </div>
 
@@ -129,5 +133,10 @@
             await RealtorService.UpdateRealtorAsync(selectedRealtorId.Value, selectedRealtor);
             NavigationManager.NavigateTo("/realtoroverview");
         }
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/admindashboard");
     }
 }

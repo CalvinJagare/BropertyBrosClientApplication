@@ -2,6 +2,8 @@
 @using BropertyBrosClientApplication.DTO.Realtor
 @using BropertyBrosClientApplication.Services
 @inject RealtorService RealtorService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
 
 @* Author: Emil *@
 
@@ -36,6 +38,9 @@
                 }
             </div>
         }
+        <div class="text-center mt-3">
+            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+        </div>
     </div>
 </div>
 
@@ -45,5 +50,10 @@
     protected override async Task OnInitializedAsync()
     {
         realtors = await RealtorService.GetAllRealtorsAsync();
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/admindashboard");
     }
 }

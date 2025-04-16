@@ -26,8 +26,12 @@
                 </div>
             </EditForm>
         </div>
-    </div>
+        <div class="text-center mt-3">
+            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+        </div>
+    </div>   
 </div>
+
 
 @code {
     private CategoryCreateDto newCategory = new();
@@ -36,6 +40,11 @@
     {
         await CategoryService.CreateCategoryAsync(newCategory);
         NavigationManager.NavigateTo("/categoryoverview");
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/admindashboard");
     }
 }
 
