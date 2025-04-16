@@ -54,5 +54,11 @@ namespace BropertyBrosClientApplication.Services
         {
             return await SendRequestAsync<List<PropertyReadDto>>(() => _httpClient.GetAsync($"https://localhost:7151/api/Property/GetPropertiesByRealtor/{realtorId}"));
         }
+
+        // Author: Emil
+        public async Task<List<PropertyReadDto>> GetPropertiesBySearch(PropertySearchDto propertySearchDto)
+        {
+            return await SendRequestAsync<List<PropertyReadDto>>(() => _httpClient.PostAsJsonAsync($"https://localhost:7151/api/Property/GetPropertiesBySearch", propertySearchDto));
+        }
     }
 }
