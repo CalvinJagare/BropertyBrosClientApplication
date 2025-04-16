@@ -17,6 +17,10 @@
         public virtual List<string> ImageUrls { get; set; } = new List<string>();
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+        public int RealtorId { get; set; }
+        public int CityId { get; set; }
+        public int CategoryId { get; set; }
+
         public virtual string RealtorName { get; set; } = string.Empty;
         public virtual string CityName { get; set; } = string.Empty;
         public virtual string CategoryName { get; set; } = string.Empty;
