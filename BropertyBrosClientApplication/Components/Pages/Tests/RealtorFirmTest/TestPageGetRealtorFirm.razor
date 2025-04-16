@@ -21,13 +21,33 @@ else
         }
     </ul>
 }
+<label>Realtor Firm ID:</label>
+<input type="number" @bind="realtorFirmId" placeholder="Enter Realtor Firm ID" />
+<button class="btn btn-info" @onclick="GetRealtorFirm">Get Realtor Firm</button>
+
+@if (isLoading)
+{
+    <p>Loading...</p>
+}
+else if (realtorFirm != null)
+{
+    <div class="mt-3">
+        <h2>City Info</h2>
+        <p><strong>ID:</strong> @realtorFirm.Id</p>
+        <p><strong>Name:</strong> @realtorFirm.CompanyName</p>
+    </div>
+}
+else if (hasTried && realtorFirm == null)
+{
+    <p class="text-danger">Realtor Firm not found.</p>
+}
 
 @code {
     private List<RealtorFirmReadDto>? realtorFirms;
-    // private CityCreateDto newCity = new();
-    // private CityReadDto? createdCity;
-    // private bool isLoading = false;
-    // private bool hasTried = false;
+    private int realtorFirmId;
+    private RealtorFirmReadDto? realtorFirm;
+    private bool isLoading = false;
+    private bool hasTried = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -38,6 +58,25 @@ else
         catch (Exception ex)
         {
             Console.WriteLine($"Error loading Realtor Firm: {ex.Message}");
+        }
+    }
+    private async Task GetRealtorFirm()
+    {
+        isLoading = true;
+        hasTried = true;
+        realtorFirm = null;
+
+        try
+        {
+            realtorFirm = await realtorFirmService.GetRealtorFirmByIdAsync(realtorFirmId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error retrieving city: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 }
