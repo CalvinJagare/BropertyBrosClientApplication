@@ -1,0 +1,49 @@
+﻿@page "/cityoverview"
+@using BropertyBrosClientApplication.DTO.City
+@using BropertyBrosClientApplication.Services
+@inject CityService CityService
+
+@* Author: Arlind *@
+
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="container">
+        <h1 class="dashboard-title text-center mb-4">Cities Overview</h1>
+
+        @if (cities == null)
+        {
+            <p class="text-center">Loading...</p>
+        }
+        else if (!cities.Any())
+        {
+            <p class="text-center">No cities found.</p>
+        }
+        else
+        {
+            <div class="row g-4">
+                @foreach (var city in cities)
+                {
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title text-center">
+                                    <NavLink class="text-decoration-none text-primary" href="@($"/updatecity/{city.Id}")">
+                                        @city.CityName
+                                    </NavLink>
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<CityReadDto>? cities;
+
+    protected override async Task OnInitializedAsync()
+    {
+        cities = await CityService.GetAllCitiesAsync();
+    }
+}
