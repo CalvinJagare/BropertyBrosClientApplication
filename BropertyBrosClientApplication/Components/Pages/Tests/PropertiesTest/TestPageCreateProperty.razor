@@ -47,8 +47,6 @@
 	</button>
 </div>
 
-@* <input type="text" @bind="newProperty.ImageUrls" /> Behöver fixas *@ 
-
 <button class="btn btn-primary" @onclick="CreateProperty">Create Property</button>
 
 @if (isLoading)
@@ -70,7 +68,11 @@ else if (createdProperty != null)
 		<p><strong>Description:</strong> @createdProperty.Description</p>
 		<p><strong>Number of Rooms:</strong> @createdProperty.NumberOfRooms</p>
 		<p><strong>Build Year:</strong> @createdProperty.BuildYear</p>
-		<p><strong>Image URLs:</strong> @createdProperty.ImageUrls</p>
+		@for (int i = 0; i < newProperty.ImageUrls.Count; i++)
+		{
+			<input class="form-control mb-2"
+				   @bind="createdProperty.ImageUrls[i]" />
+		}
 	</div>
 }
 else if (hasTried && createdProperty == null)
