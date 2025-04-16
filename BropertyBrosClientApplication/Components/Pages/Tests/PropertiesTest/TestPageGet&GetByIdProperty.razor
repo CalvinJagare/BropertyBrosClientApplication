@@ -15,7 +15,11 @@ else
 	<ul>
 		@foreach (var property in properties)
 		{
-			<li>@property.Address</li>
+			<li>Address: @property.Address</li>
+			<li>Price: @property.Price</li>
+			<li>Description: @property.Description</li>
+			<li>Rooms: @property.NumberOfRooms</li>
+			
 		}
 	</ul>
 }
@@ -35,6 +39,23 @@ else if (property != null)
 		<h2>Property Details</h2>
 		<p><strong>ID:</strong> @property.Id</p>
 		<p><strong>Name:</strong> @property.Address</p>
+		<p><strong>Price:</strong> @property.Price</p>
+		<p><strong>MontlyFee:</strong>@property.MonthlyFee</p>
+		<p><strong>YearlyFee:</strong> @property.YearlyFee</p>
+		<p><strong>LivingAreaKvm</strong> @property.LivingAreaKvm</p>
+		<p><strong>AncillaryAreaKvm:</strong>@property.AncillaryAreaKvm</p>
+		<p><strong>LandAreaKvm:</strong>@property.LandAreaKvm</p>
+		<p><strong>Description:</strong>@property.Description</p>
+		<p><strong>NumberOfRooms:</strong>@property.NumberOfRooms</p>
+		<p><strong>BuildYear</strong>@property.BuildYear</p>
+		@for (int i = 0; i < property.ImageUrls.Count; i++)
+		{
+			<input class="form-control mb-2"
+				   @bind="property.ImageUrls[i]" />
+		}
+
+
+		
 	</div>
 }
 else if (hasTried && property == null)
