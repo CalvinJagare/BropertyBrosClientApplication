@@ -1,11 +1,43 @@
 ﻿@* Author: Nayab *@
-@page "/TestPageCreateProperty"
+@page "/TestPageGetRealtorFirm"
 @using BropertyBrosClientApplication.DTO.RealtorFirm
 @using BropertyBrosClientApplication.Services
 @inject RealtorFirmService realtorFirmService
+@rendermode InteractiveServer
 
 <h1>Test Get Realtor Firm</h1>
 
-@code {
+@if (realtorFirms == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <ul>
+        @foreach (var r in realtorFirms)
+        {
+            <li>@r.CompanyName </li>
+            <img src="@r.LogoUrl" />
+        }
+    </ul>
+}
 
+@code {
+    private List<RealtorFirmReadDto>? realtorFirms;
+    // private CityCreateDto newCity = new();
+    // private CityReadDto? createdCity;
+    // private bool isLoading = false;
+    // private bool hasTried = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            realtorFirms = await realtorFirmService.GetAllRealtorFirmsAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading Realtor Firm: {ex.Message}");
+        }
+    }
 }
