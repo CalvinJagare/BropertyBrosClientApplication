@@ -1,0 +1,49 @@
+﻿@page "/realtoroverview"
+@using BropertyBrosClientApplication.DTO.Realtor
+@using BropertyBrosClientApplication.Services
+@inject RealtorService RealtorService
+
+@* Author: Emil *@
+
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="container">
+        <h1 class="dashboard-title text-center mb-4">Realtors Overview</h1>
+
+        @if (realtors == null)
+        {
+            <p class="text-center">Loading...</p>
+        }
+        else if (!realtors.Any())
+        {
+            <p class="text-center">No realtors found.</p>
+        }
+        else
+        {
+            <div class="row g-4">
+                @foreach (var realtor in realtors)
+                {
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title text-center">
+                                    <NavLink class="text-decoration-none text-primary" href="@($"/updaterealtor")">
+                                        @($"{realtor.FirstName} {realtor.LastName}")
+                                    </NavLink>
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<RealtorReadDto>? realtors;
+
+    protected override async Task OnInitializedAsync()
+    {
+        realtors = await RealtorService.GetAllRealtorsAsync();
+    }
+}

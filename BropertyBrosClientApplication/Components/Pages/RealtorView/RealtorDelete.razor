@@ -1,0 +1,75 @@
+﻿@page "/deleterealtor"
+@using BropertyBrosClientApplication.DTO.Realtor
+@using BropertyBrosClientApplication.Services
+@inject RealtorService RealtorService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+
+@* Author: Emil *@
+
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="container">
+        <h1 class="dashboard-title text-center mb-4">Delete Realtor</h1>
+
+        <div class="card shadow-sm p-4">
+            @if (realtors == null)
+            {
+                <p class="text-center">Loading realtors...</p>
+            }
+            else
+            {
+                <div class="mb-3">
+                    <label for="realtorDropdown" class="form-label">Select a Realtor</label>
+                    <select id="realtorDropdown" class="form-select" @bind="selectedRealtorId">
+                        <option value="">-- Select a Realtor --</option>
+                        @foreach (var realtor in realtors)
+                        {
+                            <option value="@realtor.Id">@($"{realtor.FirstName} {realtor.LastName}")</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="text-center mb-3">
+                    <button class="btn btn-danger" @onclick="ConfirmDelete" disabled="@(selectedRealtorId == null)">
+                        Delete Selected Realtor
+                    </button>
+                </div>
+
+                @if (deleteMessage != null)
+                {
+                    <p class="text-danger text-center">@deleteMessage</p>
+                }
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<RealtorReadDto>? realtors;
+    private int? selectedRealtorId;
+    private string? deleteMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        realtors = await RealtorService.GetAllRealtorsAsync();
+    }
+
+    private async Task ConfirmDelete()
+    {
+        if (selectedRealtorId.HasValue)
+        {
+            var realtor = realtors?.FirstOrDefault(r => r.Id == selectedRealtorId.Value);
+            if (realtor != null)
+            {
+                var confirm = await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete the realtor '{realtor.FirstName} {realtor.LastName}'?");
+                if (confirm)
+                {
+                    await RealtorService.DeleteRealtorAsync(selectedRealtorId.Value);
+                    deleteMessage = $"Realtor '{realtor.FirstName} {realtor.LastName}' has been deleted.";
+                    realtors = await RealtorService.GetAllRealtorsAsync();
+                    selectedRealtorId = null;
+                }
+            }
+        }
+    }
+}
