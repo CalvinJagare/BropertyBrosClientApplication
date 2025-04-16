@@ -28,9 +28,6 @@ namespace BropertyBrosClientApplication.Services
         {
             return await SendRequestAsync<List<RealtorFirmReadDto>>(() => _httpClient.GetAsync("https://localhost:7151/api/RealtorFirm"));
         }
-        public async Task<RealtorFirmReadDto> GetRealtorFirmByIdAsync(int id)
-        {
-            return await SendRequestAsync<RealtorFirmReadDto>(() => _httpClient.GetAsync($"https://localhost:7151/api/RealtorFirm/{id}"));
-        }
+
     }
 }
