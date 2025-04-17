@@ -36,7 +36,11 @@ namespace BropertyBrosClientApplication.Services
         {
             return await SendRequestAsync<RealtorFirmReadDto>(() => _httpClient.PostAsJsonAsync("https://localhost:7151/api/RealtorFirm", realtorFirmCreateDto));
         }
-
+        public async Task DeleteRealtorFirmAsync(int id)
+        {
+            var response = await _httpClient.DeleteAsync($"https://localhost:7151/api/RealtorFirm/{id}");
+            response.EnsureSuccessStatusCode();
+        }
 
     }
 }

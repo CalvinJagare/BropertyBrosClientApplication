@@ -1,0 +1,116 @@
+﻿@page "/TestPageDeleteRealtorFirm"
+@using BropertyBrosClientApplication.DTO.RealtorFirm
+@using BropertyBrosClientApplication.Services
+@inject RealtorFirmService realtorFirmService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+@* Author: Nayab *@
+<h1>Delete Realtor</h1>
+
+@if (isLoading)
+{
+    <p>Loading realtors...</p>
+}
+else if (realtorFirms == null || realtorFirms.Count == 0)
+{
+    <p class="text-danger">No realtors available to delete.</p>
+}
+else if (isDeleted)
+{
+    <p class="text-success">Realtor deleted successfully!</p>
+}
+else
+{
+    <div>
+        <label for="realtorSelect">Select a realtor to delete:</label>
+        <select id="realtorSelect" @bind="selectRealtorFirmId">
+            <option value="">-- Select a realtor --</option>
+            @foreach (var r in realtorFirms)
+            {
+                <option value="@r.Id">@r.CompanyName</option>
+            }
+        </select>
+        <button class="btn btn-primary" @onclick="LoadRealtorDetails" disabled="@(string.IsNullOrEmpty(selectRealtorFirmId.ToString()))">Load</button>
+    </div>
+
+    @if (realtorFirmToDelete != null)
+    {
+        <p>Are you sure you want to delete the realtor: <strong>@realtorFirmToDelete.CompanyName</strong>?</p>
+        <button class="btn btn-danger" @onclick="DeleteRealtorFirm">Delete</button>
+        <button class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
+    }
+}
+
+@if (deleteFailed)
+{
+    <p class="text-danger">Failed to delete realtor. Please try again later.</p>
+}
+
+@code {
+    private List<RealtorFirmReadDto>? realtorFirms;
+    private int? selectRealtorFirmId;
+    private RealtorFirmReadDto? realtorFirmToDelete;
+    private bool isLoading = true;
+    private bool isDeleted = false;
+    private bool deleteFailed = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            realtorFirms = await realtorFirmService.GetAllRealtorFirmsAsync();
+        }
+        catch
+        {
+            realtorFirms = null;
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private async Task LoadRealtorDetails()
+    {
+        if (selectRealtorFirmId.HasValue)
+        {
+            try
+            {
+                realtorFirmToDelete = await realtorFirmService.GetRealtorFirmByIdAsync(selectRealtorFirmId.Value);
+            }
+            catch
+            {
+                realtorFirmToDelete = null;
+            }
+        }
+    }
+
+    private async Task DeleteRealtorFirm()
+    {
+        if (selectRealtorFirmId.HasValue)
+        {
+            try
+            {
+                isLoading = true;
+                await realtorFirmService.DeleteRealtorFirmAsync(selectRealtorFirmId.Value);
+                isDeleted = true;
+                realtorFirms = realtorFirms?.Where(c => c.Id != selectRealtorFirmId.Value).ToList();
+                realtorFirmToDelete = null;
+            }
+            catch
+            {
+                deleteFailed = true;
+            }
+            finally
+            {
+                isLoading = false;
+            }
+        }
+    }
+
+    private void CancelDelete()
+    {
+        realtorFirmToDelete = null;
+    }
+}
