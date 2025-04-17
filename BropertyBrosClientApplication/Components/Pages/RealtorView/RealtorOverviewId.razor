@@ -1,0 +1,134 @@
+﻿@page "/realtoroverview/{realtorId:int}"
+@using BropertyBrosClientApplication.DTO.Properties
+@using BropertyBrosClientApplication.DTO.Realtor
+@using BropertyBrosClientApplication.Services
+@inject RealtorService realtorService
+@inject PropertyService propertyService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+@* Author: Emil *@
+@* Behöver Fixa ID Intag för Firms *@
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="container">
+        @if (realtor != null)
+        {
+            <h1 class="dashboard-title text-center mb-4">@realtor.FirstName @realtor.LastName</h1>
+            <div class="card shadow-sm p-4">
+                <div class="d-flex flex-row">
+                    <div class="d-flex flex-column w-50">
+                        <img src="@realtor.ProfileUrl" height="400" class="align-self-center" />
+                    </div>
+                    <div class="d-flex flex-column w-50 text-center justify-content-between">
+                        <div>
+                            <p>@realtor.PhoneNumber</p>
+                            <p>@realtor.Email</p>
+                        </div>
+                        <a href="@realtor.WebsiteUrl">
+                            <img src="@realtor.LogoUrl" height="200" class="align-self-center" />
+                        </a>
+                    </div>
+                </div>
+                <div class="mt-5">
+                <select id="realtorDropdown" class="form-select" @onchange="ChangeProperty">
+                    <option value="">-- Select a property --</option>
+                    @if (properties.Count > 0)
+                    {
+                        foreach (var p in properties)
+                        {
+                            <option value="@p.Id">@p.Address @p.CityName</option>
+                        }
+                    }
+                </select>
+                @if (selectedProperty != null)
+                {
+                    <div class="d-flex flex-column text-center">
+                    <div class="d-flex flex-row justify-content-between">
+                        <div class="d-flex flex-column text-center">
+                            <p>Build year: @selectedProperty.BuildYear</p>
+                            <p>Address: @selectedProperty.Address</p>
+                            <p>City: @selectedProperty.CityName</p>
+                            <p>Category: @selectedProperty.CategoryName</p>
+                            <p>Rooms: @selectedProperty.NumberOfRooms</p>
+                            <p>Living area: @selectedProperty.LivingAreaKvm</p>
+                            <p>Ancillary area: @selectedProperty.AncillaryAreaKvm</p>
+                            <p>Land area: @selectedProperty.LandAreaKvm</p>
+                            <p>Monthly fee: @selectedProperty.MonthlyFee</p>
+                            <p>Yearly fee: @selectedProperty.YearlyFee</p>
+                            <p>Price: @selectedProperty.Price</p>
+                        </div>
+                        <div class="d-flex flex-column">
+                            <img src="@selectedProperty.ImageUrls[imgIndex.Value]" height="400" style="width: auto" class="align-self-center"/>
+                            <div class="d-flex flex-row justify-content-between">
+                                <button @onclick="PreviousImage">Previous image</button>
+                                <button @onclick="NextImage">Next image</button>
+                            </div>
+                        </div>
+                    </div>
+                    <p>@selectedProperty.Description</p>
+                    </div>
+                }
+            </div>
+            </div>
+        }
+
+        <div class="text-center mt-3">
+            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int realtorId { get; set; }
+    private RealtorReadDto? realtor;
+    private List<PropertyReadDto>? properties = new();
+    private PropertyReadDto? selectedProperty;
+    private int? imgIndex;
+
+    protected override async Task OnInitializedAsync()
+    {
+        realtor = await realtorService.GetRealtorByIdAsync(realtorId);
+        properties = await propertyService.GetPropertiesByRealtor(realtorId);
+    }
+
+    private async Task ChangeProperty(ChangeEventArgs e)
+    {
+        if (int.TryParse((string?)e.Value, out int propertyId))
+        {
+            selectedProperty = await propertyService.GetPropertyByIdAsync(propertyId);
+            imgIndex = 0;
+            return;
+        }
+
+        selectedProperty = null;
+        imgIndex = null;
+    }
+
+    private async Task NextImage()
+    {
+        int maxIndex = selectedProperty.ImageUrls.Count - 1;
+
+        imgIndex++;
+
+        if (imgIndex > maxIndex ){
+            imgIndex = 0;
+        }
+    }
+
+    private async Task PreviousImage()
+    {
+        int maxIndex = selectedProperty.ImageUrls.Count - 1;
+
+        imgIndex--;
+
+        if (imgIndex < 0 ){
+            imgIndex = maxIndex;
+        }
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/admindashboard");
+    }
+}
