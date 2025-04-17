@@ -1,0 +1,166 @@
+﻿@page "/updateproperty"
+@using BropertyBrosClientApplication.DTO.Properties
+@using BropertyBrosClientApplication.Services
+@inject PropertyService PropertyService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="container">
+        <h1 class="dashboard-title text-center mb-4">Update Property</h1>
+
+        <div class="card shadow-sm p-4">
+            @if (properties == null)
+            {
+                <p class="text-center">Loading properties...</p>
+            }
+            else
+            {
+                <div class="mb-3">
+                    <label for="propertyDropdown" class="form-label">Select a Property</label>
+                    <select id="propertyDropdown" class="form-select" @bind="selectedPropertyId">
+                        <option value="">-- Select a Property --</option>
+                        @foreach (var property in properties)
+                        {
+                            <option value="@property.Id">@property.Address</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="text-center mb-3">
+                    <button class="btn btn-primary" @onclick="LoadPropertyDetails">
+                        Select Property
+                    </button>
+                </div>
+
+                @if (selectedProperty != null)
+                {
+                    <EditForm Model="selectedProperty" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address</label>
+                            <InputText id="address" class="form-control" @bind-Value="selectedProperty.Address" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="price" class="form-label">Price</label>
+                            <InputNumber id="price" class="form-control" @bind-Value="selectedProperty.Price" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="monthlyFee" class="form-label">Monthly Fee</label>
+                            <InputNumber id="monthlyFee" class="form-control" @bind-Value="selectedProperty.MonthlyFee" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="yearlyFee" class="form-label">Yearly Fee</label>
+                            <InputNumber id="yearlyFee" class="form-control" @bind-Value="selectedProperty.YearlyFee" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="livingAreaKvm" class="form-label">Living Area (Kvm)</label>
+                            <InputNumber id="livingAreaKvm" class="form-control" @bind-Value="selectedProperty.LivingAreaKvm" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="ancillaryAreaKvm" class="form-label">Ancillary Area (Kvm)</label>
+                            <InputNumber id="ancillaryAreaKvm" class="form-control" @bind-Value="selectedProperty.AncillaryAreaKvm" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="landAreaKvm" class="form-label">Land Area (Kvm)</label>
+                            <InputNumber id="landAreaKvm" class="form-control" @bind-Value="selectedProperty.LandAreaKvm" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <InputTextArea id="description" class="form-control" @bind-Value="selectedProperty.Description" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="numberOfRooms" class="form-label">Number of Rooms</label>
+                            <InputNumber id="numberOfRooms" class="form-control" @bind-Value="selectedProperty.NumberOfRooms" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="buildYear" class="form-label">Build Year</label>
+                            <InputNumber id="buildYear" class="form-control" @bind-Value="selectedProperty.BuildYear" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="imageUrls" class="form-label">Image URLs</label>
+                            <InputText id="imageUrls" class="form-control" @bind-Value="imageUrls" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="realtorId" class="form-label">Realtor ID</label>
+                            <InputNumber id="realtorId" class="form-control" @bind-Value="selectedProperty.RealtorId" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="cityId" class="form-label">City ID</label>
+                            <InputNumber id="cityId" class="form-control" @bind-Value="selectedProperty.CityId" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="categoryId" class="form-label">Category ID</label>
+                            <InputNumber id="categoryId" class="form-control" @bind-Value="selectedProperty.CategoryId" />
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                        </div>
+                    </EditForm>
+                }
+            }
+        </div>
+        <div class="text-center mt-3">
+            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<PropertyReadDto>? properties;
+    private int? selectedPropertyId;
+    private PropertyCreateDto? selectedProperty;
+    private string imageUrls = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        properties = await PropertyService.GetAllPropertiesAsync();
+    }
+
+    private async Task LoadPropertyDetails()
+    {
+        if (selectedPropertyId.HasValue)
+        {
+            var property = await PropertyService.GetPropertyByIdAsync(selectedPropertyId.Value);
+            if (property != null)
+            {
+                selectedProperty = new PropertyCreateDto
+                    {
+                        Address = property.Address,
+                        Price = property.Price,
+                        MonthlyFee = property.MonthlyFee,
+                        YearlyFee = property.YearlyFee,
+                        LivingAreaKvm = property.LivingAreaKvm,
+                        AncillaryAreaKvm = property.AncillaryAreaKvm,
+                        LandAreaKvm = property.LandAreaKvm,
+                        Description = property.Description,
+                        NumberOfRooms = property.NumberOfRooms,
+                        BuildYear = property.BuildYear,
+                        ImageUrls = property.ImageUrls,
+                        RealtorId = property.RealtorId,
+                        CityId = property.CityId,
+                        CategoryId = property.CategoryId
+                    };
+                imageUrls = string.Join(", ", property.ImageUrls);
+            }
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (selectedPropertyId.HasValue && selectedProperty != null)
+        {
+            selectedProperty.ImageUrls = imageUrls.Split(',').Select(url => url.Trim()).ToList();
+            await PropertyService.UpdatePropertyAsync(selectedPropertyId.Value, selectedProperty);
+            NavigationManager.NavigateTo("/propertyoverview");
+        }
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/admindashboard");
+    }
+}
