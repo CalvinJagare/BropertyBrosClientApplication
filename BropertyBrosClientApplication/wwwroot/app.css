@@ -300,12 +300,12 @@ h1:focus {
     }
 
 .footer {
-    background-color: rgb(2, 31, 66); /* Dark blue background */
-    color: white; /* White text */
-    position: relative; /* Ensure it stays at the bottom of the content */
-    width: 100%; /* Full width */
-    margin-top: 2rem; /* Add spacing above the footer */
-    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow at the top */
+    background-color: rgb(2, 31, 66); 
+    color: white; 
+    position: relative; 
+    width: 100%; 
+    margin-top: 2rem; 
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1); 
     padding: 0;
 }
 
@@ -315,12 +315,12 @@ h1:focus {
     }
 
         .footer a:hover {
-            color: white; /* White on hover */
+            color: white; 
         }
 
     .footer .container {
-        max-width: 1200px; /* Limit the width of the footer content */
-        margin: 0 auto; /* Center the content */
+        max-width: 1200px; 
+        margin: 0 auto; 
     }
 
 .content.px-4 {
