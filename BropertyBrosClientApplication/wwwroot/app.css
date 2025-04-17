@@ -230,3 +230,100 @@ h1:focus {
         object-fit: cover; 
         display: block;
     }
+
+.testimonial-carousel {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.carousel-slides {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.carousel-slide {
+    display: none;
+    flex: 1 0 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+    .carousel-slide.active {
+        display: flex;
+    }
+
+.testimonial-card {
+    flex: 0 0 30%;
+    max-width: 30%;
+    height: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin: 0 10px;
+    background-color: #f8f9fa; 
+    border: none; 
+    border-radius: 8px; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+}
+
+    .testimonial-card .card-body {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+.carousel-control-user {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    color: blue;
+    border: none;
+    font-size: 2rem;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 10;
+}
+
+    .carousel-control-user.prev {
+        left: 10px;
+    }
+
+    .carousel-control-user.next {
+        right: 10px;
+    }
+
+.footer {
+    background-color: rgb(2, 31, 66); /* Dark blue background */
+    color: white; /* White text */
+    position: relative; /* Ensure it stays at the bottom of the content */
+    width: 100%; /* Full width */
+    margin-top: 2rem; /* Add spacing above the footer */
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow at the top */
+    padding: 0;
+}
+
+    .footer a {
+        color: #ddd; /* Light gray links */
+        transition: color 0.3s ease;
+    }
+
+        .footer a:hover {
+            color: white; /* White on hover */
+        }
+
+    .footer .container {
+        max-width: 1200px; /* Limit the width of the footer content */
+        margin: 0 auto; /* Center the content */
+    }
+
+.content.px-4 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
