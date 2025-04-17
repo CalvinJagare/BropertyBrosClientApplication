@@ -1,7 +1,114 @@
 ﻿@page "/"
+@using Microsoft.CodeAnalysis
 
-<PageTitle>Home</PageTitle>
+@implements IDisposable
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 
-<h1>Hello, world!</h1>
+<div class="d-flex justify-content-center align-items-center py-4">
+    <a class="navbar-brand" href="/">
+        <img src="Pics/WideLogo2.png" alt="Wide Logo" class="logo img-fluid" />
+    </a>
+</div>
 
-Welcome to your new app.
+<!-- Favorit bostäder -->
+<div class="custom-carousel">
+    <div class="carousel-slides">
+        <div class="carousel-slide active">
+            <img src="Pics/Placeholder.jpg" alt="First slide">
+        </div>
+        <div class="carousel-slide">
+            <img src="Pics/Placeholder2.jpg" alt="Second slide">
+        </div>
+        <div class="carousel-slide">
+            <img src="Pics/Placeholder3.jpg" alt="Third slide">
+        </div>
+    </div>
+    <button class="carousel-control prev" @onclick="ShowPreviousSlide">&#10094;</button>
+    <button class="carousel-control next" @onclick="ShowNextSlide">&#10095;</button>
+</div>
+
+<!-- Senaste tillagda bostäder -->
+<div class="container mb-5">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Nyaste bostaden</h5>
+                    <p class="card-text">bla bla bla</p>
+                    <a href="#" class="btn btn-primary">Learn More</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title">andra nyaste bostaden</h5>
+                    <p class="card-text">bla bla bla</p>
+                    <a href="#" class="btn btn-primary">Learn More</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title">tredje nyaste bostaden</h5>
+                    <p class="card-text">bla bla bla</p>
+                    <a href="#" class="btn btn-primary">Learn More</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Om oss section? -->
+<div class="container mb-5">
+    <div class="card shadow-sm p-4">
+        <h3 class="text-center mb-3">Find Your Perfect Home</h3>
+        <p class="text-center">bla bla bla</p>
+    </div>
+</div>
+<div class="container mb-5">
+    <div class="card shadow-sm p-4">
+        <h3 class="text-center mb-3">About Property Bros</h3>
+        <p class="text-center">bla bla bla.</p>
+    </div>
+</div>
+
+@code {
+    private string? currentUrl;
+
+    protected override void OnInitialized()
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        NavigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+
+    private int currentSlideIndex = 0;
+    private int totalSlides = 3; 
+
+    private async Task ShowNextSlide()
+    {
+        currentSlideIndex = (currentSlideIndex + 1) % totalSlides;
+        await JSRuntime.InvokeVoidAsync("updateCarousel", currentSlideIndex);
+    }
+
+    private async Task ShowPreviousSlide()
+    {
+        currentSlideIndex = (currentSlideIndex - 1 + totalSlides) % totalSlides;
+        await JSRuntime.InvokeVoidAsync("updateCarousel", currentSlideIndex);
+    }
+}
+
