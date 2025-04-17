@@ -83,22 +83,6 @@
 </div>
 
 
-@* <div class="mb-3">
-    <label for="realtorId">Realtor Id</label>
-    <InputNumber id="realtorId" class="form-control" @bind-Value="newProperty.RealtorId" />
-</div>
-<div class="mb-3">
-    <label for="cityId">City Id</label>
-    <InputNumber id="cityId" class="form-control" @bind-Value="newProperty.CityId" />
-</div>
-<div class="mb-3">
-    <label for="categoryId">Category Id</label>
-    <InputNumber id="categoryId" class="form-control" @bind-Value="newProperty.CategoryId" />
-</div>
-<div class="text-center">
-    <button type="submit" class="btn btn-primary">Create</button>
-</div> *@
-
 @code {
     private PropertyCreateDto newProperty = new();
     private string imageUrls = string.Empty;
