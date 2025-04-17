@@ -17,15 +17,7 @@ namespace BropertyBrosClientApplication.Services
         private async Task<T> SendRequestAsync<T>(Func<Task<HttpResponseMessage>> httpRequest)
         {
             var response = await httpRequest();
-            if (!response.IsSuccessStatusCode)
-            {
-                var errorContent = await response.Content.ReadAsStringAsync();
-                throw new ApplicationException($"API Error: {response.StatusCode}, Details: {errorContent}");
-            }
-            else
-            {
-                response.EnsureSuccessStatusCode();
-            }
+            response.EnsureSuccessStatusCode();
             var content = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<T>(content, new JsonSerializerOptions
             {
@@ -40,6 +32,11 @@ namespace BropertyBrosClientApplication.Services
         {
             return await SendRequestAsync<RealtorFirmReadDto>(() => _httpClient.GetAsync($"https://localhost:7151/api/RealtorFirm/{id}"));
         }
+        public async Task<RealtorFirmReadDto> CreateRealtorFirmAsync(RealtorFirmCreateDto realtorFirmCreateDto)
+        {
+            return await SendRequestAsync<RealtorFirmReadDto>(() => _httpClient.PostAsJsonAsync("https://localhost:7151/api/RealtorFirm", realtorFirmCreateDto));
+        }
+
 
     }
 }

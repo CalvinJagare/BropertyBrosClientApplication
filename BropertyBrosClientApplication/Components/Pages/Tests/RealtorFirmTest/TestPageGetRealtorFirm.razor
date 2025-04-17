@@ -7,7 +7,7 @@
 
 <h1>Test Get Realtor Firm</h1>
 
-@if (realtorFirms == null)
+@* @if (realtorFirms == null)
 {
     <p>Loading...</p>
 }
@@ -20,7 +20,7 @@ else
             <img src="@r.LogoUrl" />
         }
     </ul>
-}
+} *@
 <label>Realtor Firm ID:</label>
 <input type="number" @bind="realtorFirmId" placeholder="Enter Realtor Firm ID" />
 <button class="btn btn-info" @onclick="GetRealtorFirm">Get Realtor Firm</button>
