@@ -1,5 +1,8 @@
 ﻿@page "/"
+@using BropertyBrosClientApplication.DTO.Properties
+@using BropertyBrosClientApplication.Services
 @using Microsoft.CodeAnalysis
+@inject PropertyService PropertyService
 
 @implements IDisposable
 @rendermode InteractiveServer
@@ -43,34 +46,34 @@
 
 <!-- Senaste tillagda bostäder -->
 <div class="container mb-5">
+    <h3 class="text-center mb-4">Latest Additions</h3>
     <div class="row g-4">
-        <div class="col-md-4">
-            <div class="card shadow-sm">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Nyaste bostaden</h5>
-                    <p class="card-text">bla bla bla</p>
-                    <a href="#" class="btn btn-primary">Learn More</a>
+        @if (latestProperties == null)
+        {
+            <p class="text-center">Loading latest properties...</p>
+        }
+        else if (!latestProperties.Any())
+        {
+            <p class="text-center">No properties available at the moment.</p>
+        }
+        else
+        {
+            @foreach (var property in latestProperties)
+            {
+                <div class="col-md-4">
+                    <div class="card shadow-sm h-100">
+                        <img src="@(property.ImageUrls?.FirstOrDefault() ?? "Pics/Placeholder.jpg")" class="card-img-top" alt="Property Image">
+                        <div class="card-body">
+                            <h5 class="card-title">@property.Address</h5>
+                            <p class="card-text text-muted">@property.CityName</p>
+                            <p class="card-text"><strong>Living Area:</strong> @property.LivingAreaKvm m²</p>
+                            <p class="card-text"><strong>Total Costs:</strong> $@(property.Price + property.MonthlyFee + property.YearlyFee)</p>
+                            <button class="btn btn-primary" @onclick="() => NavigateToDetails(property.Id)">Read More</button>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card shadow-sm">
-                <div class="card-body text-center">
-                    <h5 class="card-title">andra nyaste bostaden</h5>
-                    <p class="card-text">bla bla bla</p>
-                    <a href="#" class="btn btn-primary">Learn More</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card shadow-sm">
-                <div class="card-body text-center">
-                    <h5 class="card-title">tredje nyaste bostaden</h5>
-                    <p class="card-text">bla bla bla</p>
-                    <a href="#" class="btn btn-primary">Learn More</a>
-                </div>
-            </div>
-        </div>
+            }
+        }
     </div>
 </div>
 
@@ -91,6 +94,35 @@
         </p>
     </div>
 </div>
+
+<div class="container mb-5">
+    <h3 class="text-center mb-4">Latest News</h3>
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <img src="Pics/News1.jpg" class="card-img-top" alt="News Image 1">
+                <div class="card-body">
+                    <h5 class="card-title">Exciting Updates in Real Estate</h5>
+                    <p class="card-text">
+                        Discover the latest trends in the real estate market. From innovative technologies to new property developments, stay informed about what's happening in the industry.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <img src="Pics/News2.jpg" class="card-img-top" alt="News Image 2">
+                <div class="card-body">
+                    <h5 class="card-title">Tips for First-Time Home Buyers</h5>
+                    <p class="card-text">
+                        Buying your first home can be overwhelming. Check out our expert tips to make the process smoother and find the perfect place to call home.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <div class="testimonial-carousel">
     <div class="carousel-slides">
@@ -214,6 +246,22 @@
     {
         currentSlideIndex = (currentSlideIndex - 1 + totalSlides) % totalSlides;
         await JSRuntime.InvokeVoidAsync("updateCarousel", currentSlideIndex);
+    }
+
+    private List<PropertyReadDto>? latestProperties;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var allProperties = await PropertyService.GetAllPropertiesAsync();
+        latestProperties = allProperties
+            .OrderByDescending(p => p.CreatedAt)
+            .Take(3)
+            .ToList();
+    }
+
+    private void NavigateToDetails(int propertyId)
+    {
+        NavigationManager.NavigateTo($"/propertydetails/{propertyId}");
     }
 }
 

@@ -124,8 +124,8 @@
         }
     }
 
-    private void GoBack()
+    private async Task GoBack()
     {
-        NavigationManager.NavigateTo("/propertyoverview");
+        await JSRuntime.InvokeVoidAsync("history.back");
     }
 }

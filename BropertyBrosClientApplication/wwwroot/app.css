@@ -310,7 +310,7 @@ h1:focus {
 }
 
     .footer a {
-        color: #ddd; /* Light gray links */
+        color: #ddd; 
         transition: color 0.3s ease;
     }
 
@@ -326,4 +326,40 @@ h1:focus {
 .content.px-4 {
     padding-left: 0 !important;
     padding-right: 0 !important;
+}
+
+.card-img-top {
+    height: 200px; 
+    object-fit: cover; 
+    border-top-left-radius: 8px; 
+    border-top-right-radius: 8px;
+}
+
+.card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: rgb(2, 31, 66); 
+}
+
+.card-text {
+    font-size: 1rem;
+    color: #555; 
+}
+
+.card-img-top {
+    height: 200px; /* Set a fixed height for the images */
+    object-fit: cover; /* Ensure the images are cropped properly */
+    border-top-left-radius: 8px; /* Match the card's border radius */
+    border-top-right-radius: 8px;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: rgb(2, 31, 66); /* Match the site's theme */
+}
+
+.card-text {
+    font-size: 1rem;
+    color: #555; /* Subtle text color */
 }
