@@ -1,129 +1,117 @@
 ﻿@page "/createproperty"
 @using BropertyBrosClientApplication.DTO.Properties
 @using BropertyBrosClientApplication.Services
-@using Microsoft.EntityFrameworkCore.Metadata.Internal
 @inject PropertyService PropertyService
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="container">
+        <h1 class="dashboard-title text-center mb-4">Create Property</h1>
 
-@*Author Daniel*@
-<div class="d-flex justify-content-center vh-100">
-	<div class="container">
-		<h1 class="dashboard-title text-center mb-4">Create Property</h1>
+        <div class="card shadow-sm p-4">
+            <EditForm Model="newProperty" OnValidSubmit="HandleValidSubmit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
 
-		<div class="card shadow-sm p-4">
-			<EditForm Model="newProperty" OnValidSubmit="HandleValidSubmit">
-				<DataAnnotationsValidator/>
-				<ValidationSummary/>
+                <div class="mb-3">
+                    <label for="address" class="form-label">Address</label>
+                    <InputText id="address" class="form-control" @bind-Value="newProperty.Address" />
+                </div>
+                <div class="mb-3">
+                    <label for="price" class="form-label">Price</label>
+                    <InputNumber id="price" class="form-control" @bind-Value="newProperty.Price" />
+                </div>
+                <div class="mb-3">
+                    <label for="monthlyFee" class="form-label">Monthly Fee</label>
+                    <InputNumber id="monthlyFee" class="form-control" @bind-Value="newProperty.MonthlyFee" />
+                </div>
+                <div class="mb-3">
+                    <label for="yearlyFee" class="form-label">Yearly Fee</label>
+                    <InputNumber id="yearlyFee" class="form-control" @bind-Value="newProperty.YearlyFee" />
+                </div>
+                <div class="mb-3">
+                    <label for="livingAreaKvm" class="form-label">Living Area (Kvm)</label>
+                    <InputNumber id="livingAreaKvm" class="form-control" @bind-Value="newProperty.LivingAreaKvm" />
+                </div>
+                <div class="mb-3">
+                    <label for="ancillaryAreaKvm" class="form-label">Ancillary Area (Kvm)</label>
+                    <InputNumber id="ancillaryAreaKvm" class="form-control" @bind-Value="newProperty.AncillaryAreaKvm" />
+                </div>
+                <div class="mb-3">
+                    <label for="landAreaKvm" class="form-label">Land Area (Kvm)</label>
+                    <InputNumber id="landAreaKvm" class="form-control" @bind-Value="newProperty.LandAreaKvm" />
+                </div>
+                <div class="mb-3">
+                    <label for="description" class="form-label">Description</label>
+                    <InputTextArea id="description" class="form-control" @bind-Value="newProperty.Description" />
+                </div>
+                <div class="mb-3">
+                    <label for="numberOfRooms" class="form-label">Number of Rooms</label>
+                    <InputNumber id="numberOfRooms" class="form-control" @bind-Value="newProperty.NumberOfRooms" />
+                </div>
+                <div class="mb-3">
+                    <label for="buildYear" class="form-label">Build Year</label>
+                    <InputNumber id="buildYear" class="form-control" @bind-Value="newProperty.BuildYear" />
+                </div>
+                <div class="mb-3">
+                    <label for="imageUrls" class="form-label">Image URLs (seperarea alla URLs med ett , (comma)</label>
+                    <InputText id="imageUrls" class="form-control" @bind-Value="imageUrls" />
+                </div>
+                <div class="mb-3">
+                    <label for="realtorId" class="form-label">Realtor ID</label>
+                    <InputNumber id="realtorId" class="form-control" @bind-Value="newProperty.RealtorId" />
+                </div>
+                <div class="mb-3">
+                    <label for="cityId" class="form-label">City ID</label>
+                    <InputNumber id="cityId" class="form-control" @bind-Value="newProperty.CityId" />
+                </div>
+                <div class="mb-3">
+                    <label for="categoryId" class="form-label">Category ID</label>
+                    <InputNumber id="categoryId" class="form-control" @bind-Value="newProperty.CategoryId" />
+                </div>
 
-				<div class="mb-3">
-					<label for="address" class="form-label">Address</label>
-					<InputText id="address" class="form-control" @bind-Value="newProperty.Address" />
-				</div>
-				<div class="mb-3">
-					<label for="price" class="form-label">Price</label>
-					<InputNumber id="price" class="form-control" @bind-Value="newProperty.Price" />
-				</div>
-				<div class="mb-3">
-					<label for="monthlyFee" class="form-label">Monthly Fee</label>
-					<InputNumber id="monthlyFee" class="form-control" @bind-Value="newProperty.MonthlyFee" />
-				</div>
-				<div class="mb-3">
-					<label for="yearlyFee" class="form-label">Yearly Fee</label>
-					<InputNumber id="yearlyFee" class="form-control" @bind-Value="newProperty.YearlyFee" />
-				</div>
-				<div class="mb-3">
-					<label for="livingAreaKvm" class="form-label">Living Area Kvm</label>
-					<InputNumber id="livingAreaKvm" class="form-control" @bind-Value="newProperty.LivingAreaKvm" />
-				</div>
-				<div class="mb-3">
-					<label for="ancillaryareakvm" class="form-label">Ancillary Area Kvm</label>
-					<InputNumber id="ancillaryareakvm" class="form-control" @bind-Value="newProperty.AncillaryAreaKvm" />
-				</div>
-				<div class="mb-3">
-					<label for="landAreaKvm" class="form-label">Land Area Kvm</label>
-					<InputNumber id="landAreaKvm" class="form-control" @bind-Value="newProperty.LandAreaKvm" />
-				</div>
-				<div class="mb-3">
-					<label for="description" class="form-label">Description</label>
-					<InputTextArea id="description" class="form-control" @bind-Value="newProperty.Description" />
-				</div>
-				<div class="mb-3">
-					<label for="numberOfRooms">Rooms</label>
-					<InputNumber id="numberOfRooms" class="form-control" @bind-Value="newProperty.NumberOfRooms" />
-				</div>
-				<div class="mb-3">
-					<label for="buildYear">Build Year</label>
-					<InputNumber id="buildYear" class="form-control" @bind-Value="newProperty.BuildYear" />
-				</div>
-				<div class="mb-3">
-					<label for="imageurl">Image Urls</label>
-					<input @bind-value="UserImageUrlInput" @bind-value:event="oninput" @onkeydown="CheckInput"></input>
-					@for (int i = 0; i < newProperty.ImageUrls.Count; i++)
-					{
-						var index = i;
-						<div class="d-flex align-items-center mb-2" @key="newProperty.ImageUrls[index]">
-							<InputText id="imageurl"
-									   class="form-control me-2"
-									   @bind-Value="newProperty.ImageUrls[index]" />
-						</div>
-					}
-				</div>
-				@*ToDo:Realtor Id should be Automatic to the person logged in*@
-				<div class="mb-3">
-					<label for="realtorId">Realtor Id</label>
-					<InputNumber id="realtorId" class="form-control" @bind-Value="newProperty.RealtorId" />
-				</div>
-				<div class="mb-3">
-					<label for="cityId">City Id</label>
-					<InputNumber id="cityId" class="form-control" @bind-Value="newProperty.CityId" />
-				</div>
-				<div class="mb-3">
-					<label for="categoryId">Category Id</label>
-					<InputNumber id="categoryId" class="form-control" @bind-Value="newProperty.CategoryId" />
-				</div>
-				<div class="text-center">
-					<button type="submit" class="btn btn-primary">Create</button>
-				</div>				
-			</EditForm>
-		</div>
-		<div class="text-center mt-3">
-			<button class="btn btn-secondary" @onclick="GoBack">Back</button>
-		</div>
-	</div>
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Create</button>
+                </div>
+            </EditForm>
+        </div>
+        <div class="text-center mt-3">
+            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+        </div>
+    </div>
 </div>
 
+
+@* <div class="mb-3">
+    <label for="realtorId">Realtor Id</label>
+    <InputNumber id="realtorId" class="form-control" @bind-Value="newProperty.RealtorId" />
+</div>
+<div class="mb-3">
+    <label for="cityId">City Id</label>
+    <InputNumber id="cityId" class="form-control" @bind-Value="newProperty.CityId" />
+</div>
+<div class="mb-3">
+    <label for="categoryId">Category Id</label>
+    <InputNumber id="categoryId" class="form-control" @bind-Value="newProperty.CategoryId" />
+</div>
+<div class="text-center">
+    <button type="submit" class="btn btn-primary">Create</button>
+</div> *@
+
 @code {
-	private PropertyCreateDto newProperty = new PropertyCreateDto
-	{
-			ImageUrls = new List<string>()
-	};
-	private string UserImageUrlInput { get; set; }
+    private PropertyCreateDto newProperty = new();
+    private string imageUrls = string.Empty;
 
-	private async Task HandleValidSubmit()
-	{
-		await PropertyService.CreatePropertyAsync(newProperty);
-		NavigationManager.NavigateTo("/propertyoverview");
-	}
+    private async Task HandleValidSubmit()
+    {
+        newProperty.ImageUrls = imageUrls.Split(',').Select(url => url.Trim()).ToList();
+        await PropertyService.CreatePropertyAsync(newProperty);
+        NavigationManager.NavigateTo("/propertyoverview");
+    }
 
-	private void CheckInput(KeyboardEventArgs e)
-	{
-		if (e.Key == "Enter" && !string.IsNullOrWhiteSpace(UserImageUrlInput))
-		{
-			AddToList(UserImageUrlInput);
-			UserImageUrlInput = string.Empty;
-
-			StateHasChanged();
-		}
-	}
-
-	private void AddToList(string str)
-	{
-		newProperty.ImageUrls.Add(str);
-	}
-	private void GoBack()
-	{
-		NavigationManager.NavigateTo("/admindashboard");
-	}
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/admindashboard");
+    }
 }
