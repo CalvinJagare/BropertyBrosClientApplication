@@ -15,7 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Components\Pages\RealtorFirmView\" />
     <Folder Include="Components\Pages\Tests\RealtorFirmTest\" />
   </ItemGroup>
 

@@ -42,8 +42,6 @@ namespace BropertyBrosClientApplication
 
             builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
-            builder.Services.AddScoped<PropertyService>();
-
             builder.Services.AddHttpClient("BropertyBrosApi2.0", client =>
             {
                 client.BaseAddress = new Uri("https://localhost:7151/");
@@ -52,6 +50,7 @@ namespace BropertyBrosClientApplication
             builder.Services.AddScoped<RealtorService>();
             builder.Services.AddScoped<PropertyService>();
             builder.Services.AddScoped<CityService>();
+            builder.Services.AddScoped<RealtorFirmService>();
 
 
             var app = builder.Build();
