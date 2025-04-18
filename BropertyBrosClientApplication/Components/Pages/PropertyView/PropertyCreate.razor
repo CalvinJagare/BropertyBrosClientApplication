@@ -1,11 +1,16 @@
 ﻿@page "/createproperty"
+@using BropertyBrosClientApplication.DTO.City
 @using BropertyBrosClientApplication.DTO.Properties
+@using BropertyBrosClientApplication.DTO.Realtor
+@using BropertyBrosClientApplication.DTO.CategoryDto
 @using BropertyBrosClientApplication.Services
 @inject PropertyService PropertyService
+@inject RealtorService RealtorService
+@inject CityService CityService
+@inject CategoryService CategoryService
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
-@*Author: Daniel*@
 <div class="d-flex justify-content-center align-items-center vh-100">
     <div class="container">
         <h1 class="dashboard-title text-center mb-4">Create Property</h1>
@@ -56,20 +61,47 @@
                     <InputNumber id="buildYear" class="form-control" @bind-Value="newProperty.BuildYear" />
                 </div>
                 <div class="mb-3">
-                    <label for="imageUrls" class="form-label">Image URLs (seperarea alla URLs med ett , (comma))</label>
+                    <label for="imageUrls" class="form-label">Image URLs (separate all URLs with a comma)</label>
                     <InputText id="imageUrls" class="form-control" @bind-Value="imageUrls" />
                 </div>
                 <div class="mb-3">
-                    <label for="realtorId" class="form-label">Realtor ID</label>
-                    <InputNumber id="realtorId" class="form-control" @bind-Value="newProperty.RealtorId" />
+                    <label for="realtorDropdown" class="form-label">Realtor</label>
+                    <select id="realtorDropdown" class="form-select" @bind="newProperty.RealtorId">
+                        <option value="">-- Select a Realtor --</option>
+                        @if (realtors != null)
+                        {
+                            @foreach (var realtor in realtors)
+                            {
+                                <option value="@realtor.Id">@($"{realtor.FirstName} {realtor.LastName}")</option>
+                            }
+                        }
+                    </select>
                 </div>
                 <div class="mb-3">
-                    <label for="cityId" class="form-label">City ID</label>
-                    <InputNumber id="cityId" class="form-control" @bind-Value="newProperty.CityId" />
+                    <label for="cityDropdown" class="form-label">City</label>
+                    <select id="cityDropdown" class="form-select" @bind="newProperty.CityId">
+                        <option value="">-- Select a City --</option>
+                        @if (cities != null)
+                        {
+                            @foreach (var city in cities)
+                            {
+                                <option value="@city.Id">@city.CityName</option>
+                            }
+                        }
+                    </select>
                 </div>
                 <div class="mb-3">
-                    <label for="categoryId" class="form-label">Category ID</label>
-                    <InputNumber id="categoryId" class="form-control" @bind-Value="newProperty.CategoryId" />
+                    <label for="categoryDropdown" class="form-label">Category</label>
+                    <select id="categoryDropdown" class="form-select" @bind="newProperty.CategoryId">
+                        <option value="">-- Select a Category --</option>
+                        @if (categories != null)
+                        {
+                            @foreach (var category in categories)
+                            {
+                                <option value="@category.Id">@category.CategoryName</option>
+                            }
+                        }
+                    </select>
                 </div>
 
                 <div class="text-center">
@@ -83,10 +115,20 @@
     </div>
 </div>
 
-
 @code {
     private PropertyCreateDto newProperty = new();
     private string imageUrls = string.Empty;
+
+    private List<RealtorReadDto>? realtors;
+    private List<CityReadDto>? cities;
+    private List<CategoryReadDto>? categories;
+
+    protected override async Task OnInitializedAsync()
+    {
+        realtors = await RealtorService.GetAllRealtorsAsync();
+        cities = await CityService.GetAllCitiesAsync();
+        categories = await CategoryService.GetAllCategoryAsync();
+    }
 
     private async Task HandleValidSubmit()
     {
