@@ -41,6 +41,10 @@ namespace BropertyBrosClientApplication.Services
             var response = await _httpClient.DeleteAsync($"https://localhost:7151/api/RealtorFirm/{id}");
             response.EnsureSuccessStatusCode();
         }
+        public async Task<RealtorFirmReadDto> UpdateRealtorFirmAsync(int id, RealtorFirmCreateDto realtorFirmUpdateDto)
+        {
+            return await SendRequestAsync<RealtorFirmReadDto>(() => _httpClient.PutAsJsonAsync($"https://localhost:7151/api/RealtorFirm/{id}", realtorFirmUpdateDto));
+        }
 
     }
 }
