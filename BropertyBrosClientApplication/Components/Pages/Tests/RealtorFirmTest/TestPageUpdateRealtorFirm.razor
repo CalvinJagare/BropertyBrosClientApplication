@@ -1,0 +1,93 @@
+﻿@page "/TestPageUpdateRealtorFirm"
+@using BropertyBrosClientApplication.DTO.RealtorFirm
+@using BropertyBrosClientApplication.Services
+@inject RealtorFirmService realtorFirmService
+@rendermode InteractiveServer
+
+@* Author: Nayab *@
+<h1>Update Realtor Firm</h1>
+
+<div>
+    <label for="realtorId">Realtor ID:</label>
+    <input id="realtorId" @bind="realtorFirmId" type="number" />
+    <button @onclick="LoadRealtorFirm">Load Realtor</button>
+</div>
+
+@if (IsLoading)
+{
+    <p>Loading...</p>
+}
+else if (realtorFirmToUpdate != null)
+{
+    <EditForm Model="realtorFirmToUpdate" OnValidSubmit="UpdateRealtorFirm">
+        <div>
+            <label for="companyName">Company Name:</label>
+            <input id="companyName" @bind="realtorFirmToUpdate.CompanyName" />
+            <label for="description">Description:</label>
+            <input id="lastName" @bind="realtorFirmToUpdate.Description" />
+            <label for="logoUrl">Logo Url:</label>
+            <input id="logoUrl" @bind="realtorFirmToUpdate.LogoUrl" />
+            <label for="websiteUrl">WebsiteUrl:</label>
+            <input id="websiteUrl" @bind="realtorFirmToUpdate.WebsiteUrl" />
+        </div>
+        <button type="submit">Update</button>
+    </EditForm>
+}
+else if (ErrorMessage != null)
+{
+    <p style="color: red;">@ErrorMessage</p>
+}
+
+@code {
+    private int realtorFirmId;
+    private RealtorFirmCreateDto realtorFirmToUpdate = new();
+    private bool IsLoading = false;
+    private string? ErrorMessage;
+
+    private async Task LoadRealtorFirm()
+    {
+        try
+        {
+            IsLoading = true;
+            ErrorMessage = null;
+
+            var realtorFirm = await realtorFirmService.GetRealtorFirmByIdAsync(realtorFirmId);
+            realtorFirmToUpdate = new RealtorFirmCreateDto
+                {
+                    CompanyName = realtorFirm.CompanyName,
+                    Description = realtorFirm.Description,
+                    LogoUrl = realtorFirm.LogoUrl,
+                    WebsiteUrl = realtorFirm.WebsiteUrl,
+                };
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Failed to load realtor: {ex.Message}";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+
+    private async Task UpdateRealtorFirm()
+    {
+        try
+        {
+            IsLoading = true;
+            ErrorMessage = null;
+
+
+            await realtorFirmService.UpdateRealtorFirmAsync(realtorFirmId, realtorFirmToUpdate);
+            ErrorMessage = "Realtor updated successfully!";
+        }
+        catch (Exception ex)
+        {
+            ErrorMessage = $"Failed to update Realtor: {ex.Message}";
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+    }
+}
