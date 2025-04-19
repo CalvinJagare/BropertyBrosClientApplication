@@ -1,0 +1,84 @@
+﻿@page "/deletecity"
+@using BropertyBrosClientApplication.DTO.City
+@using BropertyBrosClientApplication.Services
+@inject CityService CityService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+
+@* Author: Arlind *@
+
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="container">
+        <h1 class="dashboard-title text-center mb-4">Delete City</h1>
+
+        <div class="card shadow-sm p-4">
+            @if (cities == null)
+            {
+                <p class="text-center">Loading cities...</p>
+            }
+            else
+            {
+                <div class="mb-3">
+                    <label for="cityDropdown" class="form-label">Select a City</label>
+                    <select id="cityDropdown" class="form-select" @bind="selectedCityId">
+                        <option value="">-- Select a City --</option>
+                        @foreach (var city in cities)
+                        {
+                            <option value="@city.Id">@city.CityName</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="text-center mb-3">
+                    <button class="btn btn-danger" @onclick="ConfirmDelete">
+                        Delete Selected City
+                    </button>
+                </div>
+
+                @if (deleteMessage != null)
+                {
+                    <p class="text-danger text-center">@deleteMessage</p>
+                }
+            }
+        </div>
+        <div class="text-center mt-3">
+            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<CityReadDto>? cities;
+    private int? selectedCityId;
+    private string? deleteMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        cities = await CityService.GetAllCitiesAsync();
+    }
+
+    private async Task ConfirmDelete()
+    {
+        if (selectedCityId.HasValue)
+        {
+            var city = cities?.FirstOrDefault(c => c.Id == selectedCityId.Value);
+            if (city != null)
+            {
+                var confirm = await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete the city '{city.CityName}'?");
+                if (confirm)
+                {
+                    await CityService.DeleteCityAsync(selectedCityId.Value);
+                    deleteMessage = $"City '{city.CityName}' has been deleted.";
+                    cities = await CityService.GetAllCitiesAsync();
+                    selectedCityId = null;
+                }
+            }
+        }
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/admindashboard");
+    }
+}

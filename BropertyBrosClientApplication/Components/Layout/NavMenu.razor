@@ -15,113 +15,58 @@
 
 <div class="nav-scrollable"  onclick="document.querySelector('.navbar-toggler').click()">
     <nav class="flex-column">       
-        <!-- CITY CRUD -->
+
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="testpagecreatecity">
-                <span class="" aria-hidden="true"></span> Create City
+            <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">
+                <span class="" aria-hidden="true"></span> Home
             </NavLink>
         </div>
 
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="testpageupdatecity">
-                <span class="" aria-hidden="true"></span> Update City
+            <NavLink class="nav-link" href="/propertypostings">
+                <span class="" aria-hidden="true"></span> Our Properties
             </NavLink>
         </div>
 
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="testpagereadcity">
-                <span class="" aria-hidden="true"></span> Read City
+            <NavLink class="nav-link" href="/realtorlist">
+                <span class="" aria-hidden="true"></span> Our Realtors
             </NavLink>
         </div>
 
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="testpagedeletecity">
-                <span class="" aria-hidden="true"></span> Delete City
-            </NavLink>
-        </div>
-        <!-- CITY CRUD -->
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="testpage">
-                <span class="" aria-hidden="true"></span> Test Get
+            <NavLink class="nav-link" href="">
+                <span class="" aria-hidden="true"></span> Realtor Firms
             </NavLink>
         </div>
 
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="testpagecreate">
-                <span class="" aria-hidden="true"></span> Test Create
+            <NavLink class="nav-link" href="testpagegetrealtorandproperties">
+                <span class="" aria-hidden="true"></span> (TEMP) Realtor Properties
             </NavLink>
         </div>
 
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="testpageupdatecategory">
-                <span class="" aria-hidden="true"></span> Test Update
+            <NavLink class="nav-link" href="testpagesearchproperties">
+                <span class="" aria-hidden="true"></span> (TEMP)Search Properties
             </NavLink>
         </div>
+ 
 
+        <!--Admin Alternativ-->
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="TestPageDeleteCategory">
-                <span class="" aria-hidden="true"></span> Test Delete
-            </NavLink>
-        </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="testpagegetrealtors">
-                <span class="" aria-hidden="true"></span> Test Get Realtors
+            <NavLink class="nav-link" href="admindashboard">
+                <span class="" aria-hidden="true"></span> Admin Dashboard
             </NavLink>
         </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="testpagecreaterealtor">
-                <span class="" aria-hidden="true"></span> Test Create Realtor
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="testpageupdaterealtor">
-                <span class="" aria-hidden="true"></span> Test Update Realtor
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="testpagedeleterealtor">
-                <span class="" aria-hidden="true"></span> Test Delete Realtor
-              </NavLink>
-          </div>
-          <!-- RealtorFirm CRUD Start -->
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="TestPageGetRealtorFirm">
-                <span class="" aria-hidden="true"></span> Test Get Realtor Firm
-            </NavLink>
-          </div>
-          <div class="nav-item px-3">
-            <NavLink class="nav-link" href="TestPageCreateRealtorFirm">
-                <span class="" aria-hidden="true"></span> Test Create Realtor Firm
-            </NavLink>
-          </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="TestPageDeleteRealtorFirm">
-                <span class="" aria-hidden="true"></span> Test Delete Realtor Firm
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="TestPageUpdateRealtorFirm">
-                <span class="" aria-hidden="true"></span> Test Update Realtor Firm
-            </NavLink>
-        </div>
-        <!-- RealtorFirm CRUD End -->
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="TestPageCreateProperty">
-				        <span class="" aria-hidden="true"></span> Test Create Property
-            </NavLink>
-        </div>
+        <!--Admin Alternativ-->
 
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="auth">
                 <span class="bi bi-lock-nav-menu" aria-hidden="true"></span> Auth Required
             </NavLink>
-        </div>
-
+        </div>       
         <AuthorizeView>
             <Authorized>
                 <div class="nav-item px-3">
@@ -157,6 +102,7 @@
 
 @code {
     private string? currentUrl;
+    private bool isAdminControlsExpanded = false;
 
     protected override void OnInitialized()
     {

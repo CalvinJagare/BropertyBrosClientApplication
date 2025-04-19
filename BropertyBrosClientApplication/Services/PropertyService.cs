@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace BropertyBrosClientApplication.Services
 {
-    //Author: Daniel, Calvin
+    //Author: Daniel, Calvin, Emil
     public class PropertyService
     {
         private readonly HttpClient _httpClient;
@@ -15,9 +15,9 @@ namespace BropertyBrosClientApplication.Services
 
         private async Task<T> SendRequestAsync<T>(Func<Task<HttpResponseMessage>> httpRequest)
         {
-            var respone = await httpRequest();
-            respone.EnsureSuccessStatusCode();
-            var content = await respone.Content.ReadAsStringAsync();
+            var response = await httpRequest();
+            response.EnsureSuccessStatusCode();
+            var content = await response.Content.ReadAsStringAsync();
             return JsonSerializer.Deserialize<T>(content, new JsonSerializerOptions
             {
                 PropertyNameCaseInsensitive = true
@@ -47,6 +47,18 @@ namespace BropertyBrosClientApplication.Services
         {
             var response = await _httpClient.DeleteAsync($"https://localhost:7151/api/Property/{id}");
             response.EnsureSuccessStatusCode();
+        }
+
+        // Author: Emil
+        public async Task<List<PropertyReadDto>> GetPropertiesByRealtor(int realtorId)
+        {
+            return await SendRequestAsync<List<PropertyReadDto>>(() => _httpClient.GetAsync($"https://localhost:7151/api/Property/GetPropertiesByRealtor/{realtorId}"));
+        }
+
+        // Author: Emil
+        public async Task<List<PropertyReadDto>> GetPropertiesBySearch(PropertySearchDto propertySearchDto)
+        {
+            return await SendRequestAsync<List<PropertyReadDto>>(() => _httpClient.PostAsJsonAsync($"https://localhost:7151/api/Property/GetPropertiesBySearch", propertySearchDto));
         }
     }
 }

@@ -1,0 +1,83 @@
+﻿@page "/deleteproperty"
+@using BropertyBrosClientApplication.DTO.Properties
+@using BropertyBrosClientApplication.Services
+@inject PropertyService PropertyService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+
+@*Author: Daniel*@
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="container">
+        <h1 class="dashboard-title text-center mb-4">Delete Property</h1>
+
+        <div class="card shadow-sm p-4">
+            @if (properties == null)
+            {
+                <p class="text-center">Loading properties...</p>
+            }
+            else
+            {
+                <div class="mb-3">
+                    <label for="propertyDropdown" class="form-label">Select a Property</label>
+                    <select id="propertyDropdown" class="form-select" @bind="selectedPropertyId">
+                        <option value="">-- Select a Property --</option>
+                        @foreach (var property in properties)
+                        {
+                            <option value="@property.Id">@property.Address</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="text-center mb-3">
+                    <button class="btn btn-danger" @onclick="ConfirmDelete">
+                        Delete Selected Property
+                    </button>
+                </div>
+
+                @if (deleteMessage != null)
+                {
+                    <p class="text-danger text-center">@deleteMessage</p>
+                }
+            }
+        </div>
+        <div class="text-center mt-3">
+            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<PropertyReadDto>? properties;
+    private int? selectedPropertyId;
+    private string? deleteMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        properties = await PropertyService.GetAllPropertiesAsync();
+    }
+
+    private async Task ConfirmDelete()
+    {
+        if (selectedPropertyId.HasValue)
+        {
+            var property = properties?.FirstOrDefault(p => p.Id == selectedPropertyId.Value);
+            if (property != null)
+            {
+                var confirm = await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete the property at '{property.Address}'?");
+                if (confirm)
+                {
+                    await PropertyService.DeletePropertyAsync(selectedPropertyId.Value);
+                    deleteMessage = $"Property at '{property.Address}' has been deleted.";
+                    properties = await PropertyService.GetAllPropertiesAsync();
+                    selectedPropertyId = null;
+                }
+            }
+        }
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/admindashboard");
+    }
+}

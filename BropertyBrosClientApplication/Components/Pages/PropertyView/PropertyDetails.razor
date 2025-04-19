@@ -1,0 +1,131 @@
+﻿@page "/propertydetails/{PropertyId:int}"
+@using BropertyBrosClientApplication.DTO.Properties
+@using BropertyBrosClientApplication.DTO.Realtor
+@using BropertyBrosClientApplication.Services
+@inject PropertyService PropertyService
+@inject RealtorService RealtorService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+
+@* Author: Calvin *@
+<div class="container py-5">
+    @if (property == null)
+    {
+        <p class="text-center">Loading property details...</p>
+    }
+    else
+    {
+        <div class="text-center mb-4">
+            <h1 class="dashboard-title">@property.Address</h1>
+            <p class="text-muted">@property.CityName</p>
+        </div>
+
+        @if (property.ImageUrls != null && property.ImageUrls.Any())
+        {
+            <div class="custom-carousel mb-5">
+                <div class="carousel-slides">
+                    @for (int i = 0; i < property.ImageUrls.Count; i++)
+                    {
+                        <div class="carousel-slide @(i == 0 ? "active" : "")">
+                            <img src="@property.ImageUrls[i]" alt="Property Image" class="img-fluid rounded">
+                        </div>
+                    }
+                </div>
+                <button class="carousel-control prev" @onclick="ShowPreviousSlide">&#10094;</button>
+                <button class="carousel-control next" @onclick="ShowNextSlide">&#10095;</button>
+            </div>
+        }
+        else
+        {
+            <p class="text-center">No images available for this property.</p>
+        }
+
+        <div class="card shadow-sm mb-5">
+            <div class="card-body">
+                <h5 class="card-title">Property Details</h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item"><strong>Price:</strong> $@property.Price</li>
+                    <li class="list-group-item"><strong>Living Area:</strong> @property.LivingAreaKvm m²</li>
+                    <li class="list-group-item"><strong>Number of Rooms:</strong> @property.NumberOfRooms</li>
+                    <li class="list-group-item"><strong>Build Year:</strong> @property.BuildYear</li>
+                    <li class="list-group-item"><strong>Category:</strong> @property.CategoryName</li>
+                    <li class="list-group-item"><strong>Land Area:</strong> @property.LandAreaKvm m²</li>
+                    <li class="list-group-item"><strong>Ancillary Area:</strong> @property.AncillaryAreaKvm m²</li>
+                    <li class="list-group-item"><strong>Monthly Fee:</strong> $@property.MonthlyFee</li>
+                    <li class="list-group-item"><strong>Yearly Fee:</strong> $@property.YearlyFee</li>
+                    <li class="list-group-item"><strong>Description:</strong> @property.Description</li>
+                </ul>
+            </div>
+        </div>
+
+        @if (realtor != null)
+        {
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Realtor Information</h5>
+                    <div class="d-flex align-items-center">
+                        @if (!string.IsNullOrEmpty(realtor.ProfileUrl))
+                        {
+                            <img src="@realtor.ProfileUrl" alt="Realtor Profile" class="img-thumbnail me-3" style="width: 100px; height: 100px; object-fit: cover;">
+                        }
+                        <div>
+                            <p><strong>Name:</strong> @realtor.FirstName @realtor.LastName</p>
+                            <p><strong>Email:</strong> <a href="">@realtor.Email</a></p>
+                            <p><strong>Phone:</strong> <a href="">@realtor.PhoneNumber</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <p class="text-center">Loading realtor information...</p>
+        }
+
+        <div class="text-center mt-4">
+            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int PropertyId { get; set; }
+
+    private PropertyReadDto? property;
+    private RealtorReadDto? realtor;
+    private int currentSlideIndex = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        property = await PropertyService.GetPropertyByIdAsync(PropertyId);
+        if (property != null)
+        {
+            realtor = await RealtorService.GetRealtorByIdAsync(property.RealtorId);
+        }
+    }
+
+    private async Task ShowNextSlide()
+    {
+        if (property?.ImageUrls != null)
+        {
+            currentSlideIndex = (currentSlideIndex + 1) % property.ImageUrls.Count;
+            await JSRuntime.InvokeVoidAsync("updateCarousel", currentSlideIndex);
+        }
+    }
+
+    private async Task ShowPreviousSlide()
+    {
+        if (property?.ImageUrls != null)
+        {
+            currentSlideIndex = (currentSlideIndex - 1 + property.ImageUrls.Count) % property.ImageUrls.Count;
+            await JSRuntime.InvokeVoidAsync("updateCarousel", currentSlideIndex);
+        }
+    }
+
+    private async Task GoBack()
+    {
+        await JSRuntime.InvokeVoidAsync("history.back");
+    }
+}

@@ -1,0 +1,85 @@
+﻿@page "/deletecategory"
+@using BropertyBrosClientApplication.DTO.CategoryDto
+@using BropertyBrosClientApplication.Services
+@inject CategoryService CategoryService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+
+@* Author: Calvin *@
+
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="container">
+        <h1 class="dashboard-title text-center mb-4">Delete Category</h1>
+
+        <div class="card shadow-sm p-4">
+            @if (categories == null)
+            {
+                <p class="text-center">Loading categories...</p>
+            }
+            else
+            {
+                <div class="mb-3">
+                    <label for="categoryDropdown" class="form-label">Select a Category</label>
+                    <select id="categoryDropdown" class="form-select" @bind="selectedCategoryId">
+                        <option value="">-- Select a Category --</option>
+                        @foreach (var category in categories)
+                        {
+                            <option value="@category.Id">@category.CategoryName</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="text-center mb-3">
+                    <button class="btn btn-danger" @onclick="ConfirmDelete">
+                        Delete Selected Category
+                    </button>
+                </div>
+
+                @if (deleteMessage != null)
+                {
+                    <p class="text-danger text-center">@deleteMessage</p>
+                }
+            }
+        </div>
+        <div class="text-center mt-3">
+            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<CategoryReadDto>? categories;
+    private int? selectedCategoryId;
+    private string? deleteMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        categories = await CategoryService.GetAllCategoryAsync();
+    }
+
+    private async Task ConfirmDelete()
+    {
+        if (selectedCategoryId.HasValue)
+        {
+            var category = categories?.FirstOrDefault(c => c.Id == selectedCategoryId.Value);
+            if (category != null)
+            {
+                var confirm = await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete the category '{category.CategoryName}'?");
+                if (confirm)
+                {
+                    await CategoryService.DeleteCategoryAsync(selectedCategoryId.Value);
+                    deleteMessage = $"Category '{category.CategoryName}' has been deleted.";
+                    categories = await CategoryService.GetAllCategoryAsync();
+                    selectedCategoryId = null;
+                }
+            }
+        }
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/admindashboard");
+    }
+}
+

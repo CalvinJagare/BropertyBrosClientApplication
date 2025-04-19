@@ -8,16 +8,44 @@
 
 <h1>Create Property</h1>
 <input type="text" @bind="newProperty.Address" placeholder="Enter Address"/>
+<h3>Price</h3>
+<br />
 <input type="text" @bind="newProperty.Price" placeholder="Enter Price" />
+<h3>MontlyFee</h3>
+<br />
 <input type="text" @bind="newProperty.MonthlyFee" placeholder="Enter MontlyFee" />
+<h3>YearlyFee</h3>
+<br />
 <input type="text" @bind="newProperty.YearlyFee"  />
+<h3>LivingAreaKvm</h3>
+<br />
 <input type="text" @bind="newProperty.LivingAreaKvm"  />
+<h3>AncillaryAreaKvm</h3>
+<br />
 <input type="text" @bind="newProperty.AncillaryAreaKvm"  />
+<h3>LandAreaKvm</h3>
+<br />
 <input type="text" @bind="newProperty.LandAreaKvm"  />
+<h3>Description</h3>
+<br />
 <input type="text" @bind="newProperty.Description"  />
+<h3>NumberOfRooms</h3>
+<br />
 <input type="text" @bind="newProperty.NumberOfRooms"  />
+<h3>BuildYear</h3><br />
 <input type="text" @bind="newProperty.BuildYear"  />
-@* <input type="text" @bind="newProperty.ImageUrls" /> Behöver fixas *@ 
+<div>
+	<label>Image URLs:</label>
+	@for (int i = 0; i < newProperty.ImageUrls.Count; i++)
+	{
+		<input class="form-control mb-2"
+		@bind="newProperty.ImageUrls[i]" />
+	}
+
+	<button type="button" class="btn btn-secondary mb-3" @onclick="AddImageUrl">
+		Add Image URL
+	</button>
+</div>
 
 <button class="btn btn-primary" @onclick="CreateProperty">Create Property</button>
 
@@ -40,7 +68,11 @@ else if (createdProperty != null)
 		<p><strong>Description:</strong> @createdProperty.Description</p>
 		<p><strong>Number of Rooms:</strong> @createdProperty.NumberOfRooms</p>
 		<p><strong>Build Year:</strong> @createdProperty.BuildYear</p>
-		<p><strong>Image URLs:</strong> @createdProperty.ImageUrls</p>
+		@for (int i = 0; i < newProperty.ImageUrls.Count; i++)
+		{
+			<input class="form-control mb-2"
+				   @bind="createdProperty.ImageUrls[i]" />
+		}
 	</div>
 }
 else if (hasTried && createdProperty == null)
@@ -59,11 +91,11 @@ else if (hasTried && createdProperty == null)
 	{
 		try
 		{
-			properties = await PropertyService.GetAllPropertiesAsync();
+			properties= await PropertyService.GetAllPropertiesAsync();
 		}
 		catch (Exception ex)
 		{
-			Console.WriteLine($"Error loading categories: {ex.Message}");
+			Console.WriteLine($"Error loading data: {ex.Message}");
 		}
 	}
 
@@ -73,10 +105,13 @@ else if (hasTried && createdProperty == null)
 		hasTried = true;
 		createdProperty = null;
 		StateHasChanged();
-		return;
 
 		try
 		{	
+			newProperty.RealtorId = 1;
+			newProperty.CityId = 1;
+			newProperty.CategoryId = 1;
+
 			createdProperty = await PropertyService.CreatePropertyAsync(newProperty);
 		}
 		catch (Exception ex)
@@ -88,5 +123,13 @@ else if (hasTried && createdProperty == null)
 			isLoading = false;
 			StateHasChanged();
 		}
+	}
+
+	private void AddImageUrl()
+	{
+		if (newProperty.ImageUrls == null)
+			newProperty.ImageUrls = new List<string>();
+
+		newProperty.ImageUrls.Add("thisIsATestIMGUrl");
 	}
 }

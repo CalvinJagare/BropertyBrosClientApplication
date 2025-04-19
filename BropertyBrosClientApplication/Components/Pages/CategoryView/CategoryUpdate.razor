@@ -1,0 +1,116 @@
+﻿@page "/updatecategory"
+@using BropertyBrosClientApplication.DTO.CategoryDto
+@using BropertyBrosClientApplication.Services
+@inject CategoryService CategoryService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+@* Author: Calvin *@
+
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="container">
+        <h1 class="dashboard-title text-center mb-4">Update Category</h1>
+
+        <div class="card shadow-sm p-4">
+            @if (categories == null)
+            {
+                <p class="text-center">Loading categories...</p>
+            }
+            else
+            {
+                <div class="mb-3">
+                    <label for="categoryDropdown" class="form-label">Select a Category</label>
+                    <select id="categoryDropdown" class="form-select" @bind="selectedCategoryId">
+                        <option value="">-- Select a Category --</option>
+                        @foreach (var category in categories)
+                        {
+                            <option value="@category.Id">@category.CategoryName</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="text-center mb-3">
+                    <button class="btn btn-primary" @onclick="LoadCategoryDetails" disabled="@(selectedCategoryId == null)">
+                        Select Category
+                    </button>
+                </div>
+
+                @if (selectedCategory != null)
+                {
+                    <EditForm Model="selectedCategory" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <div class="mb-3">
+                            <label for="categoryName" class="form-label">Category Name</label>
+                            <InputText id="categoryName" class="form-control" @bind-Value="selectedCategory.CategoryName" />
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Update</button>
+                        </div>
+                    </EditForm>
+                }
+                else if (selectedCategoryId != null)
+                {
+                    <p class="text-center">Please click "Select Category" to load the details.</p>
+                }
+            }
+        </div>
+        <div class="text-center mt-3">
+            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<CategoryReadDto>? categories;
+    private int? selectedCategoryId;
+    private CategoryCreateDto? selectedCategory;
+
+    protected override async Task OnInitializedAsync()
+    {
+        categories = await CategoryService.GetAllCategoryAsync();
+    }
+
+    private async Task LoadCategoryDetails()
+    {
+        if (selectedCategoryId.HasValue)
+        {
+            Console.WriteLine($"Loading details for category ID: {selectedCategoryId.Value}");
+            var category = await CategoryService.GetCategoryByIdAsync(selectedCategoryId.Value);
+            if (category != null)
+            {
+                selectedCategory = new CategoryCreateDto
+                    {
+                        CategoryName = category.CategoryName
+                    };
+                Console.WriteLine($"Loaded category: {selectedCategory.CategoryName}");
+            }
+            else
+            {
+                Console.WriteLine("Category not found.");
+                selectedCategory = null;
+            }
+        }
+        else
+        {
+            selectedCategory = null;
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        if (selectedCategoryId.HasValue && selectedCategory != null)
+        {
+            Console.WriteLine($"Updating category ID: {selectedCategoryId.Value} with name: {selectedCategory.CategoryName}");
+            await CategoryService.UpdateCategoryAsync(selectedCategoryId.Value, selectedCategory);
+            NavigationManager.NavigateTo("/categoryoverview");
+        }
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/admindashboard");
+    }
+}
