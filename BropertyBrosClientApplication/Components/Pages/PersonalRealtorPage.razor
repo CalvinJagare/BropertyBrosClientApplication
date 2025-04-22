@@ -17,13 +17,14 @@
         }
         else
         {
+            <!-- Profile Picture and Name -->
             <div class="text-center mb-4">
                 <img src="@(realtor.ProfileUrl)" alt="Realtor Profile" class="img-thumbnail profile-picture" />
+                <h2 class="text-center mb-4">@($"{realtor.FirstName} {realtor.LastName}")</h2>
             </div>
-            <h2 class="text-center mb-4">@($"{realtor.FirstName} {realtor.LastName}")</h2>
 
-            <div class="row mb-4">
-                <div class="col-md-12">
+            <div class="row mb-4 justify-content-center">
+                <div class="col-md-8">
                     <div class="card shadow-sm p-3 text-center">
                         <h5 class="card-title">Personal Details</h5>
                         <p class="card-text"><strong>Phone:</strong> @realtor.PhoneNumber</p>
@@ -32,8 +33,8 @@
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-12">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
                     <div class="card shadow-sm p-3 text-center">
                         <img src="@(realtor.LogoUrl)" alt="Company Logo" class="img-thumbnail company-logo mb-3 mx-auto" />
                         <h5 class="card-title">@realtor.CompanyName</h5>
