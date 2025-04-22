@@ -4,6 +4,7 @@
 @inject RealtorService RealtorService
 @rendermode InteractiveServer
 
+@*Author: Arlind*@
 <h1>Registered Realtors</h1>
 
 @if (isLoading)
@@ -12,24 +13,28 @@
 }
 else if (realtors?.Count > 0)
 {
-    <div class="row">
-        @foreach (var realtor in realtors)
-        {
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-sm h-100">
+   <div class="row">
+    @foreach (var realtor in realtors)
+    {
+        <div class="col-md-4 mb-4">
+                <NavLink class="text-decoration-none text-dark" href="@($"/realtor/{realtor.Id}")">
+                    <div class="card shadow-sm h-100">
                     <img src="@realtor.ProfileUrl" class="card-img-top" style="height: 200px; object-fit: cover;" />
                     <div class="card-body">
                         <h5 class="card-title">@realtor.FirstName @realtor.LastName</h5>
                         <p class="card-text">
-                             @realtor.PhoneNumber<br />
-                             @realtor.Email<br />
-                             <strong>@realtor.CompanyName</strong>
+                            @realtor.PhoneNumber<br />
+                            @realtor.Email<br />
+                            <strong>@realtor.CompanyName</strong>
                         </p>
                     </div>
                 </div>
-            </div>
-        }
-    </div>
+            </NavLink>
+        </div>
+    }
+</div>
+
+
 }
 else
 {
