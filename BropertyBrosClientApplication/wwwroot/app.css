@@ -418,7 +418,7 @@ h1:focus {
     height: 150px;
     object-fit: cover;
     border-radius: 50%;
-    border: 2px solid #ddd;
+    border: 3px solid #ddd;
 }
 
 .company-logo {
@@ -432,8 +432,8 @@ h1:focus {
     background: linear-gradient(to bottom, rgb(2, 31, 66), rgb(50, 75, 120));
     color: white;
     border: none;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
 .realtorlist-title {
@@ -486,4 +486,30 @@ h1:focus {
 .realtorlist-container {
     margin: 0 auto;
     max-width: 1200px;
+}
+
+.realtor-name {
+    font-size: 1.75rem;
+    font-weight: bold;
+    color: white;
+    margin-top: 1rem;
+}
+
+.personal-details-card {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    color: #333;
+}
+
+.company-details-card {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    color: #333;
+}
+
+.company-logo {
+    width: 100px;
+    height: auto;
+    object-fit: contain;
+    border-radius: 8px;
 }
