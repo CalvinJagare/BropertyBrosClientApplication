@@ -1,0 +1,59 @@
+﻿@page "/propertyoverview"
+@using BropertyBrosClientApplication.DTO.Properties
+@using BropertyBrosClientApplication.Services
+@inject PropertyService PropertyService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="container">
+        <h1 class="dashboard-title text-center mb-4">Properties Overview</h1>
+
+        @if (properties == null)
+        {
+            <p class="text-center">Loading...</p>
+        }
+        else if (!properties.Any())
+        {
+            <p class="text-center">No properties found.</p>
+        }
+        else
+        {
+            <div class="row g-4">
+                @foreach (var property in properties)
+                {
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title text-center">
+                                    <NavLink class="text-decoration-none text-primary" href="@($"/propertydetails/{property.Id}")">
+                                        @property.Address
+                                    </NavLink>
+
+                                </h5>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        <div class="text-center mt-3">
+            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<PropertyReadDto>? properties;
+
+    protected override async Task OnInitializedAsync()
+    {
+        properties = await PropertyService.GetAllPropertiesAsync();
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/admindashboard");
+    }
+}

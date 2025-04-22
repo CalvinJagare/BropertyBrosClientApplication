@@ -1,0 +1,59 @@
+﻿@page "/propertypostings"
+@using BropertyBrosClientApplication.DTO.Properties
+@using BropertyBrosClientApplication.Services
+@inject PropertyService PropertyService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<div class="container py-5">
+    <h1 class="dashboard-title text-center mb-4">Available Properties</h1>
+
+    @if (properties == null)
+    {
+        <p class="text-center">Loading properties...</p>
+    }
+    else if (!properties.Any())
+    {
+        <p class="text-center">No properties available at the moment.</p>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var property in properties)
+            {
+                <div class="col-12">
+                    <div class="card shadow-sm h-100">
+                        <div class="row g-0">
+                            <div class="col-md-4">
+                                <img src="@(property.ImageUrls?.FirstOrDefault() ?? "Pics/Placeholder.jpg")" class="img-fluid rounded-start" alt="Property Image">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <h5 class="card-title">@property.Address</h5>
+                                    <p class="card-text text-muted">@property.CityName</p>
+                                    <p class="card-text"><strong>Living Area:</strong> @property.LivingAreaKvm m²</p>
+                                    <p class="card-text"><strong>Total Costs:</strong> $@(property.Price + property.MonthlyFee + property.YearlyFee)</p>
+                                    <button class="btn btn-primary" @onclick="() => NavigateToDetails(property.Id)">Read More</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private List<PropertyReadDto>? properties;
+
+    protected override async Task OnInitializedAsync()
+    {
+        properties = await PropertyService.GetAllPropertiesAsync();
+    }
+
+    private void NavigateToDetails(int propertyId)
+    {
+        NavigationManager.NavigateTo($"/propertydetails/{propertyId}");
+    }
+}

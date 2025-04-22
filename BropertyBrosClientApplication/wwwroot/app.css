@@ -1,5 +1,6 @@
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: rgb(252, 253,252);
 }
 
 a, .btn-link {
@@ -149,3 +150,242 @@ h1:focus {
     text-align: center; 
     margin-bottom: 1rem; 
 }
+
+.logo {
+    max-width: 1000px;
+    height: auto;
+}
+
+
+.custom-carousel {
+    position: relative;
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 1rem;
+    background: linear-gradient(to bottom, rgb(2, 31, 66), rgb(50, 75, 120));
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    height: 532px; 
+    overflow: hidden; 
+}
+
+
+.carousel-slides {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.carousel-slide {
+    min-width: 100%;
+    box-sizing: border-box;
+}
+
+    .carousel-slide img {
+        width: 100%;
+        display: block;
+    }
+
+.carousel-control {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none; 
+    color: white; 
+    border: none; 
+    font-size: 2rem; 
+    padding: 10px; 
+    cursor: pointer;
+    z-index: 10;
+}
+
+    .carousel-control.prev {
+        left: 10px;
+    }
+
+    .carousel-control.next {
+        right: 10px;
+    }
+
+
+.carousel-slide {
+    opacity: 0;
+    visibility: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+}
+
+    .carousel-slide.active {
+        opacity: 1;
+        visibility: visible;
+        position: relative;
+    }
+
+    .carousel-slide img {
+        width: 100%; 
+        height: 500px; 
+        object-fit: cover; 
+        display: block;
+    }
+
+.testimonial-carousel {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.carousel-slides {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.carousel-slide {
+    display: none;
+    flex: 1 0 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+    .carousel-slide.active {
+        display: flex;
+    }
+
+.testimonial-card {
+    flex: 0 0 30%;
+    max-width: 30%;
+    height: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin: 0 10px;
+    background-color: #f8f9fa; 
+    border: none; 
+    border-radius: 8px; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+}
+
+    .testimonial-card .card-body {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+.carousel-control-user {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    color: blue;
+    border: none;
+    font-size: 2rem;
+    padding: 10px;
+    cursor: pointer;
+    z-index: 10;
+}
+
+    .carousel-control-user.prev {
+        left: 10px;
+    }
+
+    .carousel-control-user.next {
+        right: 10px;
+    }
+
+.footer {
+    background-color: rgb(2, 31, 66); 
+    color: white; 
+    position: relative; 
+    width: 100%; 
+    margin-top: 2rem; 
+    box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.1); 
+    padding: 0;
+}
+
+    .footer a {
+        color: #ddd; 
+        transition: color 0.3s ease;
+    }
+
+        .footer a:hover {
+            color: white; 
+        }
+
+    .footer .container {
+        max-width: 1200px; 
+        margin: 0 auto; 
+    }
+
+.content.px-4 {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.card-img-top {
+    height: 200px; 
+    object-fit: cover; 
+    border-top-left-radius: 8px; 
+    border-top-right-radius: 8px;
+}
+
+.card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: rgb(2, 31, 66); 
+}
+
+.card-text {
+    font-size: 1rem;
+    color: #555; 
+}
+
+.card-img-top {
+    height: 200px; 
+    object-fit: cover; 
+    border-top-left-radius: 8px; 
+    border-top-right-radius: 8px;
+}
+
+.card-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: rgb(2, 31, 66); 
+}
+
+.card-text {
+    font-size: 1rem;
+    color: #555; 
+}
+
+.dashboard-title {
+    font-size: 2rem;
+    font-weight: bold;
+    color: rgb(2, 31, 66);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.card-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: rgb(2, 31, 66);
+}
+
+.list-group-item h5 {
+    font-size: 1.25rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.list-group-item p {
+    margin: 0;
+    font-size: 1rem;
+    color: #555;
+}
+

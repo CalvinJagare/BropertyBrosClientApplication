@@ -1,0 +1,59 @@
+﻿@page "/realtorfirmoverview"
+@using BropertyBrosClientApplication.DTO.RealtorFirm
+@using BropertyBrosClientApplication.Services
+@inject RealtorFirmService RealtorFirmService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+@* //Author: Calvin *@
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="container">
+        <h1 class="dashboard-title text-center mb-4">Realtor Firms Overview</h1>
+
+        @if (realtorFirms == null)
+        {
+            <p class="text-center">Loading...</p>
+        }
+        else if (!realtorFirms.Any())
+        {
+            <p class="text-center">No realtor firms found.</p>
+        }
+        else
+        {
+            <div class="row g-4">
+                @foreach (var firm in realtorFirms)
+                {
+                    <div class="col-md-6 col-lg-4">
+                        <div class="card shadow-sm">
+                            <div class="card-body">
+                                <h5 class="card-title text-center">
+                                    <NavLink class="text-decoration-none text-primary" href="">
+                                        @firm.CompanyName
+                                    </NavLink>
+                                </h5>
+                                <p class="text-center">@firm.Description</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        <div class="text-center mt-3">
+            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<RealtorFirmReadDto>? realtorFirms;
+
+    protected override async Task OnInitializedAsync()
+    {
+        realtorFirms = await RealtorFirmService.GetAllRealtorFirmsAsync();
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/admindashboard");
+    }
+}
