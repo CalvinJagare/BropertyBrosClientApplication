@@ -1,12 +1,12 @@
-﻿@page "/updaterealtor{Id:int}"
+﻿@page "/updaterealtor"
 @using BropertyBrosClientApplication.DTO.Realtor
+@using BropertyBrosClientApplication.DTO.RealtorFirm
 @using BropertyBrosClientApplication.Services
 @inject RealtorService RealtorService
+@inject RealtorFirmService RealtorFirmService
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
-@* Author: Emil *@
-@* Behöver Fixa ID Intag för Firms *@
 <div class="d-flex justify-content-center align-items-center vh-100">
     <div class="container">
         <h1 class="dashboard-title text-center mb-4">Update Realtor</h1>
@@ -67,8 +67,17 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="realtorFirmId" class="form-label">Realtor Firm ID</label>
-                            <InputNumber id="realtorFirmId" class="form-control" @bind-Value="selectedRealtor.RealtorFirmId" />
+                            <label for="realtorFirmDropdown" class="form-label">Realtor Firm</label>
+                            <select id="realtorFirmDropdown" class="form-select" @bind="selectedRealtor.RealtorFirmId">
+                                <option value="">-- Select a Realtor Firm --</option>
+                                @if (realtorFirms != null)
+                                {
+                                    @foreach (var firm in realtorFirms)
+                                    {
+                                        <option value="@firm.Id">@firm.CompanyName</option>
+                                    }
+                                }
+                            </select>
                         </div>
 
                         <div class="text-center">
@@ -90,12 +99,14 @@
 
 @code {
     private List<RealtorReadDto>? realtors;
+    private List<RealtorFirmReadDto>? realtorFirms;
     private int? selectedRealtorId;
     private RealtorCreateDto? selectedRealtor;
 
     protected override async Task OnInitializedAsync()
     {
         realtors = await RealtorService.GetAllRealtorsAsync();
+        realtorFirms = await RealtorFirmService.GetAllRealtorFirmsAsync();
     }
 
     private async Task LoadRealtorDetails()
@@ -115,14 +126,6 @@
                         RealtorFirmId = realtor.RealtorFirmId
                     };
             }
-            else
-            {
-                selectedRealtor = null;
-            }
-        }
-        else
-        {
-            selectedRealtor = null;
         }
     }
 

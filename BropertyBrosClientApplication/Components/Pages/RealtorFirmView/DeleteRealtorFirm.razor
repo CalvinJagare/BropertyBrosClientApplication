@@ -1,0 +1,84 @@
+﻿@page "/deleterealtorfirm"
+@using BropertyBrosClientApplication.DTO.RealtorFirm
+@using BropertyBrosClientApplication.Services
+@inject RealtorFirmService RealtorFirmService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+
+@* //Author: Calvin *@
+
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="container">
+        <h1 class="dashboard-title text-center mb-4">Delete Realtor Firm</h1>
+
+        <div class="card shadow-sm p-4">
+            @if (realtorFirms == null)
+            {
+                <p class="text-center">Loading realtor firms...</p>
+            }
+            else
+            {
+                <div class="mb-3">
+                    <label for="firmDropdown" class="form-label">Select a Realtor Firm</label>
+                    <select id="firmDropdown" class="form-select" @bind="selectedFirmId">
+                        <option value="">-- Select a Realtor Firm --</option>
+                        @foreach (var firm in realtorFirms)
+                        {
+                            <option value="@firm.Id">@firm.CompanyName</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="text-center mb-3">
+                    <button class="btn btn-danger" @onclick="ConfirmDelete">
+                        Delete Selected Firm
+                    </button>
+                </div>
+
+                @if (deleteMessage != null)
+                {
+                    <p class="text-danger text-center">@deleteMessage</p>
+                }
+            }
+        </div>
+        <div class="text-center mt-3">
+            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<RealtorFirmReadDto>? realtorFirms;
+    private int? selectedFirmId;
+    private string? deleteMessage;
+
+    protected override async Task OnInitializedAsync()
+    {
+        realtorFirms = await RealtorFirmService.GetAllRealtorFirmsAsync();
+    }
+
+    private async Task ConfirmDelete()
+    {
+        if (selectedFirmId.HasValue)
+        {
+            var firm = realtorFirms?.FirstOrDefault(f => f.Id == selectedFirmId.Value);
+            if (firm != null)
+            {
+                var confirm = await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete the firm '{firm.CompanyName}'?");
+                if (confirm)
+                {
+                    await RealtorFirmService.DeleteRealtorFirmAsync(selectedFirmId.Value);
+                    deleteMessage = $"Firm '{firm.CompanyName}' has been deleted.";
+                    realtorFirms = await RealtorFirmService.GetAllRealtorFirmsAsync();
+                    selectedFirmId = null;
+                }
+            }
+        }
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/admindashboard");
+    }
+}
