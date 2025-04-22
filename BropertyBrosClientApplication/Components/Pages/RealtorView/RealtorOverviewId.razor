@@ -30,45 +30,45 @@
                     </div>
                 </div>
                 <div class="mt-5">
-                <select id="realtorDropdown" class="form-select" @onchange="ChangeProperty">
-                    <option value="">-- Select a property --</option>
-                    @if (properties.Count > 0)
-                    {
-                        foreach (var p in properties)
+                    <select id="realtorDropdown" class="form-select" @onchange="ChangeProperty">
+                        <option value="">-- Select a property --</option>
+                        @if (properties.Count > 0)
                         {
-                            <option value="@p.Id">@p.Address @p.CityName</option>
+                            foreach (var p in properties)
+                            {
+                                <option value="@p.Id">@p.Address @p.CityName</option>
+                            }
                         }
-                    }
-                </select>
-                @if (selectedProperty != null)
-                {
-                    <div class="d-flex flex-column text-center">
-                    <div class="d-flex flex-row justify-content-between">
+                    </select>
+                    @if (selectedProperty != null)
+                    {
                         <div class="d-flex flex-column text-center">
-                            <p>Build year: @selectedProperty.BuildYear</p>
-                            <p>Address: @selectedProperty.Address</p>
-                            <p>City: @selectedProperty.CityName</p>
-                            <p>Category: @selectedProperty.CategoryName</p>
-                            <p>Rooms: @selectedProperty.NumberOfRooms</p>
-                            <p>Living area: @selectedProperty.LivingAreaKvm</p>
-                            <p>Ancillary area: @selectedProperty.AncillaryAreaKvm</p>
-                            <p>Land area: @selectedProperty.LandAreaKvm</p>
-                            <p>Monthly fee: @selectedProperty.MonthlyFee</p>
-                            <p>Yearly fee: @selectedProperty.YearlyFee</p>
-                            <p>Price: @selectedProperty.Price</p>
-                        </div>
-                        <div class="d-flex flex-column">
-                            <img src="@selectedProperty.ImageUrls[imgIndex.Value]" height="400" style="width: auto" class="align-self-center"/>
                             <div class="d-flex flex-row justify-content-between">
-                                <button @onclick="PreviousImage">Previous image</button>
-                                <button @onclick="NextImage">Next image</button>
+                                <div class="d-flex flex-column text-center">
+                                    <p>Build year: @selectedProperty.BuildYear</p>
+                                    <p>Address: @selectedProperty.Address</p>
+                                    <p>City: @selectedProperty.CityName</p>
+                                    <p>Category: @selectedProperty.CategoryName</p>
+                                    <p>Rooms: @selectedProperty.NumberOfRooms</p>
+                                    <p>Living area: @selectedProperty.LivingAreaKvm</p>
+                                    <p>Ancillary area: @selectedProperty.AncillaryAreaKvm</p>
+                                    <p>Land area: @selectedProperty.LandAreaKvm</p>
+                                    <p>Monthly fee: @selectedProperty.MonthlyFee</p>
+                                    <p>Yearly fee: @selectedProperty.YearlyFee</p>
+                                    <p>Price: @selectedProperty.Price</p>
+                                </div>
+                                <div class="d-flex flex-column" width="400">
+                                    <img @onload="ResizeImage" src="@selectedProperty.ImageUrls[imgIndex.Value]" height="400" style="width: auto" class="align-self-center"/>
+                                    <div class="d-flex flex-row justify-content-between">
+                                        <button @onclick="PreviousImage">Previous image</button>
+                                        <button @onclick="NextImage">Next image</button>
+                                    </div>
+                                </div>
                             </div>
+                            <p>@selectedProperty.Description</p>
                         </div>
-                    </div>
-                    <p>@selectedProperty.Description</p>
-                    </div>
-                }
-            </div>
+                    }
+                </div>
             </div>
         }
 
@@ -130,5 +130,5 @@
     private void GoBack()
     {
         NavigationManager.NavigateTo("/admindashboard");
-    }
+    } 
 }
