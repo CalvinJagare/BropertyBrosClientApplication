@@ -9,4 +9,12 @@
     });
 }
 
-/*Author: Calvin*/
+/*Author: Calvin* /\ /
+
+/*Author: Daniel*/
+function goToTopOfPage() {
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}

@@ -1,0 +1,61 @@
+﻿@page "/PersonalRealtorPage/{id:int}"
+@using BropertyBrosClientApplication.DTO.Realtor
+@using BropertyBrosClientApplication.Services
+@inject RealtorService RealtorService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+
+@*Author:Daniel*@
+<div>
+	<h1 class="text-center">Realtor Details</h1>
+	@if (realtor == null)
+	{
+		<p class="text-center">Loading...</p>
+	}
+	else
+	{
+		<div class="card shadow-sm p-4">
+			<h5 class="card-title">@($"{realtor.FirstName} {realtor.LastName}")</h5>
+			<p class="card-text">Phone: @realtor.PhoneNumber</p>
+			<p class="card-text">Email: @realtor.Email</p>
+			<p class="card-text">Profile URL: @realtor.ProfileUrl</p><br />
+			<h3>Firm:</h3>
+			<p class="card-text">Company: @realtor.CompanyName</p>
+			<p class="card-text">Logo: @realtor.LogoUrl</p>
+			<p class="card-text">Website: @realtor.WebsiteUrl</p>
+
+		</div>
+
+		<div class="text-center mt-3">
+			<button class="btn btn-secondary" @onclick="GoBack">Back</button>
+		</div>
+	}
+</div>
+
+@code {
+	private RealtorReadDto? realtor;
+	private bool firstRender = true;
+	[Parameter]
+	public int id { get; set; } 
+
+	protected override async Task OnInitializedAsync()
+	{
+		realtor = await RealtorService.GetRealtorByIdAsync(id);
+
+	}
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if(firstRender)
+		{
+			firstRender = false;
+			await JSRuntime.InvokeVoidAsync("goToTopOfPage");
+		}
+	}
+
+	private void GoBack()
+	{
+		NavigationManager.NavigateTo("/propertypostings");
+	}
+}
