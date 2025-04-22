@@ -1,9 +1,11 @@
 ﻿@page "/propertydetails/{PropertyId:int}"
 @using BropertyBrosClientApplication.DTO.Properties
 @using BropertyBrosClientApplication.DTO.Realtor
+@using BropertyBrosClientApplication.DTO.RealtorFirm
 @using BropertyBrosClientApplication.Services
 @inject PropertyService PropertyService
 @inject RealtorService RealtorService
+@inject RealtorFirmService RealtorFirmService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
@@ -70,10 +72,10 @@
                             <img src="@realtor.ProfileUrl" alt="Realtor Profile" class="img-thumbnail me-3" style="width: 100px; height: 100px; object-fit: cover;">
                         }
                         <div>
-                            <p><strong>Name:</strong> @realtor.FirstName @realtor.LastName</p>
+                            <p><strong>Name:</strong><a href="/PersonalRealtorPage/@realtor.Id"> @realtor.FirstName @realtor.LastName</a></p>
                             <p><strong>Email:</strong> <a href="">@realtor.Email</a></p>
                             <p><strong>Phone:</strong> <a href="">@realtor.PhoneNumber</a></p>
-                            <p><strong>Company:</strong> <a href="">@realtor.CompanyName</a></p>
+                            <p><strong>Company:</strong> <a href="/listoffirms">@realtor.CompanyName</a></p>
                         </div>
                     </div>
                 </div>
@@ -104,6 +106,7 @@
         if (property != null)
         {
             realtor = await RealtorService.GetRealtorByIdAsync(property.RealtorId);
+
         }
     }
 

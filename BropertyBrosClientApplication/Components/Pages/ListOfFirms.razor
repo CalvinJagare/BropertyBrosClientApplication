@@ -1,0 +1,53 @@
+﻿@page "/listoffirms"
+@using BropertyBrosClientApplication.DTO.RealtorFirm
+@using BropertyBrosClientApplication.Services
+@inject RealtorFirmService RealtorFirmService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+<div class="container py-5">
+    <h1 class="dashboard-title text-center mb-4">List of Realtor Firms</h1>
+
+    @if (realtorFirms == null)
+    {
+        <p class="text-center">Loading realtor firms...</p>
+    }
+    else if (!realtorFirms.Any())
+    {
+        <p class="text-center">No realtor firms found.</p>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var firm in realtorFirms)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                @if (!string.IsNullOrEmpty(firm.LogoUrl))
+                                {
+                                    <img src="@firm.LogoUrl" alt="Firm Logo" class="img-thumbnail me-3" style="width: 75px; height: 75px; object-fit: cover;">
+                                }
+                                <h5 class="card-title mb-0">@firm.CompanyName</h5>
+                            </div>
+                            <p class="card-text">@firm.Description</p>
+                            <div class="text-center">
+                                <a href="@firm.WebsiteUrl" class="btn btn-primary">View Website</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private List<RealtorFirmReadDto>? realtorFirms;
+
+    protected override async Task OnInitializedAsync()
+    {
+        realtorFirms = await RealtorFirmService.GetAllRealtorFirmsAsync();
+    }
+}

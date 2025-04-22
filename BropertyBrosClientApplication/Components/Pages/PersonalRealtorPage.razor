@@ -1,0 +1,75 @@
+﻿@page "/PersonalRealtorPage/{id:int}"
+@using BropertyBrosClientApplication.DTO.Realtor
+@using BropertyBrosClientApplication.Services
+@inject RealtorService RealtorService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+
+@*Author: Daniel*@
+
+<div class="container mb-5">
+    <div class="card shadow-sm p-4 gradient-card">
+        @if (realtor == null)
+        {
+            <h1 class="text-center">Realtor Details</h1>
+            <p class="text-center">Loading...</p>
+        }
+        else
+        {
+            <div class="text-center mb-4">
+                <img src="@(realtor.ProfileUrl)" alt="Realtor Profile" class="img-thumbnail profile-picture" />
+                <h2 class="text-center mb-4">@($"{realtor.FirstName} {realtor.LastName}")</h2>
+            </div>
+
+            <div class="row mb-4 justify-content-center">
+                <div class="col-md-8">
+                    <div class="card shadow-sm p-3 text-center">
+                        <h5 class="card-title">Personal Details</h5>
+                        <p class="card-text"><strong>Phone:</strong> @realtor.PhoneNumber</p>
+                        <p class="card-text"><strong>Email:</strong> <a href="mailto:@realtor.Email">@realtor.Email</a></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card shadow-sm p-3 text-center">
+                        <img src="@(realtor.LogoUrl)" alt="Company Logo" class="img-thumbnail company-logo mb-3 mx-auto" />
+                        <h5 class="card-title">@realtor.CompanyName</h5>
+                        <p class="card-text"><strong>Website:</strong> <a href="@realtor.WebsiteUrl" target="_blank">@realtor.WebsiteUrl</a></p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="text-center mt-4">
+        <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+    </div>
+</div>
+
+@code {
+    private RealtorReadDto? realtor;
+    [Parameter]
+    public int id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        realtor = await RealtorService.GetRealtorByIdAsync(id);
+    }
+
+    // protected override async Task OnAfterRenderAsync(bool firstRender)
+    // {
+    // 	if(!firstRender)
+    // 	{
+    // 		firstRender = true;
+    // 		await JSRuntime.InvokeVoidAsync("goToTopOfPage");
+    // 	}
+    // }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/propertypostings");
+    }
+}

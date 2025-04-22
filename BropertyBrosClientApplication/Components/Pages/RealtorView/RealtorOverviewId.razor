@@ -1,0 +1,142 @@
+﻿@page "/realtoroverview/{realtorId:int}"
+@using BropertyBrosClientApplication.DTO.Properties
+@using BropertyBrosClientApplication.DTO.Realtor
+@using BropertyBrosClientApplication.Services
+@inject RealtorService realtorService
+@inject PropertyService propertyService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+
+@* Author: Emil, Calvin *@
+@* Behöver Fixa ID Intag för Firms *@
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="container">
+        @if (realtor != null)
+        {
+            <h1 class="dashboard-title text-center mb-4">@realtor.FirstName @realtor.LastName</h1>
+            <div class="card shadow-sm p-4">
+                <div class="d-flex flex-row">
+                    <div class="d-flex flex-column w-50">
+                        <img src="@realtor.ProfileUrl" height="400" class="align-self-center" />
+                    </div>
+                    <div class="d-flex flex-column w-50 text-center justify-content-between">
+                        <div>
+                            <p>@realtor.PhoneNumber</p>
+                            <p>@realtor.Email</p>
+                        </div>
+                        <a href="@realtor.WebsiteUrl">
+                            <img src="@realtor.LogoUrl" height="200" class="align-self-center" />
+                        </a>
+                    </div>
+                </div>
+                <div class="mt-5">
+                    <select id="realtorDropdown" class="form-select" @onchange="ChangeProperty">
+                        <option value="">-- Select a property --</option>
+                        @if (properties.Count > 0)
+                        {
+                            foreach (var p in properties)
+                            {
+                                <option value="@p.Id">@p.Address @p.CityName</option>
+                            }
+                        }
+                    </select>
+                    @if (selectedProperty != null)
+                    {
+                        <div class="d-flex flex-column text-center">
+                            <p class="mt-3 mb-3">@selectedProperty.Description</p>
+                            <div class="d-flex flex-row justify-content-between p-5">
+                                <p class="m-1">Build year: @selectedProperty.BuildYear</p>
+                                <p class="m-1">Address: @selectedProperty.Address</p>
+                                <p class="m-1">City: @selectedProperty.CityName</p>
+                                <p class="m-1">Category: @selectedProperty.CategoryName</p>
+                                <p class="m-1">Rooms: @selectedProperty.NumberOfRooms</p>
+                                <p class="m-1">Living area Kvm: @selectedProperty.LivingAreaKvm</p>
+                                <p class="m-1">Ancillary area Kvm: @selectedProperty.AncillaryAreaKvm</p>
+                                <p class="m-1">Land area Kvm: @selectedProperty.LandAreaKvm</p>
+                                <p class="m-1">Monthly fee SEK: @selectedProperty.MonthlyFee</p>
+                                <p class="m-1">Yearly fee SEK: @selectedProperty.YearlyFee</p>
+                                <p class="m-1">Price SEK: @selectedProperty.Price</p>
+                            </div>
+
+                            @if (selectedProperty.ImageUrls != null && selectedProperty.ImageUrls.Any())
+                            {
+                                <div class="custom-carousel mb-5">
+                                    <div class="carousel-slides">
+                                        @for (int i = 0; i < selectedProperty.ImageUrls.Count; i++)
+                                        {
+                                            <div class="carousel-slide @(i == 0 ? "active" : "")">
+                                                <img src="@selectedProperty.ImageUrls[i]" alt="Property Image" class="img-fluid rounded">
+                                            </div>
+                                        }
+                                    </div>
+                                    <button class="carousel-control prev" @onclick="ShowPreviousSlide">&#10094;</button>
+                                    <button class="carousel-control next" @onclick="ShowNextSlide">&#10095;</button>
+                                </div>
+                            }
+                            else
+                            {
+                                <p class="text-center">No images available for this property.</p>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        <div class="text-center mt-3">
+            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int realtorId { get; set; }
+    private RealtorReadDto? realtor;
+    private List<PropertyReadDto>? properties = new();
+    private PropertyReadDto? selectedProperty;
+    private int currentSlideIndex = 0; private int? imgIndex;
+
+    protected override async Task OnInitializedAsync()
+    {
+        realtor = await realtorService.GetRealtorByIdAsync(realtorId);
+        properties = await propertyService.GetPropertiesByRealtor(realtorId);
+    }
+
+    private async Task ChangeProperty(ChangeEventArgs e)
+    {
+        if (int.TryParse((string?)e.Value, out int propertyId))
+        {
+            selectedProperty = await propertyService.GetPropertyByIdAsync(propertyId);
+            imgIndex = 0;
+            return;
+        }
+
+        selectedProperty = null;
+        imgIndex = null;
+    }
+
+    private async Task ShowNextSlide()
+    {
+        if (selectedProperty?.ImageUrls != null)
+        {
+            currentSlideIndex = (currentSlideIndex + 1) % selectedProperty.ImageUrls.Count;
+            await JSRuntime.InvokeVoidAsync("updateCarousel", currentSlideIndex);
+        }
+    }
+
+    private async Task ShowPreviousSlide()
+    {
+        if (selectedProperty?.ImageUrls != null)
+        {
+            currentSlideIndex = (currentSlideIndex - 1 + selectedProperty.ImageUrls.Count) % selectedProperty.ImageUrls.Count;
+            await JSRuntime.InvokeVoidAsync("updateCarousel", currentSlideIndex);
+        }
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/admindashboard");
+    }
+}
