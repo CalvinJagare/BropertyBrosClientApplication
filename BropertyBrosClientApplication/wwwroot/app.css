@@ -435,3 +435,55 @@ h1:focus {
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
+.realtorlist-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: rgb(2, 31, 66);
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.realtorlist-loading-text, .realtorlist-no-realtors-text {
+    font-size: 1.25rem;
+    color: #555;
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.realtorlist-card {
+    border: none;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+    .realtorlist-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    }
+
+.realtorlist-img {
+    height: 250px; 
+    object-fit: cover; 
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.realtorlist-card-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+    color: rgb(2, 31, 66);
+    margin-bottom: 0.5rem;
+}
+
+.realtorlist-card-text {
+    font-size: 1rem;
+    color: #555;
+    line-height: 1.5;
+}
+
+.realtorlist-container {
+    margin: 0 auto;
+    max-width: 1200px;
+}

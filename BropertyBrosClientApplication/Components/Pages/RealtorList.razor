@@ -4,37 +4,41 @@
 @inject RealtorService RealtorService
 @rendermode InteractiveServer
 
-<h1>Registered Realtors</h1>
+<div class="realtorlist-container mb-5">
+    <h1 class="realtorlist-title text-center mb-4">Registered Realtors</h1>
 
-@if (isLoading)
-{
-    <p>Loading realtors...</p>
-}
-else if (realtors?.Count > 0)
-{
-    <div class="row">
-        @foreach (var realtor in realtors)
-        {
-            <div class="col-md-4 mb-4">
-                <div class="card shadow-sm h-100">
-                    <img src="@realtor.ProfileUrl" class="card-img-top" style="height: 200px; object-fit: cover;" />
-                    <div class="card-body">
-                        <h5 class="card-title">@realtor.FirstName @realtor.LastName</h5>
-                        <p class="card-text">
-                             @realtor.PhoneNumber<br />
-                             @realtor.Email<br />
-                             <strong>@realtor.CompanyName</strong>
-                        </p>
-                    </div>
+    @if (isLoading)
+    {
+        <p class="text-center realtorlist-loading-text">Loading realtors...</p>
+    }
+    else if (realtors?.Count > 0)
+    {
+        <div class="row g-4">
+            @foreach (var realtor in realtors)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <NavLink class="text-decoration-none" href="@($"/PersonalRealtorPage/{realtor.Id}")">
+                        <div class="card shadow-sm h-100 realtorlist-card">
+                            <img src="@realtor.ProfileUrl" class="card-img-top realtorlist-img" alt="Realtor Profile" />
+                            <div class="card-body text-center">
+                                <h5 class="realtorlist-card-title">@realtor.FirstName @realtor.LastName</h5>
+                                <p class="realtorlist-card-text">
+                                    <strong>Phone:</strong> @realtor.PhoneNumber<br />
+                                    <strong>Email:</strong> <a href="mailto:@realtor.Email">@realtor.Email</a><br />
+                                </p>
+                            </div>
+                        </div>
+                    </NavLink>
                 </div>
-            </div>
-        }
-    </div>
-}
-else
-{
-    <p>No realtors found.</p>
-}
+            }
+        </div>
+    }
+    else
+    {
+        <p class="text-center realtorlist-no-realtors-text">No realtors found.</p>
+    }
+</div>
+
 
 @code {
     private List<RealtorReadDto>? realtors;
