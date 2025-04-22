@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.13.35913.81
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BropertyBrosClientApplication", "BropertyBrosClientApplication\BropertyBrosClientApplication.csproj", "{F3F34F0D-26C9-4D1B-AC0A-E0A53A2EA8CD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BropertyBrosClientApplication", "BropertyBrosClientApplication\BropertyBrosClientApplication.csproj", "{F3F34F0D-26C9-4D1B-AC0A-E0A53A2EA8CD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BropertyBrosApi2.0", "..\BropertyBrosApi2.0\BropertyBrosApi2.0\BropertyBrosApi2.0.csproj", "{5ACBBA94-2600-08AC-C946-9B3AFB3E0D78}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BropertyBrosApi2.0", "..\BropertyBrosApi2.0\BropertyBrosApi2.0\BropertyBrosApi2.0.csproj", "{5ACBBA94-2600-08AC-C946-9B3AFB3E0D78}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
