@@ -1,0 +1,12 @@
+﻿@using BropertyBrosClientApplication.Services.Providers
+@inject ApiAuthenticationStateProvider AuthProvider
+
+@code {
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await AuthProvider.InitFromClientAsync();
+        }
+    }
+}
