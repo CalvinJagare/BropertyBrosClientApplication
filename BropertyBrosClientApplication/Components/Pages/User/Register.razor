@@ -1,9 +1,66 @@
 ﻿@page "/users/register"
+@using BropertyBrosClientApplication.Services.Base2
+@inject IClient httpClient
 @inject NavigationManager NavigationManager
 
+<h3>Register New Account</h3>
 
-<h3>Register</h3>
+@if(string.IsNullOrEmpty(message) == false)
+{
+    <div class="alert alert-danger">
+        <p class="text-success">@message</p>
+    </div>    
+}
+
+<div>
+    <EditForm Model="RegistrationModel" OnValidSubmit="HandleRegister" FormName="registerForm">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="form-group">
+            <label for="email">Email</label>
+            <InputText class="form-control" @bind-Value="RegistrationModel.Email" />
+            <ValidationMessage For="@(() => RegistrationModel.Email)" />
+        </div>
+        <div class="form-group">
+            <label for="firstName">First Name</label>
+            <InputText class="form-control" @bind-Value="RegistrationModel.FirstName" />
+            <ValidationMessage For="@(() => RegistrationModel.FirstName)" />
+        </div>
+        <div class="form-group">
+            <label for="lastName">Last Name</label>
+            <InputText class="form-control" @bind-Value="RegistrationModel.LastName" />
+            <ValidationMessage For="@(() => RegistrationModel.LastName)" />
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <InputText type="password" class="form-control" @bind-Value="RegistrationModel.Password" />
+            <ValidationMessage For="@(() => RegistrationModel.Password)" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Register</button>
+    </EditForm>
+</div>
+
 
 @code {
+    UserDto RegistrationModel = new UserDto();
+    string message = string.Empty;
 
+    private async Task HandleRegister()
+    {
+        try
+        {
+            await httpClient.RegisterAsync(RegistrationModel);
+            NavigationManager.NavigateTo("/user/login");
+        }
+        catch (ApiException aex)
+        {
+            if (aex.StatusCode >= 200 && aex.StatusCode <= 299)
+            {
+                NavigationManager.NavigateTo("/user/login");
+            }
+            message = aex.Response;
+            
+        }
+    }
 }

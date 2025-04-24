@@ -1,0 +1,55 @@
+﻿@page "/user/login"
+@using BropertyBrosClientApplication.Services.Authentication
+@using BropertyBrosClientApplication.Services.Base2
+@inject IAuthenticationService authService
+@inject NavigationManager NavigationManager
+
+<h3>Login</h3>
+
+
+<EditForm Model="LoginModel" OnValidSubmit="HandleLogin">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="email">Email</label>
+        <InputText class="form-control" @bind-Value="LoginModel.Email" />
+        <ValidationMessage For="@(() => LoginModel.Email)" />
+    </div>
+
+    <div class="form-group">
+        <label for="password">Password</label>
+        <InputText type="password" class="form-control" @bind-Value="LoginModel.Password" />
+        <ValidationMessage For="@(() => LoginModel.Password)" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Login</button>
+</EditForm>
+
+@code {
+    LoginUserDto LoginModel = new LoginUserDto();
+
+    private async Task HandleLogin()
+    {
+        string message = string.Empty;
+        try
+        {
+            var response = await authService.AuthenticateAsync(LoginModel);
+
+            if (response)
+            {
+                NavigationManager.NavigateTo("/"); 
+            }
+            message = "Login failed: Invalid credentials or other error.";
+            
+        }
+        catch (ApiException aex)
+        {
+            if (aex.StatusCode >= 200 && aex.StatusCode <= 299)
+            {
+                NavigationManager.NavigateTo("/");
+            }
+            message = "Login failed: " + aex.Response;
+        }
+    }
+}

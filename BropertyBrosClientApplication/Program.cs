@@ -1,7 +1,10 @@
+using Blazored.LocalStorage;
 using BropertyBrosClientApplication.Components;
-using BropertyBrosClientApplication.Components.Account;
 using BropertyBrosClientApplication.Data;
 using BropertyBrosClientApplication.Services;
+using BropertyBrosClientApplication.Services.Authentication;
+using BropertyBrosClientApplication.Services.Base2;
+using BropertyBrosClientApplication.Services.Providers;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -19,28 +22,14 @@ namespace BropertyBrosClientApplication
                 .AddInteractiveServerComponents();
 
             builder.Services.AddCascadingAuthenticationState();
-            builder.Services.AddScoped<IdentityUserAccessor>();
-            builder.Services.AddScoped<IdentityRedirectManager>();
-            builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
-
-            builder.Services.AddAuthentication(options =>
-                {
-                    options.DefaultScheme = IdentityConstants.ApplicationScheme;
-                    options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
-                })
-                .AddIdentityCookies();
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-            builder.Services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString));
-            builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddSignInManager()
-                .AddDefaultTokenProviders();
-
-            builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+            builder.Services.AddBlazoredLocalStorage();
+            builder.Services.AddScoped<ApiAuthenticationStateProvider>();
+            builder.Services.AddScoped<AuthenticationStateProvider>(s => 
+                s.GetRequiredService<ApiAuthenticationStateProvider>());
+            builder.Services.AddAuthenticationCore();
 
             builder.Services.AddHttpClient("BropertyBrosApi2.0", client =>
             {
@@ -51,6 +40,9 @@ namespace BropertyBrosClientApplication
             builder.Services.AddScoped<PropertyService>();
             builder.Services.AddScoped<CityService>();
             builder.Services.AddScoped<RealtorFirmService>();
+            builder.Services.AddScoped<IClient, Client>();
+            builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+
 
 
             var app = builder.Build();
@@ -75,8 +67,6 @@ namespace BropertyBrosClientApplication
             app.MapRazorComponents<App>()
                 .AddInteractiveServerRenderMode();
 
-            // Add additional endpoints required by the Identity /Account Razor components.
-            app.MapAdditionalIdentityEndpoints();
 
             app.Run();
         }
