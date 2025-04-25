@@ -293,17 +293,17 @@ namespace BropertyBrosClientApplication.Services
     [System.CodeDom.Compiler.GeneratedCode("NSwag", "14.3.0.0 (NJsonSchema v11.2.0.0 (Newtonsoft.Json v13.0.0.0))")]
     public partial class Client : IClient
     {
-        #pragma warning disable 8618
+#pragma warning disable 8618
         private string _baseUrl;
-        #pragma warning restore 8618
+#pragma warning restore 8618
 
         private System.Net.Http.HttpClient _httpClient;
         private static System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(CreateSerializerSettings, true);
         private Newtonsoft.Json.JsonSerializerSettings _instanceSettings;
 
-    #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         public Client(string baseUrl, System.Net.Http.HttpClient httpClient)
-    #pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+#pragma warning restore CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
         {
             BaseUrl = baseUrl;
             _httpClient = httpClient;
@@ -467,7 +467,7 @@ namespace BropertyBrosClientApplication.Services
                         ProcessResponse(client_, response_);
 
                         var status_ = (int)response_.StatusCode;
-                        if (status_ == 202)
+                        if (status_ == 200)
                         {
                             var objectResponse_ = await ReadObjectResponseAsync<AuthResponseDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
@@ -2722,7 +2722,7 @@ namespace BropertyBrosClientApplication.Services
                     var field = System.Reflection.IntrospectionExtensions.GetTypeInfo(value.GetType()).GetDeclaredField(name);
                     if (field != null)
                     {
-                        var attribute = System.Reflection.CustomAttributeExtensions.GetCustomAttribute(field, typeof(System.Runtime.Serialization.EnumMemberAttribute)) 
+                        var attribute = System.Reflection.CustomAttributeExtensions.GetCustomAttribute(field, typeof(System.Runtime.Serialization.EnumMemberAttribute))
                             as System.Runtime.Serialization.EnumMemberAttribute;
                         if (attribute != null)
                         {
@@ -2734,13 +2734,13 @@ namespace BropertyBrosClientApplication.Services
                     return converted == null ? string.Empty : converted;
                 }
             }
-            else if (value is bool) 
+            else if (value is bool)
             {
                 return System.Convert.ToString((bool)value, cultureInfo).ToLowerInvariant();
             }
             else if (value is byte[])
             {
-                return System.Convert.ToBase64String((byte[]) value);
+                return System.Convert.ToBase64String((byte[])value);
             }
             else if (value is string[])
             {
@@ -3292,10 +3292,10 @@ namespace BropertyBrosClientApplication.Services
 
 }
 
-#pragma warning restore  108
-#pragma warning restore  114
-#pragma warning restore  472
-#pragma warning restore  612
+#pragma warning restore 108
+#pragma warning restore 114
+#pragma warning restore 472
+#pragma warning restore 612
 #pragma warning restore 1573
 #pragma warning restore 1591
 #pragma warning restore 8073
