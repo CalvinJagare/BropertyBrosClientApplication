@@ -1,5 +1,6 @@
 using BropertyBrosClientApplication.Components;
 using BropertyBrosClientApplication.Services;
+using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace BropertyBrosClientApplication
@@ -29,6 +30,11 @@ namespace BropertyBrosClientApplication
             builder.Services.AddScoped<PropertyService>();
             builder.Services.AddScoped<CityService>();
             builder.Services.AddScoped<RealtorFirmService>();
+            builder.Services.AddScoped<AuthService>();
+            builder.Services.AddScoped<CustomAuthenticationStateProvider>();
+            builder.Services.AddScoped<AuthenticationStateProvider>(provider => provider.GetRequiredService<CustomAuthenticationStateProvider>());
+            builder.Services.AddAuthorizationCore();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

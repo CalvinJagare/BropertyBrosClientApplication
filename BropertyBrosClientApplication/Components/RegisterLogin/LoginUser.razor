@@ -1,0 +1,33 @@
+﻿@page "/loginuser"
+@using BropertyBrosApi2._0.DTOs
+@inject IHttpClientFactory HttpClientFactory
+@inject NavigationManager NavigationManager
+
+<h3>Login</h3>
+<EditForm Model="loginUser" OnValidSubmit="HandleLogin" FormName="LoginForm">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <InputText @bind-Value="loginUser.Email" placeholder="Email" />
+    <InputText @bind-Value="loginUser.Password" placeholder="Password" type="password" />
+
+    <button type="submit">Login</button>
+</EditForm>
+
+@code {
+    private LoginUserDto loginUser = new();
+
+    private async Task HandleLogin()
+    {
+        var client = HttpClientFactory.CreateClient("BropertyBrosApi2.0");
+        var response = await client.PostAsJsonAsync("api/auth/register", loginUser);
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Login successful!");
+        }
+        else
+        {
+            Console.WriteLine("Login failed.");
+        }
+    }
+}
