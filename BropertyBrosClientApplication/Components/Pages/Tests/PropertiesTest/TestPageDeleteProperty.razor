@@ -8,39 +8,39 @@
 <h1>Delete Property</h1>
 @if(isLoading)
 {
-	<p>Loading Properties</p>
+    <p>Loading Properties</p>
 }
 else if(isDeleted)
 {
-	<p class="text-success">Property deleted successfully!</p>
+    <p class="text-success">Property deleted successfully!</p>
 }
 else
 {
-	<div>
-		<label for="propertySelect">Select a property to delete:</label>
-		<select id="propertySelect" @bind="selectedPropertyId">
-			<option value="">-- Select a property --</option>
-			@foreach (var property in properties)
-			{
-				<option value="@property.Id">@property.Address</option>
-			}
-		</select>
-		<button class="btn btn-primary" @onclick="LoadPropertyDetails" disabled="@(string.IsNullOrEmpty(selectedPropertyId.ToString()))">Load</button>
+    <div>
+        <label for="propertySelect">Select a property to delete:</label>
+        <select id="propertySelect" @bind="selectedPropertyId">
+            <option value="">-- Select a property --</option>
+            @foreach (var property in properties)
+            {
+                <option value="@property.Id">@property.Address</option>
+            }
+        </select>
+        <button class="btn btn-primary" @onclick="LoadPropertyDetails" disabled="@(string.IsNullOrEmpty(selectedPropertyId.ToString()))">Load</button>
 
-		@if (propertyToDelete != null)
-		{
-			<p>Are you sure you want to delete the category: <strong>@propertyToDelete.Address</strong>?</p>
-			<button class="btn btn-danger" @onclick="DeleteProperty">Delete</button>
-			<button class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
-		}
-	</div>
+        @if (propertyToDelete != null)
+        {
+            <p>Are you sure you want to delete the category: <strong>@propertyToDelete.Address</strong>?</p>
+            <button class="btn btn-danger" @onclick="DeleteProperty">Delete</button>
+            <button class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
+        }
+    </div>
 }
 
 @code {
-	private List<PropertyReadDto>? properties;
-	private int? selectedPropertyId;
-	private PropertyReadDto? propertyToDelete;
-	private bool isLoading = true;
+    private List<Services.PropertyReadDto>? properties;
+    private int? selectedPropertyId;
+    private Services.PropertyReadDto? propertyToDelete;
+    private bool isLoading = true;
 	private bool isDeleted = false;
 
 	protected override async Task OnInitializedAsync()

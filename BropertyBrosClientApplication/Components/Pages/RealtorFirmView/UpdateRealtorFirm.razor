@@ -79,9 +79,9 @@
 </div>
 
 @code {
-    private List<RealtorFirmReadDto>? realtorFirms;
+    private List<Services.RealtorFirmReadDto>? realtorFirms;
     private int? selectedFirmId;
-    private RealtorFirmCreateDto? firmForm;
+    private Services.RealtorFirmCreateDto? firmForm;
 
     protected override async Task OnInitializedAsync()
     {
@@ -95,7 +95,7 @@
             var firm = await RealtorFirmService.GetRealtorFirmByIdAsync(selectedFirmId.Value);
             if (firm != null)
             {
-                firmForm = new RealtorFirmCreateDto
+                firmForm = new Services.RealtorFirmCreateDto
                     {
                         CompanyName = firm.CompanyName,
                         Description = firm.Description,

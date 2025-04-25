@@ -9,7 +9,7 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 
- @* Author: Calvin *@
+@* Author: Calvin *@
 
 <div class="d-flex justify-content-center align-items-center py-4">
     <a class="navbar-brand" href="/">
@@ -195,7 +195,7 @@
             </div>
         }
     </div>
-    
+
 
     <button class="carousel-control-user prev" @onclick="ShowPreviousSlide">‹</button>
     <button class="carousel-control-user next" @onclick="ShowNextSlide">›</button>
@@ -248,7 +248,7 @@
         await JSRuntime.InvokeVoidAsync("updateCarousel", currentSlideIndex);
     }
 
-    private List<PropertyReadDto>? latestProperties;
+    private List<Services.PropertyReadDto>? latestProperties;
 
     protected override async Task OnInitializedAsync()
     {

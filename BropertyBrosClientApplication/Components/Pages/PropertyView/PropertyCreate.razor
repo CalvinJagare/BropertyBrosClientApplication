@@ -116,12 +116,12 @@
 </div>
 
 @code {
-    private PropertyCreateDto newProperty = new();
+    private Services.PropertyCreateDto newProperty = new();
     private string imageUrls = string.Empty;
 
-    private List<RealtorReadDto>? realtors;
-    private List<CityReadDto>? cities;
-    private List<CategoryReadDto>? categories;
+    private List<Services.RealtorReadDto>? realtors;
+    private List<Services.CityReadDto>? cities;
+    private List<Services.CategoryReadDto>? categories;
 
     protected override async Task OnInitializedAsync()
     {

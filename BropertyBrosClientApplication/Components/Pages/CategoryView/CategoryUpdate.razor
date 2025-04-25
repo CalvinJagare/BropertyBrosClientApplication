@@ -64,9 +64,9 @@
 </div>
 
 @code {
-    private List<CategoryReadDto>? categories;
+    private List<Services.CategoryReadDto>? categories;
     private int? selectedCategoryId;
-    private CategoryCreateDto? selectedCategory;
+    private Services.CategoryCreateDto? selectedCategory;
 
     protected override async Task OnInitializedAsync()
     {
@@ -81,7 +81,7 @@
             var category = await CategoryService.GetCategoryByIdAsync(selectedCategoryId.Value);
             if (category != null)
             {
-                selectedCategory = new CategoryCreateDto
+                selectedCategory = new Services.CategoryCreateDto
                     {
                         CategoryName = category.CategoryName
                     };

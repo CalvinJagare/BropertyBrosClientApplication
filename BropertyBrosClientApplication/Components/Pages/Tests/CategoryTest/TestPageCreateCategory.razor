@@ -28,9 +28,9 @@ else if (hasTried && createdCategory == null)
 }
 
 @code {
-    private List<CategoryReadDto>? categories;
-    private CategoryCreateDto newCategory = new CategoryCreateDto();
-    private CategoryReadDto? createdCategory;
+    private List<Services.CategoryReadDto>? categories;
+    private Services.CategoryCreateDto newCategory = new Services.CategoryCreateDto();
+    private Services.CategoryReadDto? createdCategory;
     private bool isLoading = false;
     private bool hasTried = false;
 

@@ -34,7 +34,7 @@ else if (ErrorMessage != null)
 
 @code {
     private int CategoryId;
-    private CategoryCreateDto CategoryToUpdate = new();
+    private Services.CategoryCreateDto CategoryToUpdate = new();
     private bool IsLoading = false;
     private string? ErrorMessage;
 
@@ -46,7 +46,7 @@ else if (ErrorMessage != null)
             ErrorMessage = null;
 
             var category = await CategoryService.GetCategoryByIdAsync(CategoryId);
-            CategoryToUpdate = new CategoryCreateDto
+            CategoryToUpdate = new Services.CategoryCreateDto
                 {
                     CategoryName = category.CategoryName
                 };

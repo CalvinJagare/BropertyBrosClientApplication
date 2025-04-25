@@ -143,13 +143,13 @@
 </div>
 
 @code {
-    private List<PropertyReadDto>? properties;
-    private List<RealtorReadDto>? realtors;
-    private List<CityReadDto>? cities;
-    private List<CategoryReadDto>? categories;
+    private List<Services.PropertyReadDto>? properties;
+    private List<Services.RealtorReadDto>? realtors;
+    private List<Services.CityReadDto>? cities;
+    private List<Services.CategoryReadDto>? categories;
 
     private int? selectedPropertyId;
-    private PropertyCreateDto? selectedProperty;
+    private Services.PropertyCreateDto? selectedProperty;
     private string imageUrls = string.Empty;
 
     protected override async Task OnInitializedAsync()
@@ -167,7 +167,7 @@
             var property = await PropertyService.GetPropertyByIdAsync(selectedPropertyId.Value);
             if (property != null)
             {
-                selectedProperty = new PropertyCreateDto
+                selectedProperty = new Services.PropertyCreateDto
                     {
                         Address = property.Address,
                         Price = property.Price,

@@ -79,8 +79,8 @@
 
 @code {
     public int? realtorId { get; set; } = null;
-    private List<RealtorReadDto>? realtors = new();
-    private RealtorCreateDto? realtor;
+    private List<Services.RealtorReadDto>? realtors = new();
+    private Services.RealtorCreateDto? realtor;
 
     protected override async Task OnInitializedAsync()
     {

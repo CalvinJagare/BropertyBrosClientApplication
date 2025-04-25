@@ -30,7 +30,7 @@
                     @for (int i = 0; i < property.ImageUrls.Count; i++)
                     {
                         <div class="carousel-slide @(i == 0 ? "active" : "")">
-                            <img src="@property.ImageUrls[i]" alt="Property Image" class="img-fluid rounded">
+                            <img src="@property.ImageUrls.ElementAt(i)" alt="Property Image" class="img-fluid rounded">
                         </div>
                     }
                 </div>
@@ -96,8 +96,8 @@
     [Parameter]
     public int PropertyId { get; set; }
 
-    private PropertyReadDto? property;
-    private RealtorReadDto? realtor;
+    private Services.PropertyReadDto? property;
+    private Services.RealtorReadDto? realtor;
     private int currentSlideIndex = 0;
 
     protected override async Task OnInitializedAsync()
