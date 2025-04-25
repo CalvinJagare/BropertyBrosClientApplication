@@ -51,14 +51,29 @@
                 <span class="" aria-hidden="true"></span> (TEMP)Search Properties
             </NavLink>
         </div>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/users/register">
+                <span class="" aria-hidden="true"></span> Register
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="/users/login">
+                <span class="" aria-hidden="true"></span> Login
+            </NavLink>
+        </div>
  
 
         <!--Admin Alternativ-->
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="admindashboard">
-                <span class="" aria-hidden="true"></span> Admin Dashboard
-            </NavLink>
-        </div>
+		<AuthorizeView>
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="admindashboard">
+                        <span class="" aria-hidden="true"></span> Admin Dashboard
+                    </NavLink>
+                </div>
+            </Authorized>
+        </AuthorizeView>
         <!--Admin Alternativ-->
 
         <div class="nav-item px-3">

@@ -1,5 +1,15 @@
+using Blazored.LocalStorage;
 using BropertyBrosClientApplication.Components;
+
+using BropertyBrosClientApplication.Components.Account;
+using BropertyBrosClientApplication.Data;
+using BropertyBrosClientApplication.Providers;
 using BropertyBrosClientApplication.Services;
+using BropertyBrosClientApplication.Services.Auth;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.AspNetCore.Identity;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace BropertyBrosClientApplication
@@ -16,19 +26,32 @@ namespace BropertyBrosClientApplication
 
             builder.Services.AddCascadingAuthenticationState();
 
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-
-
-
             builder.Services.AddHttpClient("BropertyBrosApi2.0", client =>
             {
                 client.BaseAddress = new Uri("https://localhost:7151/");
             });
+            builder.Services.AddBlazoredLocalStorage();
+            builder.Services.AddScoped<ApiAuthStateProvider>();
+            //builder.Services.AddScoped<AuthenticationStateProvider>(s => s.GetRequiredService<ApiAuthStateProvider>());
+            builder.Services.AddAuthorizationCore();
             builder.Services.AddScoped<CategoryService>();
             builder.Services.AddScoped<RealtorService>();
             builder.Services.AddScoped<PropertyService>();
             builder.Services.AddScoped<CityService>();
             builder.Services.AddScoped<RealtorFirmService>();
+
+            builder.Services.AddScoped<IAuthService, AuthService>();
+
+            builder.Services.AddScoped<IClient>(provider =>
+            {
+                var httpClient = provider.GetRequiredService<HttpClient>();
+                var baseUrl = builder.Configuration["ApiSettings:BaseUrl"];
+                return new Client(baseUrl, httpClient);
+            });
+
+
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

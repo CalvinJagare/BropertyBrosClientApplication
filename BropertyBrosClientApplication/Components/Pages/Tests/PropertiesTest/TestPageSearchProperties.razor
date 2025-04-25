@@ -89,10 +89,10 @@ else if (hastried && properties.Count < 1)
 }
 
 @code {
-    private List<PropertyReadDto>? properties = new();
-    private List<CityReadDto>? cities = new();
-    private List<CategoryReadDto> categories = new();
-    private PropertySearchDto propertySearchDto = new();
+    private List<Services.PropertyReadDto>? properties = new();
+    private List<Services.CityReadDto>? cities = new();
+    private List<Services.CategoryReadDto> categories = new();
+    private Services.PropertySearchDto propertySearchDto = new();
     private bool isLoading = false;
     private bool hastried = false;
 

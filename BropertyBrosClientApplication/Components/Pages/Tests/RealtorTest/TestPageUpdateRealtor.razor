@@ -44,7 +44,7 @@ else if (ErrorMessage != null)
 
 @code {
     private int realtorId;
-    private RealtorCreateDto realtorToUpdate = new();
+    private Services.RealtorCreateDto realtorToUpdate = new();
     private bool IsLoading = false;
     private string? ErrorMessage;
 
@@ -56,7 +56,7 @@ else if (ErrorMessage != null)
             ErrorMessage = null;
 
             var realtor = await realtorService.GetRealtorByIdAsync(realtorId);
-            realtorToUpdate = new RealtorCreateDto
+            realtorToUpdate = new Services.RealtorCreateDto
                 {
                     FirstName = realtor.FirstName,
                     LastName = realtor.LastName,

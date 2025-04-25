@@ -64,9 +64,9 @@
 </div>
 
 @code {
-    private List<CityReadDto>? cities;
+    private List<Services.CityReadDto>? cities;
     private int? selectedCityId;
-    private CityCreateDto? selectedCity;
+    private Services.CityCreateDto? selectedCity;
 
     protected override async Task OnInitializedAsync()
     {
@@ -80,7 +80,7 @@
             var city = await CityService.GetCityByIdAsync(selectedCityId.Value);
             if (city != null)
             {
-                selectedCity = new CityCreateDto
+                selectedCity = new Services.CityCreateDto
                     {
                         CityName = city.CityName
                     };

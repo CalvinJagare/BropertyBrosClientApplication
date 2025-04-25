@@ -38,8 +38,10 @@
 	<label>Image URLs:</label>
 	@for (int i = 0; i < newProperty.ImageUrls.Count; i++)
 	{
+		var index = i; // avoid modified closure issue
 		<input class="form-control mb-2"
-		@bind="newProperty.ImageUrls[i]" />
+			   value="@newProperty.ImageUrls.ToList()[index]"
+			   @oninput="e => UpdateImageUrl(index, e.Value?.ToString())" />
 	}
 
 	<button type="button" class="btn btn-secondary mb-3" @onclick="AddImageUrl">
@@ -70,8 +72,10 @@ else if (createdProperty != null)
 		<p><strong>Build Year:</strong> @createdProperty.BuildYear</p>
 		@for (int i = 0; i < newProperty.ImageUrls.Count; i++)
 		{
+			var index = i; // avoid modified closure issue
 			<input class="form-control mb-2"
-				   @bind="createdProperty.ImageUrls[i]" />
+				   value="@newProperty.ImageUrls.ToList()[index]"
+				   @oninput="e => UpdateImageUrl(index, e.Value?.ToString())" />
 		}
 	</div>
 }
@@ -81,9 +85,9 @@ else if (hasTried && createdProperty == null)
 }
 
 @code {
-	private List<PropertyReadDto>? properties;
-	private PropertyCreateDto newProperty = new PropertyCreateDto();
-	private PropertyReadDto? createdProperty;
+	private List<Services.PropertyReadDto>? properties;
+	private Services.PropertyCreateDto newProperty = new Services.PropertyCreateDto();
+	private Services.PropertyReadDto? createdProperty;
 	private bool isLoading = false;
 	private bool hasTried = false;
 
@@ -131,5 +135,13 @@ else if (hasTried && createdProperty == null)
 			newProperty.ImageUrls = new List<string>();
 
 		newProperty.ImageUrls.Add("thisIsATestIMGUrl");
+	}
+
+	private void UpdateImageUrl(int index, string? value)
+	{
+		if (value is null) return;
+		var list = newProperty.ImageUrls.ToList();
+		list[index] = value;
+		newProperty.ImageUrls = list;
 	}
 }

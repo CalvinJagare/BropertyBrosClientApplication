@@ -35,8 +35,8 @@ else if (hasTried && cityToUpdate == null)
 
 @code {
     private int cityId;
-    private CityReadDto? cityToUpdate;
-    private CityCreateDto updatedCity = new();
+    private Services.CityReadDto? cityToUpdate;
+    private Services.CityCreateDto updatedCity = new();
     private bool isLoading = false;
     private bool hasTried = false;
     private bool updateSuccess = false;
