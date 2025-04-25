@@ -1,5 +1,6 @@
 using Blazored.LocalStorage;
 using BropertyBrosClientApplication.Components;
+
 using BropertyBrosClientApplication.Components.Account;
 using BropertyBrosClientApplication.Data;
 using BropertyBrosClientApplication.Providers;
@@ -8,6 +9,7 @@ using BropertyBrosClientApplication.Services.Auth;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.AspNetCore.Identity;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace BropertyBrosClientApplication
@@ -37,6 +39,7 @@ namespace BropertyBrosClientApplication
             builder.Services.AddScoped<PropertyService>();
             builder.Services.AddScoped<CityService>();
             builder.Services.AddScoped<RealtorFirmService>();
+
             builder.Services.AddScoped<IAuthService, AuthService>();
 
             builder.Services.AddScoped<IClient>(provider =>
@@ -45,6 +48,8 @@ namespace BropertyBrosClientApplication
                 var baseUrl = builder.Configuration["ApiSettings:BaseUrl"];
                 return new Client(baseUrl, httpClient);
             });
+
+
 
 
             var app = builder.Build();

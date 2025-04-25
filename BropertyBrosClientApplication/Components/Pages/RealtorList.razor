@@ -1,7 +1,63 @@
 ﻿@page "/realtorlist"
+@using BropertyBrosClientApplication.DTO.Realtor
+@using BropertyBrosClientApplication.Services
+@inject RealtorService RealtorService
+@rendermode InteractiveServer
+@*Author: Arlind*@
 
-<h3>RealtorList</h3>
+<div class="realtorlist-container mb-5">
+    <h1 class="realtorlist-title text-center mb-4">Registered Realtors</h1>
+
+    @if (isLoading)
+    {
+        <p class="text-center realtorlist-loading-text">Loading realtors...</p>
+    }
+    else if (realtors?.Count > 0)
+    {
+        <div class="row g-4">
+            @foreach (var realtor in realtors)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <NavLink class="text-decoration-none" href="@($"/PersonalRealtorPage/{realtor.Id}")">
+                        <div class="card shadow-sm h-100 realtorlist-card">
+                            <img src="@realtor.ProfileUrl" class="card-img-top realtorlist-img" alt="Realtor Profile" />
+                            <div class="card-body text-center">
+                                <h5 class="realtorlist-card-title">@realtor.FirstName @realtor.LastName</h5>
+                                <p class="realtorlist-card-text">
+                                    <strong>Phone:</strong> @realtor.PhoneNumber<br />
+                                    <strong>Email:</strong> <a href="mailto:@realtor.Email">@realtor.Email</a><br />
+                                </p>
+                            </div>
+                        </div>
+                    </NavLink>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <p class="text-center realtorlist-no-realtors-text">No realtors found.</p>
+    }
+</div>
+
 
 @code {
+    private List<RealtorReadDto>? realtors;
+    private bool isLoading = true;
 
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            realtors = await RealtorService.GetAllRealtorsAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading realtors: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
 }
