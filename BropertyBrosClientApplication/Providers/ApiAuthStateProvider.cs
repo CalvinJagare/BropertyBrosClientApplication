@@ -21,7 +21,15 @@ namespace BropertyBrosClientApplication.Providers
         {
             var user = new ClaimsPrincipal(new ClaimsIdentity());
 
-            var savedToken = await localStorage.GetItemAsync<string>("token");
+            string savedToken = null;
+            try
+            {
+                savedToken = await localStorage.GetItemAsync<string>("token");
+            }
+            catch
+            {
+                return new AuthenticationState(user);
+            }
 
             if (savedToken == null)
             {

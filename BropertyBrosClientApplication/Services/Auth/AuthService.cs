@@ -2,6 +2,7 @@
 using Blazored.LocalStorage;
 using BropertyBrosClientApplication.Providers;
 using Microsoft.AspNetCore.Components.Authorization;
+using System.Net.Http.Headers;
 
 namespace BropertyBrosClientApplication.Services.Auth
 {
