@@ -126,7 +126,7 @@
     protected override async Task OnInitializedAsync()
     {
         realtors = await RealtorService.GetAllRealtorsAsync();
-        cities = await CityService.GetAllCitiesAsync();
+        // cities = await CityService.GetAllCitiesAsync();
         categories = await CategoryService.GetAllCategoryAsync();
     }
 

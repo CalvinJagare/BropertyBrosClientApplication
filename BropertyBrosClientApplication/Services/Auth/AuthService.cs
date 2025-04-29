@@ -1,5 +1,8 @@
 ﻿
 using Blazored.LocalStorage;
+using BropertyBrosClientApplication.Providers;
+using Microsoft.AspNetCore.Components.Authorization;
+using System.Net.Http.Headers;
 
 namespace BropertyBrosClientApplication.Services.Auth
 {
@@ -7,11 +10,13 @@ namespace BropertyBrosClientApplication.Services.Auth
     {
         private readonly IClient httpClient;
         private readonly ILocalStorageService localStorage;
+        private readonly AuthenticationStateProvider authenticationStateProvider;
 
-        public AuthService(IClient httpClient, ILocalStorageService localStorage)
+        public AuthService(IClient httpClient, ILocalStorageService localStorage, AuthenticationStateProvider authenticationStateProvider)
         {
             this.httpClient = httpClient;
             this.localStorage = localStorage;
+            this.authenticationStateProvider = authenticationStateProvider;
         }
         public async Task<bool> AuthAsync(LoginUserDto loginModel)
         {
@@ -21,14 +26,14 @@ namespace BropertyBrosClientApplication.Services.Auth
             await localStorage.SetItemAsync("token", response.Token);
 
             //Change auth state of app
-            //Add Apiauthstateprovider
+            await ((ApiAuthStateProvider)authenticationStateProvider).LoggedIn();
 
             return true;
         }
 
-        public Task Logout()
+        public async Task Logout()
         {
-            throw new NotImplementedException();
+            await ((ApiAuthStateProvider)authenticationStateProvider).LoggedOut();
         }
     }
 }

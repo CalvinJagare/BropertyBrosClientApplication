@@ -1,54 +1,46 @@
-﻿using BropertyBrosClientApplication.DTO.City;
+﻿
+using Blazored.LocalStorage;
+using BropertyBrosClientApplication.DTO.City;
+using BropertyBrosClientApplication.Services.Auth;
+using System.Diagnostics;
 using System.Net.Http.Json;
 using System.Text.Json;
 
 namespace BropertyBrosClientApplication.Services
 {
     //Author: Arlind
-    public class CityService
+    public class CityService : BaseHttpService, ICityService
     {
-        private readonly HttpClient _httpClient;
+        private readonly IClient client;
 
-        public CityService(IHttpClientFactory clientFactory)
+        public CityService(ILocalStorageService localStorage, IClient client) : base(localStorage, client)
         {
-            _httpClient = clientFactory.CreateClient("BropertyApi2.0");
+            this.client = client;
         }
 
-        private async Task<T> SendRequestAsync<T>(Func<Task<HttpResponseMessage>> httpRequest)
+        public async Task<ApiResponse<List<CityReadDto>>> GetAllCities()
         {
-            var response = await httpRequest();
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<T>(content, new JsonSerializerOptions
+            var response = new ApiResponse<List<CityReadDto>>
             {
-                PropertyNameCaseInsensitive = true
-            })!;
-        }
+                Data = new List<CityReadDto>(),
+                Success = false,
+            };
 
-        public async Task<List<CityReadDto>> GetAllCitiesAsync()
-        {
-            return await SendRequestAsync<List<CityReadDto>>(() => _httpClient.GetAsync("https://localhost:7151/api/City"));
-        }
-
-        public async Task<CityReadDto> GetCityByIdAsync(int id)
-        {
-            return await SendRequestAsync<CityReadDto>(() => _httpClient.GetAsync($"https://localhost:7151/api/City/{id}"));
-        }
-
-        public async Task<CityReadDto> CreateCityAsync(CityCreateDto cityCreateDto)
-        {
-            return await SendRequestAsync<CityReadDto>(() => _httpClient.PostAsJsonAsync("https://localhost:7151/api/City", cityCreateDto));
-        }
-
-        public async Task<CityReadDto> UpdateCityAsync(int id, CityCreateDto cityUpdateDto)
-        {
-            return await SendRequestAsync<CityReadDto>(() => _httpClient.PutAsJsonAsync($"https://localhost:7151/api/City/{id}", cityUpdateDto));
-        }
-
-        public async Task DeleteCityAsync(int id)
-        {
-            var response = await _httpClient.DeleteAsync($"https://localhost:7151/api/City/{id}");
-            response.EnsureSuccessStatusCode();
+            try
+            {
+                await GetBearerToken();
+                var data = await client.CityAllAsync();
+                response = new ApiResponse<List<CityReadDto>>
+                {
+                    Data = data.ToList(),
+                    Success = true,
+                };
+            }
+            catch (ApiException ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+            return response;
         }
     }
 }

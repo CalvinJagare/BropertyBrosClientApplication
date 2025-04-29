@@ -6,6 +6,9 @@ using BropertyBrosClientApplication.Data;
 using BropertyBrosClientApplication.Providers;
 using BropertyBrosClientApplication.Services;
 using BropertyBrosClientApplication.Services.Auth;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -24,6 +27,7 @@ namespace BropertyBrosClientApplication
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
 
+
             builder.Services.AddCascadingAuthenticationState();
 
             builder.Services.AddHttpClient("BropertyBrosApi2.0", client =>
@@ -32,7 +36,7 @@ namespace BropertyBrosClientApplication
             });
             builder.Services.AddBlazoredLocalStorage();
             builder.Services.AddScoped<ApiAuthStateProvider>();
-            //builder.Services.AddScoped<AuthenticationStateProvider>(s => s.GetRequiredService<ApiAuthStateProvider>());
+            builder.Services.AddScoped<AuthenticationStateProvider>(s => s.GetRequiredService<ApiAuthStateProvider>());
             builder.Services.AddAuthorizationCore();
             builder.Services.AddScoped<CategoryService>();
             builder.Services.AddScoped<RealtorService>();
@@ -40,14 +44,14 @@ namespace BropertyBrosClientApplication
             builder.Services.AddScoped<CityService>();
             builder.Services.AddScoped<RealtorFirmService>();
 
-            builder.Services.AddScoped<IAuthService, AuthService>();
-
             builder.Services.AddScoped<IClient>(provider =>
             {
                 var httpClient = provider.GetRequiredService<HttpClient>();
-                var baseUrl = builder.Configuration["ApiSettings:BaseUrl"];
-                return new Client(baseUrl, httpClient);
+                httpClient.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]);
+                return new Client(httpClient);
             });
+
+            builder.Services.AddScoped<IAuthService, AuthService>();
 
 
 
@@ -70,6 +74,8 @@ namespace BropertyBrosClientApplication
 
             app.UseStaticFiles();
             app.UseAntiforgery();
+
+            app.UseAuthorization();
 
             app.MapRazorComponents<App>()
                 .AddInteractiveServerRenderMode();

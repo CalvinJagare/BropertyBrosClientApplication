@@ -7,7 +7,7 @@
 
 @* Author: Arlind *@
 
-<div class="d-flex justify-content-center align-items-center vh-100">
+@* <div class="d-flex justify-content-center align-items-center vh-100">
     <div class="container">
         <h1 class="dashboard-title text-center mb-4">Update City</h1>
 
@@ -70,24 +70,24 @@
 
     protected override async Task OnInitializedAsync()
     {
-        cities = await CityService.GetAllCitiesAsync();
+        // cities = await CityService.GetAllCitiesAsync();
     }
 
     private async Task LoadCityDetails()
     {
         if (selectedCityId.HasValue)
         {
-            var city = await CityService.GetCityByIdAsync(selectedCityId.Value);
-            if (city != null)
-            {
-                selectedCity = new Services.CityCreateDto
-                    {
-                        CityName = city.CityName
-                    };
-            }
-            else
-            {
-                selectedCity = null;
+            // var city = await CityService.GetCityByIdAsync(selectedCityId.Value);
+            // if (city != null)
+            // {
+            //     selectedCity = new Services.CityCreateDto
+            //         {
+            //             CityName = city.CityName
+            //         };
+            // }
+            // else
+            // {
+            //     selectedCity = null;
             }
         }
         else
@@ -109,5 +109,5 @@
     {
         NavigationManager.NavigateTo("/admindashboard");
     }
-}
+} *@
 

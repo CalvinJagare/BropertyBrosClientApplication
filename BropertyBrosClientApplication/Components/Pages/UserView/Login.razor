@@ -40,6 +40,7 @@
 			if(response)
 			{
 				NavigationManager.NavigateTo("/");
+				Debug.WriteLine($"Login successful: {response}");
 			}
 			message = "Invalid Credentials, please try again."; 
 		}

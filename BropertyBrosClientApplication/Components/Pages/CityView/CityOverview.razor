@@ -11,18 +11,18 @@
     <div class="container">
         <h1 class="dashboard-title text-center mb-4">Cities Overview</h1>
 
-        @if (cities == null)
+        @if (Cities == null)
         {
             <p class="text-center">Loading...</p>
         }
-        else if (!cities.Any())
+        else if (!Cities.Any())
         {
             <p class="text-center">No cities found.</p>
         }
         else
         {
             <div class="row g-4">
-                @foreach (var city in cities)
+                @foreach (var city in Cities)
                 {
                     <div class="col-md-6 col-lg-4">
                         <div class="card shadow-sm">
@@ -45,11 +45,20 @@
 </div>
 
 @code {
-    private List<Services.CityReadDto>? cities;
+    private List<Services.CityReadDto>? Cities;
+    private ApiResponse<List<Services.CityReadDto>>? apiResponse = new ApiResponse<List<Services.CityReadDto>> { Success = true };
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        cities = await CityService.GetAllCitiesAsync();
+        if(firstRender)
+        {
+            apiResponse = await CityService.GetAllCities();
+            if (apiResponse.Success)
+            {
+                Cities = apiResponse.Data;
+				StateHasChanged();
+            }
+        }
     }
 
     private void GoBack()

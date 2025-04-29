@@ -55,7 +55,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        cities = await CityService.GetAllCitiesAsync();
+
     }
 
     private async Task ConfirmDelete()
@@ -68,9 +68,9 @@
                 var confirm = await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete the city '{city.CityName}'?");
                 if (confirm)
                 {
-                    await CityService.DeleteCityAsync(selectedCityId.Value);
+                    // await CityService.DeleteCityAsync(selectedCityId.Value);
                     deleteMessage = $"City '{city.CityName}' has been deleted.";
-                    cities = await CityService.GetAllCitiesAsync();
+                    // cities = await CityService.GetAllCitiesAsync();
                     selectedCityId = null;
                 }
             }
