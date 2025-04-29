@@ -27,6 +27,7 @@ namespace BropertyBrosClientApplication
             builder.Services.AddRazorComponents()
                 .AddInteractiveServerComponents();
 
+
             builder.Services.AddCascadingAuthenticationState();
 
             builder.Services.AddHttpClient("BropertyBrosApi2.0", client =>
@@ -46,8 +47,8 @@ namespace BropertyBrosClientApplication
             builder.Services.AddScoped<IClient>(provider =>
             {
                 var httpClient = provider.GetRequiredService<HttpClient>();
-                var baseUrl = builder.Configuration["ApiSettings:BaseUrl"];
-                return new Client(baseUrl, httpClient);
+                httpClient.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]);
+                return new Client(httpClient);
             });
 
             builder.Services.AddScoped<IAuthService, AuthService>();

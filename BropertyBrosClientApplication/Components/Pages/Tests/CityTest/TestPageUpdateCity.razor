@@ -51,12 +51,12 @@ else if (hasTried && cityToUpdate == null)
 
         try
         {
-            cityToUpdate = await CityService.GetCityByIdAsync(cityId);
+            // cityToUpdate = await CityService.GetCityByIdAsync(cityId);
 
-            if (cityToUpdate != null)
-            {
-                updatedCity.CityName = cityToUpdate.CityName;
-            }
+            // if (cityToUpdate != null)
+            // {
+            //     updatedCity.CityName = cityToUpdate.CityName;
+            // }
         }
         catch (Exception ex)
         {
@@ -72,7 +72,7 @@ else if (hasTried && cityToUpdate == null)
     {
         try
         {
-            await CityService.UpdateCityAsync(cityId, updatedCity);
+            // await CityService.UpdateCityAsync(cityId, updatedCity);
             updateSuccess = true;
         }
         catch (Exception ex)
