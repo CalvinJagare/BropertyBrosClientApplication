@@ -1,6 +1,7 @@
 ﻿@page "/propertyoverview"
 @using BropertyBrosClientApplication.DTO.Properties
 @using BropertyBrosClientApplication.Services
+@using BropertyBrosClientApplication.Services.Property
 @inject PropertyService PropertyService
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
@@ -46,11 +47,20 @@
 
 @code {
     private List<Services.PropertyReadDto>? properties;
+    private ApiResponse<List<Services.PropertyReadDto>>? apiResponse = new ApiResponse<List<Services.PropertyReadDto>> { Success = true };
 
-    protected override async Task OnInitializedAsync()
-    {
-        properties = await PropertyService.GetAllPropertiesAsync();
-    }
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			apiResponse = await PropertyService.GetAllProperties();
+			if (apiResponse.Success)
+			{
+				properties = apiResponse.Data;
+				StateHasChanged();
+			}
+		}
+	}
 
     private void GoBack()
     {

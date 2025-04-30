@@ -1,9 +1,10 @@
 ﻿@page "/updateproperty"
+@using BropertyBrosClientApplication.DTO.CategoryDto
+@using BropertyBrosClientApplication.DTO.City
 @using BropertyBrosClientApplication.DTO.Properties
 @using BropertyBrosClientApplication.DTO.Realtor
-@using BropertyBrosClientApplication.DTO.City
-@using BropertyBrosClientApplication.DTO.CategoryDto
 @using BropertyBrosClientApplication.Services
+@using BropertyBrosClientApplication.Services.Property
 @inject PropertyService PropertyService
 @inject RealtorService RealtorService
 @inject CityService CityService
@@ -143,6 +144,8 @@
 </div>
 
 @code {
+
+
     private List<Services.PropertyReadDto>? properties;
     private List<Services.RealtorReadDto>? realtors;
     private List<Services.CityReadDto>? cities;
@@ -154,37 +157,50 @@
 
     protected override async Task OnInitializedAsync()
     {
-        properties = await PropertyService.GetAllPropertiesAsync();
-        realtors = await RealtorService.GetAllRealtorsAsync();
+        // properties = await PropertyService.GetAllPropertiesAsync();
+        // realtors = await RealtorService.GetAllRealtorsAsync();
         // cities = await CityService.GetAllCitiesAsync();
-        categories = await CategoryService.GetAllCategoryAsync();
+        // categories = await CategoryService.GetAllCategoryAsync();
     }
+
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			var apiResponse = await PropertyService.GetAllProperties();
+			if (apiResponse.Success)
+			{
+				properties = apiResponse.Data;
+				StateHasChanged();
+			}
+		}
+	}
 
     private async Task LoadPropertyDetails()
     {
         if (selectedPropertyId.HasValue)
         {
-            var property = await PropertyService.GetPropertyByIdAsync(selectedPropertyId.Value);
+            var property = await PropertyService.GetPropertyById(selectedPropertyId.Value);
             if (property != null)
             {
                 selectedProperty = new Services.PropertyCreateDto
                     {
-                        Address = property.Address,
-                        Price = property.Price,
-                        MonthlyFee = property.MonthlyFee,
-                        YearlyFee = property.YearlyFee,
-                        LivingAreaKvm = property.LivingAreaKvm,
-                        AncillaryAreaKvm = property.AncillaryAreaKvm,
-                        LandAreaKvm = property.LandAreaKvm,
-                        Description = property.Description,
-                        NumberOfRooms = property.NumberOfRooms,
-                        BuildYear = property.BuildYear,
-                        ImageUrls = property.ImageUrls,
-                        RealtorId = property.RealtorId,
-                        CityId = property.CityId,
-                        CategoryId = property.CategoryId
+                        Address = property.Data.Address,
+                        Price = property.Data.Price,
+                        MonthlyFee = property.Data.MonthlyFee,
+                        YearlyFee = property.Data.YearlyFee,
+                        LivingAreaKvm = property.Data.LivingAreaKvm,
+                        AncillaryAreaKvm = property.Data.AncillaryAreaKvm,
+                        LandAreaKvm = property.Data.LandAreaKvm,
+                        Description = property.Data.Description,
+                        NumberOfRooms = property.Data.NumberOfRooms,
+                        BuildYear = property.Data.BuildYear,
+                        ImageUrls = property.Data.ImageUrls,
+                        RealtorId = property.Data.RealtorId,
+                        CityId = property.Data.CityId,
+                        CategoryId = property.Data.CategoryId
                     };
-                imageUrls = string.Join(", ", property.ImageUrls);
+                imageUrls = string.Join(", ", property.Data.ImageUrls);
             }
         }
     }
@@ -194,7 +210,7 @@
         if (selectedPropertyId.HasValue && selectedProperty != null)
         {
             selectedProperty.ImageUrls = imageUrls.Split(',').Select(url => url.Trim()).ToList();
-            await PropertyService.UpdatePropertyAsync(selectedPropertyId.Value, selectedProperty);
+            await PropertyService.UpdateProperty(selectedPropertyId.Value, selectedProperty);
             NavigationManager.NavigateTo("/propertyoverview");
         }
     }

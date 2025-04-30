@@ -4,6 +4,7 @@
 @using BropertyBrosClientApplication.DTO.Realtor
 @using BropertyBrosClientApplication.DTO.CategoryDto
 @using BropertyBrosClientApplication.Services
+@using BropertyBrosClientApplication.Services.Property
 @inject PropertyService PropertyService
 @inject RealtorService RealtorService
 @inject CityService CityService
@@ -81,9 +82,9 @@
                     <label for="cityDropdown" class="form-label">City</label>
                     <select id="cityDropdown" class="form-select" @bind="newProperty.CityId">
                         <option value="">-- Select a City --</option>
-                        @if (cities != null)
+                        @if (apiCityResponse?.Data != null)
                         {
-                            @foreach (var city in cities)
+                            @foreach (var city in apiCityResponse.Data)
                             {
                                 <option value="@city.Id">@city.CityName</option>
                             }
@@ -117,23 +118,28 @@
 
 @code {
     private Services.PropertyCreateDto newProperty = new();
+    private ApiResponse<List<Services.CityReadDto>>? apiCityResponse = new Services.ApiResponse<List<Services.CityReadDto>> { Success = true };
     private string imageUrls = string.Empty;
 
     private List<Services.RealtorReadDto>? realtors;
-    private List<Services.CityReadDto>? cities;
     private List<Services.CategoryReadDto>? categories;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        realtors = await RealtorService.GetAllRealtorsAsync();
-        // cities = await CityService.GetAllCitiesAsync();
-        categories = await CategoryService.GetAllCategoryAsync();
-    }
+        if (firstRender)
+        {
+            apiCityResponse = await CityService.GetAllCities();
+            if (apiCityResponse.Success)
+			{
+				StateHasChanged();
+			}
+		}
+	}
 
     private async Task HandleValidSubmit()
     {
         newProperty.ImageUrls = imageUrls.Split(',').Select(url => url.Trim()).ToList();
-        await PropertyService.CreatePropertyAsync(newProperty);
+        await PropertyService.CreateProperty(newProperty);
         NavigationManager.NavigateTo("/propertyoverview");
     }
 

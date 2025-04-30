@@ -1,8 +1,9 @@
 ﻿@page "/propertypostings"
-@using BropertyBrosClientApplication.DTO.Properties
-@using BropertyBrosClientApplication.DTO.City
 @using BropertyBrosClientApplication.DTO.CategoryDto
+@using BropertyBrosClientApplication.DTO.City
+@using BropertyBrosClientApplication.DTO.Properties
 @using BropertyBrosClientApplication.Services
+@using BropertyBrosClientApplication.Services.Property
 @inject PropertyService PropertyService
 @inject CityService CityService
 @inject CategoryService CategoryService
@@ -120,7 +121,7 @@
         {
             // cities = await CityService.GetAllCitiesAsync();
             categories = await CategoryService.GetAllCategoryAsync();
-            properties = await PropertyService.GetAllPropertiesAsync();
+            // properties = await PropertyService.GetAllPropertiesAsync();
         }
         catch (Exception ex)
         {
@@ -134,7 +135,7 @@
 
         try
         {
-            properties = await PropertyService.GetPropertiesBySearch(propertySearchDto);
+            // properties = await PropertyService.GetPropertiesBySearch(propertySearchDto);
         }
         catch (Exception ex)
         {

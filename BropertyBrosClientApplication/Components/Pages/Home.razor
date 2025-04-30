@@ -1,6 +1,7 @@
 ﻿@page "/"
 @using BropertyBrosClientApplication.DTO.Properties
 @using BropertyBrosClientApplication.Services
+@using BropertyBrosClientApplication.Services.Property
 @using Microsoft.CodeAnalysis
 @inject PropertyService PropertyService
 
@@ -252,11 +253,11 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var allProperties = await PropertyService.GetAllPropertiesAsync();
-        latestProperties = allProperties
-            .OrderByDescending(p => p.CreatedAt)
-            .Take(3)
-            .ToList();
+        // var allProperties = await PropertyService.GetAllPropertiesAsync();
+        // latestProperties = allProperties
+        //     .OrderByDescending(p => p.CreatedAt)
+        //     .Take(3)
+        //     .ToList();
     }
 
     private void NavigateToDetails(int propertyId)

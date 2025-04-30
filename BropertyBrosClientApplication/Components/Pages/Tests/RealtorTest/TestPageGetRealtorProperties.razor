@@ -2,6 +2,7 @@
 @using BropertyBrosClientApplication.DTO.Properties
 @using BropertyBrosClientApplication.DTO.Realtor
 @using BropertyBrosClientApplication.Services
+@using BropertyBrosClientApplication.Services.Property
 @inject RealtorService realtorService
 @inject PropertyService propertyService
 @rendermode InteractiveServer
@@ -62,7 +63,7 @@ else if (hastried && realtor == null)
         try
         {
             realtor = await realtorService.GetRealtorByIdAsync(realtorId);
-            properties = await propertyService.GetPropertiesByRealtor(realtorId);
+            // properties = await propertyService.GetPropertiesByRealtor(realtorId);
         }
         catch (Exception ex)
         {

@@ -6,6 +6,7 @@ using BropertyBrosClientApplication.Data;
 using BropertyBrosClientApplication.Providers;
 using BropertyBrosClientApplication.Services;
 using BropertyBrosClientApplication.Services.Auth;
+using BropertyBrosClientApplication.Services.Property;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
