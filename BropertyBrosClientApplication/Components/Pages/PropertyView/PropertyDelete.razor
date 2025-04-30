@@ -1,6 +1,7 @@
 ﻿@page "/deleteproperty"
 @using BropertyBrosClientApplication.DTO.Properties
 @using BropertyBrosClientApplication.Services
+@using BropertyBrosClientApplication.Services.Property
 @inject PropertyService PropertyService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
@@ -49,13 +50,22 @@
 
 @code {
     private List<Services.PropertyReadDto>? properties;
+	private ApiResponse<List<Services.PropertyReadDto>>? apiResponse = new ApiResponse<List<Services.PropertyReadDto>> { Success = true };
     private int? selectedPropertyId;
     private string? deleteMessage;
 
-    protected override async Task OnInitializedAsync()
-    {
-        properties = await PropertyService.GetAllPropertiesAsync();
-    }
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			apiResponse = await PropertyService.GetAllProperties();
+			if (apiResponse.Success)
+			{
+				properties = apiResponse.Data;
+				StateHasChanged();
+			}
+		}
+	}
 
     private async Task ConfirmDelete()
     {
@@ -67,9 +77,9 @@
                 var confirm = await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete the property at '{property.Address}'?");
                 if (confirm)
                 {
-                    await PropertyService.DeletePropertyAsync(selectedPropertyId.Value);
+                    await PropertyService.DeleteProperty(selectedPropertyId.Value);
                     deleteMessage = $"Property at '{property.Address}' has been deleted.";
-                    properties = await PropertyService.GetAllPropertiesAsync();
+					apiResponse = await PropertyService.GetAllProperties();
                     selectedPropertyId = null;
                 }
             }
