@@ -1,7 +1,5 @@
 ﻿@page "/realtorlist"
-@using BropertyBrosClientApplication.DTO.Realtor
-@using BropertyBrosClientApplication.Services
-@inject RealtorService RealtorService
+@inject IRealtorService RealtorService
 @rendermode InteractiveServer
 @*Author: Arlind*@
 
@@ -49,7 +47,7 @@
     {
         try
         {
-            realtors = await RealtorService.GetAllRealtorsAsync();
+            // realtors = await RealtorService.GetAllRealtorsAsync();
         }
         catch (Exception ex)
         {
