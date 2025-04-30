@@ -39,8 +39,7 @@ namespace BropertyBrosClientApplication
             builder.Services.AddScoped<ApiAuthStateProvider>();
             builder.Services.AddScoped<AuthenticationStateProvider>(s => s.GetRequiredService<ApiAuthStateProvider>());
             builder.Services.AddAuthorizationCore();
-            builder.Services.AddScoped<CategoryService>();
-            builder.Services.AddScoped<IRealtorService, RealtorService>();
+
             builder.Services.AddScoped<PropertyService>();
             builder.Services.AddScoped<CityService>();
             builder.Services.AddScoped<RealtorFirmService>();
@@ -53,6 +52,7 @@ namespace BropertyBrosClientApplication
             });
 
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 
 
