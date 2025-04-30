@@ -1,7 +1,5 @@
 ﻿@page "/deleterealtor"
-@using BropertyBrosClientApplication.DTO.Realtor
-@using BropertyBrosClientApplication.Services
-@inject RealtorService RealtorService
+@inject IRealtorService realtorService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
@@ -49,13 +47,22 @@
 </div>
 
 @code {
-    private List<Services.RealtorReadDto>? realtors;
+    private List<RealtorReadDto>? realtors;
     private int? selectedRealtorId;
     private string? deleteMessage;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        realtors = await RealtorService.GetAllRealtorsAsync();
+        if (firstRender)
+        {
+            var realtorsResponse = await realtorService.GetAllRealtorsAsync();
+
+            if (realtorsResponse.Success)
+            {
+                realtors = realtorsResponse.Data;
+                StateHasChanged();
+            }
+        }
     }
 
     private async Task ConfirmDelete()
@@ -68,9 +75,16 @@
                 var confirm = await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete the realtor '{realtor.FirstName} {realtor.LastName}'?");
                 if (confirm)
                 {
-                    await RealtorService.DeleteRealtorAsync(selectedRealtorId.Value);
+                    await realtorService.DeleteRealtorAsync(selectedRealtorId.Value);
                     deleteMessage = $"Realtor '{realtor.FirstName} {realtor.LastName}' has been deleted.";
-                    realtors = await RealtorService.GetAllRealtorsAsync();
+
+                    var realtorsResponse = await realtorService.GetAllRealtorsAsync();
+
+                    if (realtorsResponse.Success)
+                    {
+                        realtors = realtorsResponse.Data;
+                    }
+
                     selectedRealtorId = null;
                 }
             }
