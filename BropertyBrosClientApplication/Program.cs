@@ -6,6 +6,7 @@ using BropertyBrosClientApplication.Data;
 using BropertyBrosClientApplication.Providers;
 using BropertyBrosClientApplication.Services;
 using BropertyBrosClientApplication.Services.Auth;
+using BropertyBrosClientApplication.Services.Realtor;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -38,7 +39,7 @@ namespace BropertyBrosClientApplication
             builder.Services.AddScoped<ApiAuthStateProvider>();
             builder.Services.AddScoped<AuthenticationStateProvider>(s => s.GetRequiredService<ApiAuthStateProvider>());
             builder.Services.AddAuthorizationCore();
-            builder.Services.AddScoped<RealtorService>();
+
             builder.Services.AddScoped<PropertyService>();
             builder.Services.AddScoped<CityService>();
             builder.Services.AddScoped<RealtorFirmService>();

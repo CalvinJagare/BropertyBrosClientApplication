@@ -1,9 +1,4 @@
 ﻿@page "/updateproperty"
-@using BropertyBrosClientApplication.DTO.Properties
-@using BropertyBrosClientApplication.DTO.Realtor
-@using BropertyBrosClientApplication.DTO.City
-@using BropertyBrosClientApplication.DTO.CategoryDto
-@using BropertyBrosClientApplication.Services
 @inject PropertyService PropertyService
 @inject RealtorService RealtorService
 @inject CityService CityService
@@ -155,7 +150,7 @@
     protected override async Task OnInitializedAsync()
     {
         properties = await PropertyService.GetAllPropertiesAsync();
-        realtors = await RealtorService.GetAllRealtorsAsync();
+        // realtors = await RealtorService.GetAllRealtorsAsync();
         // cities = await CityService.GetAllCitiesAsync();
         // categories = await CategoryService.GetAllCategoryAsync();
     }

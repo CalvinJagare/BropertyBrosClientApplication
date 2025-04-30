@@ -1,8 +1,4 @@
 ﻿@page "/propertydetails/{PropertyId:int}"
-@using BropertyBrosClientApplication.DTO.Properties
-@using BropertyBrosClientApplication.DTO.Realtor
-@using BropertyBrosClientApplication.DTO.RealtorFirm
-@using BropertyBrosClientApplication.Services
 @inject PropertyService PropertyService
 @inject RealtorService RealtorService
 @inject RealtorFirmService RealtorFirmService
@@ -105,7 +101,7 @@
         property = await PropertyService.GetPropertyByIdAsync(PropertyId);
         if (property != null)
         {
-            realtor = await RealtorService.GetRealtorByIdAsync(property.RealtorId);
+            // realtor = await RealtorService.GetRealtorByIdAsync(property.RealtorId);
 
         }
     }
