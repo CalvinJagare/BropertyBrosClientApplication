@@ -1,8 +1,4 @@
 ﻿@page "/PersonalRealtorPage/{id:int}"
-@using BropertyBrosClientApplication.DTO.Properties
-@using BropertyBrosClientApplication.DTO.Realtor
-@using BropertyBrosClientApplication.Services
-@using BropertyBrosClientApplication.Services.Property
 @inject RealtorService RealtorService
 @inject PropertyService PropertyService
 @inject NavigationManager NavigationManager
@@ -93,17 +89,17 @@
 
 @code {
 
-    private Services.RealtorReadDto? realtor;
+    private RealtorReadDto? realtor;
 
-    private List<Services.PropertyReadDto>? properties;
+    private List<PropertyReadDto>? properties;
 
     [Parameter]
     public int id { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        realtor = await RealtorService.GetRealtorByIdAsync(id);
-        // properties = await PropertyService.GetPropertiesByRealtor(id);
+        // realtor = await RealtorService.GetRealtorByIdAsync(id);
+        properties = await PropertyService.GetPropertiesByRealtor(id);
     }
 
     private async Task GoBack()

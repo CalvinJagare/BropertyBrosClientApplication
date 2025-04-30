@@ -1,7 +1,5 @@
 ﻿@page "/updaterealtor"
-@using BropertyBrosClientApplication.DTO.Realtor
-@using BropertyBrosClientApplication.Services
-@inject RealtorService RealtorService
+@inject IRealtorService realtorService
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
@@ -79,12 +77,21 @@
 
 @code {
     public int? realtorId { get; set; } = null;
-    private List<Services.RealtorReadDto>? realtors = new();
-    private Services.RealtorCreateDto? realtor;
+    private List<RealtorReadDto>? realtors = new();
+    private RealtorCreateDto? realtor;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        realtors = await RealtorService.GetAllRealtorsAsync();
+        if (firstRender)
+        {
+            var realtorsResponse = await realtorService.GetAllRealtorsAsync();
+
+            if (realtorsResponse.Success)
+            {
+                realtors = realtorsResponse.Data;
+                StateHasChanged();
+            }
+        }
     }
 
     private async Task ChangeRealtor(ChangeEventArgs e)
@@ -92,21 +99,25 @@
         if (int.TryParse((string?)e.Value, out int selectedId))
         {
             realtorId = selectedId;
-            var dto = await RealtorService.GetRealtorByIdAsync(realtorId.Value);
-            realtor = new()
-                {
-                    FirstName = dto.FirstName,
-                    LastName = dto.LastName,
-                    PhoneNumber = dto.PhoneNumber,
-                    Email = dto.Email,
-                    ProfileUrl = dto.ProfileUrl
-                };
+            var realtorResponse = await realtorService.GetRealtorByIdAsync(realtorId.Value);
+
+            if (realtorResponse.Success)
+            {
+                realtor = new()
+                    {
+                        FirstName = realtorResponse.Data.FirstName,
+                        LastName = realtorResponse.Data.LastName,
+                        PhoneNumber = realtorResponse.Data.PhoneNumber,
+                        Email = realtorResponse.Data.Email,
+                        ProfileUrl = realtorResponse.Data.ProfileUrl
+                    };
+            }
         }
     }
 
     private async Task HandleValidSubmit()
     {
-        await RealtorService.UpdateRealtorAsync(realtorId.Value, realtor);
+        await realtorService.UpdateRealtorAsync(realtorId.Value, realtor);
         NavigationManager.NavigateTo("/realtoroverview");
     }
 

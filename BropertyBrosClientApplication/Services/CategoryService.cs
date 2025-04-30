@@ -1,55 +1,147 @@
-﻿using BropertyBrosClientApplication.DTO.CategoryDto;
-using System.Net.Http.Json;
-using System.Text.Json;
+﻿using Blazored.LocalStorage;
+using BropertyBrosClientApplication.Services.Auth;
+using System.Diagnostics;
 
 namespace BropertyBrosClientApplication.Services
 {
-    //Author: Calvin
-    public class CategoryService
+    // Author: Calvin
+    public class CategoryService : BaseHttpService, ICategoryService
     {
-        private readonly HttpClient _httpClient;
+        private readonly IClient client;
 
-        public CategoryService(IHttpClientFactory clientFactory)
+        public CategoryService(ILocalStorageService localStorage, IClient client) : base(localStorage, client)
         {
-            _httpClient = clientFactory.CreateClient("BropertyApi2.0");
+            this.client = client;
         }
 
-        private async Task<T> SendRequestAsync<T>(Func<Task<HttpResponseMessage>> httpRequest)
+        public async Task<ApiResponse<List<CategoryReadDto>>> GetAllCategories()
         {
-            var response = await httpRequest();
-            response.EnsureSuccessStatusCode();
-            var content = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<T>(content, new JsonSerializerOptions
+            var response = new ApiResponse<List<CategoryReadDto>>
             {
-                PropertyNameCaseInsensitive = true
-            })!;
+                Data = new List<CategoryReadDto>(),
+                Success = false,
+            };
+
+            try
+            {
+                await GetBearerToken();
+                var data = await client.CategoryAllAsync();
+                response = new ApiResponse<List<CategoryReadDto>>
+                {
+                    Data = data.ToList(),
+                    Success = true,
+                };
+            }
+            catch (ApiException ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+
+            return response;
         }
 
-        public async Task<List<CategoryReadDto>> GetAllCategoryAsync()
+        public async Task<ApiResponse<CategoryReadDto>> GetCategoryById(int id)
         {
-            return await SendRequestAsync<List<CategoryReadDto>>(() => _httpClient.GetAsync("https://localhost:7151/api/Category"));
+            var response = new ApiResponse<CategoryReadDto>
+            {
+                Data = null,
+                Success = false,
+            };
+
+            try
+            {
+                await GetBearerToken();
+                var data = await client.CategoryGETAsync(id);
+                response = new ApiResponse<CategoryReadDto>
+                {
+                    Data = data,
+                    Success = true,
+                };
+            }
+            catch (ApiException ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+
+            return response;
         }
 
-        public async Task<CategoryReadDto> GetCategoryByIdAsync(int id)
+        public async Task<ApiResponse<CategoryReadDto>> CreateCategory(CategoryCreateDto categoryCreateDto)
         {
-            return await SendRequestAsync<CategoryReadDto>(() => _httpClient.GetAsync($"https://localhost:7151/api/Category/{id}"));
+            var response = new ApiResponse<CategoryReadDto>
+            {
+                Data = null,
+                Success = false,
+            };
+
+            try
+            {
+                await GetBearerToken();
+                var data = await client.CategoryPOSTAsync(categoryCreateDto);
+                response = new ApiResponse<CategoryReadDto>
+                {
+                    Data = data,
+                    Success = true,
+                };
+            }
+            catch (ApiException ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+
+            return response;
         }
 
-        public async Task<CategoryReadDto> CreateCategoryAsync(CategoryCreateDto categoryCreateDto)
+        public async Task<ApiResponse<bool>> UpdateCategory(int id, CategoryCreateDto categoryUpdateDto)
         {
-            return await SendRequestAsync<CategoryReadDto>(() => _httpClient.PostAsJsonAsync("https://localhost:7151/api/Category", categoryCreateDto));
+            var response = new ApiResponse<bool>
+            {
+                Data = false,
+                Success = false,
+            };
+
+            try
+            {
+                await GetBearerToken();
+                await client.CategoryPUTAsync(id, categoryUpdateDto);
+                response = new ApiResponse<bool>
+                {
+                    Data = true,
+                    Success = true,
+                };
+            }
+            catch (ApiException ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
+
+            return response;
         }
 
-        public async Task<CategoryReadDto> UpdateCategoryAsync(int id, CategoryCreateDto categoryUpdateDto)
+        public async Task<ApiResponse<bool>> DeleteCategory(int id)
         {
-            return await SendRequestAsync<CategoryReadDto>(() => _httpClient.PutAsJsonAsync($"https://localhost:7151/api/Category/{id}", categoryUpdateDto));
-        }
+            var response = new ApiResponse<bool>
+            {
+                Data = false,
+                Success = false,
+            };
 
-        public async Task DeleteCategoryAsync(int id)
-        {
-            var response = await _httpClient.DeleteAsync($"https://localhost:7151/api/Category/{id}");
-            response.EnsureSuccessStatusCode();
-        }
+            try
+            {
+                await GetBearerToken();
+                await client.CategoryDELETEAsync(id);
+                response = new ApiResponse<bool>
+                {
+                    Data = true,
+                    Success = true,
+                };
+            }
+            catch (ApiException ex)
+            {
+                Debug.WriteLine(ex.Message);
+            }
 
+            return response;
+        }
     }
 }

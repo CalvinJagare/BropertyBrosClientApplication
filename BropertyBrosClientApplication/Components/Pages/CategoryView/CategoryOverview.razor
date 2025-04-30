@@ -1,11 +1,9 @@
 ﻿@page "/categoryoverview"
 @using BropertyBrosClientApplication.DTO.CategoryDto
 @using BropertyBrosClientApplication.Services
-@inject CategoryService CategoryService
+@inject ICategoryService CategoryService
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
-
-@* Author: Calvin *@
 
 <div class="d-flex justify-content-center align-items-center vh-100">
     <div class="container">
@@ -46,10 +44,19 @@
 
 @code {
     private List<Services.CategoryReadDto>? categories;
+    private ApiResponse<List<Services.CategoryReadDto>>? apiResponse = new ApiResponse<List<Services.CategoryReadDto>> { Success = true };
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        categories = await CategoryService.GetAllCategoryAsync();
+        if (firstRender)
+        {
+            apiResponse = await CategoryService.GetAllCategories();
+            if (apiResponse.Success)
+            {
+                categories = apiResponse.Data;
+                StateHasChanged();
+            }
+        }
     }
 
     private void GoBack()
@@ -57,4 +64,3 @@
         NavigationManager.NavigateTo("/admindashboard");
     }
 }
-

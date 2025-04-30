@@ -1,10 +1,5 @@
 ﻿@page "/realtoroverview/{realtorId:int}"
-@using BropertyBrosClientApplication.DTO.Properties
-@using BropertyBrosClientApplication.DTO.Realtor
-@using BropertyBrosClientApplication.Services
-@using BropertyBrosClientApplication.Services.Property
-@inject RealtorService realtorService
-@inject PropertyService propertyService
+@inject IRealtorService realtorService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
@@ -32,7 +27,7 @@
                             </a>
                         </div>
                     </div>
-                    <div class="mt-5">
+                    @* <div class="mt-5">
                         <select id="realtorDropdown" class="form-select" @onchange="ChangeProperty">
                             <option value="">-- Select a property --</option>
                             @if (properties.Count > 0)
@@ -85,7 +80,7 @@
                                 </div>
                             </div>
                         }
-                    </div>
+                    </div> *@
                 </div>
             }
 
@@ -99,47 +94,57 @@
 @code {
     [Parameter]
     public int realtorId { get; set; }
-    private Services.RealtorReadDto? realtor;
-    // private List<Services.PropertyReadDto>? properties = new();
-    // private Services.PropertyReadDto? selectedProperty;
+    private RealtorReadDto? realtor;
+    private List<PropertyReadDto>? properties = new();
+    private PropertyReadDto? selectedProperty;
     private int currentSlideIndex = 0; private int? imgIndex;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        realtor = await realtorService.GetRealtorByIdAsync(realtorId);
+        if (firstRender)
+        {
+            var realtorResponse = await realtorService.GetRealtorByIdAsync(realtorId);
+
+            if (realtorResponse.Success)
+            {
+                realtor = realtorResponse.Data;
+                StateHasChanged();
+            }
+
         // properties = await propertyService.GetPropertiesByRealtor(realtorId);
+        }
     }
 
-    private async Task ChangeProperty(ChangeEventArgs e)
-    {
-        // if (int.TryParse((string?)e.Value, out int propertyId))
-        // {
-        //     selectedProperty = await propertyService.GetPropertyByIdAsync(propertyId);
-        //     imgIndex = 0;
-        //     return;
-        // }
+    // private async Task ChangeProperty(ChangeEventArgs e)
+    // {
+    //     if (int.TryParse((string?)e.Value, out int propertyId))
+    //     {
+    //         selectedProperty = await propertyService.GetPropertyByIdAsync(propertyId);
+    //         imgIndex = 0;
+    //         return;
+    //     }
 
-        // selectedProperty = null;
-        // imgIndex = null;
-    }
+    //     selectedProperty = null;
+    //     imgIndex = null;
+    // }
 
-    private async Task ShowNextSlide()
-    {
-        // if (selectedProperty?.ImageUrls != null)
-        // {
-        //     currentSlideIndex = (currentSlideIndex + 1) % selectedProperty.ImageUrls.Count;
-        //     await JSRuntime.InvokeVoidAsync("updateCarousel", currentSlideIndex);
-        // }
-    }
+    // private async Task ShowNextSlide()
+    // {
+    //     if (selectedProperty?.ImageUrls != null)
+    //     {
+    //         currentSlideIndex = (currentSlideIndex + 1) % selectedProperty.ImageUrls.Count;
+    //         await JSRuntime.InvokeVoidAsync("updateCarousel", currentSlideIndex);
+    //     }
+    // }
 
-    private async Task ShowPreviousSlide()
-    {
-        // if (selectedProperty?.ImageUrls != null)
-        // {
-        //     currentSlideIndex = (currentSlideIndex - 1 + selectedProperty.ImageUrls.Count) % selectedProperty.ImageUrls.Count;
-        //     await JSRuntime.InvokeVoidAsync("updateCarousel", currentSlideIndex);
-        // }
-    }
+    // private async Task ShowPreviousSlide()
+    // {
+    //     if (selectedProperty?.ImageUrls != null)
+    //     {
+    //         currentSlideIndex = (currentSlideIndex - 1 + selectedProperty.ImageUrls.Count) % selectedProperty.ImageUrls.Count;
+    //         await JSRuntime.InvokeVoidAsync("updateCarousel", currentSlideIndex);
+    //     }
+    // }
 
     private void GoBack()
     {

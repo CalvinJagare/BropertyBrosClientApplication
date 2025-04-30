@@ -1,16 +1,18 @@
-﻿@page "/propertypostings"
+﻿page "/propertypostings"
+@using BropertyBrosClientApplication.DTO.Properties
+@using BropertyBrosClientApplication.DTO.City
 @using BropertyBrosClientApplication.DTO.CategoryDto
 @using BropertyBrosClientApplication.DTO.City
 @using BropertyBrosClientApplication.DTO.Properties
 @using BropertyBrosClientApplication.Services
-@using BropertyBrosClientApplication.Services.Property
-@inject PropertyService PropertyService
-@inject CityService CityService
-@inject CategoryService CategoryService
+@* @inject IPropertyService PropertyService *@
+@inject ICityService CityService
+@inject ICategoryService CategoryService
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
 @*Author: Emil, Calvin*@
+
 <div class="container py-5">
     <h1 class="dashboard-title text-center mb-4">Available Properties</h1>
 
@@ -106,7 +108,6 @@
 </div>
 
 @code {
-
     private List<Services.PropertyReadDto>? properties = new();
     private List<Services.CityReadDto>? cities = new();
     private List<Services.CategoryReadDto>? categories = new();
@@ -114,18 +115,37 @@
     private bool isLoading = false;
     private bool isSearchAreaVisible = false;
 
-
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            // cities = await CityService.GetAllCitiesAsync();
-            categories = await CategoryService.GetAllCategoryAsync();
-            // properties = await PropertyService.GetAllPropertiesAsync();
+            isLoading = true;
+
+            var cityResponse = await CityService.GetAllCities();
+            if (cityResponse.Success)
+            {
+                cities = cityResponse.Data;
+            }
+
+            var categoryResponse = await CategoryService.GetAllCategories();
+            if (categoryResponse.Success)
+            {
+                categories = categoryResponse.Data;
+            }
+
+            // var propertyResponse = await PropertyService.GetAllProperties();
+            // if (propertyResponse.Success)
+            // {
+            //     properties = propertyResponse.Data;
+            // }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Error loading data: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
         }
     }
 
@@ -135,7 +155,11 @@
 
         try
         {
-            // properties = await PropertyService.GetPropertiesBySearch(propertySearchDto);
+            // var response = await PropertyService.GetPropertiesBySearch(propertySearchDto);
+            // if (response.Success)
+            // {
+            //     properties = response.Data;
+            // }
         }
         catch (Exception ex)
         {
@@ -157,4 +181,3 @@
         isSearchAreaVisible = !isSearchAreaVisible;
     }
 }
-
