@@ -2,7 +2,7 @@
 using BropertyBrosClientApplication.Services.Auth;
 using System.Diagnostics;
 
-namespace BropertyBrosClientApplication.Services
+namespace BropertyBrosClientApplication.Services.Category
 {
     // Author: Calvin
     public class CategoryService : BaseHttpService, ICategoryService

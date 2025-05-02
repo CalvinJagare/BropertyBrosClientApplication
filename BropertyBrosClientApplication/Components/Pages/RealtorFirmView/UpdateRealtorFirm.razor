@@ -1,7 +1,8 @@
 ﻿@page "/updaterealtorfirm"
 @using BropertyBrosClientApplication.DTO.RealtorFirm
 @using BropertyBrosClientApplication.Services
-@inject RealtorFirmService RealtorFirmService
+@using BropertyBrosClientApplication.Services.RealtorFirm
+@inject IRealtorFirmService RealtorFirmService
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
@@ -14,7 +15,7 @@
         <div class="card shadow-sm p-4">
             @if (realtorFirms == null)
             {
-                <p class="text-center">Loading realtor firms...</p>
+                <p class="text-center">@errorMessage ?? "Loading realtor firms..."</p>
             }
             else
             {
@@ -82,19 +83,29 @@
     private List<Services.RealtorFirmReadDto>? realtorFirms;
     private int? selectedFirmId;
     private Services.RealtorFirmCreateDto? firmForm;
+    private string? errorMessage;
 
     protected override async Task OnInitializedAsync()
     {
-        realtorFirms = await RealtorFirmService.GetAllRealtorFirmsAsync();
+        var response = await RealtorFirmService.GetAllRealtorFirms();
+        if (response.Success)
+        {
+            realtorFirms = response.Data;
+        }
+        else
+        {
+            errorMessage = response.Message ?? "Failed to load realtor firms.";
+        }
     }
 
     private async Task LoadFirmDetails()
     {
         if (selectedFirmId.HasValue)
         {
-            var firm = await RealtorFirmService.GetRealtorFirmByIdAsync(selectedFirmId.Value);
-            if (firm != null)
+            var response = await RealtorFirmService.GetRealtorFirmById(selectedFirmId.Value);
+            if (response.Success)
             {
+                var firm = response.Data;
                 firmForm = new Services.RealtorFirmCreateDto
                     {
                         CompanyName = firm.CompanyName,
@@ -103,6 +114,10 @@
                         WebsiteUrl = firm.WebsiteUrl
                     };
             }
+            else
+            {
+                errorMessage = response.Message ?? "Failed to load firm details.";
+            }
         }
     }
 
@@ -110,8 +125,15 @@
     {
         if (selectedFirmId.HasValue && firmForm != null)
         {
-            await RealtorFirmService.UpdateRealtorFirmAsync(selectedFirmId.Value, firmForm);
-            NavigationManager.NavigateTo("/realtorfirmoverview");
+            var response = await RealtorFirmService.UpdateRealtorFirm(selectedFirmId.Value, firmForm);
+            if (response.Success)
+            {
+                NavigationManager.NavigateTo("/realtorfirmoverview");
+            }
+            else
+            {
+                errorMessage = response.Message ?? "Failed to update the realtor firm.";
+            }
         }
     }
 

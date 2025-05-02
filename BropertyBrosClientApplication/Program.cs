@@ -6,8 +6,10 @@ using BropertyBrosClientApplication.Data;
 using BropertyBrosClientApplication.Providers;
 using BropertyBrosClientApplication.Services;
 using BropertyBrosClientApplication.Services.Auth;
+using BropertyBrosClientApplication.Services.Category;
 using BropertyBrosClientApplication.Services.Property;
 using BropertyBrosClientApplication.Services.Realtor;
+using BropertyBrosClientApplication.Services.RealtorFirm;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -41,7 +43,8 @@ namespace BropertyBrosClientApplication
             builder.Services.AddScoped<AuthenticationStateProvider>(s => s.GetRequiredService<ApiAuthStateProvider>());
             builder.Services.AddAuthorizationCore();
             builder.Services.AddScoped<CityService>();
-            builder.Services.AddScoped<RealtorFirmService>();
+            builder.Services.AddScoped<PropertyService>();
+
 
             builder.Services.AddScoped<IClient>(provider =>
             {
@@ -54,6 +57,8 @@ namespace BropertyBrosClientApplication
             builder.Services.AddScoped<ICategoryService, CategoryService>();
             builder.Services.AddScoped<IRealtorService, RealtorService>();
             builder.Services.AddScoped<IPropertyService, PropertyService>();
+            builder.Services.AddScoped<IRealtorFirmService, RealtorFirmService>();
+
 
 
 

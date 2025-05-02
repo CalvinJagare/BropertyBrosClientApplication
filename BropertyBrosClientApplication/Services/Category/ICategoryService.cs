@@ -1,4 +1,4 @@
-﻿namespace BropertyBrosClientApplication.Services
+﻿namespace BropertyBrosClientApplication.Services.Category
 {
     //Author: Calvin
     public interface ICategoryService
