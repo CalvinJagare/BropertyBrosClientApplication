@@ -1,18 +1,14 @@
-﻿page "/propertypostings"
-@using BropertyBrosClientApplication.DTO.CategoryDto
-@using BropertyBrosClientApplication.DTO.City
-@using BropertyBrosClientApplication.DTO.City
-@using BropertyBrosClientApplication.DTO.Properties
-@using BropertyBrosClientApplication.DTO.Properties
-@using BropertyBrosClientApplication.Services
-@using BropertyBrosClientApplication.Services.Category
+﻿@page "/propertypostings"
+@using System.Diagnostics
 @* @inject IPropertyService PropertyService *@
-@inject ICityService CityService
+@inject CityService CityService
 @inject ICategoryService CategoryService
+@inject IPropertyService PropertyService
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
 @*Author: Emil, Calvin*@
+@* Co-Author: Daniel *@
 
 <div class="container py-5">
     <h1 class="dashboard-title text-center mb-4">Available Properties</h1>
@@ -116,39 +112,44 @@
     private bool isLoading = false;
     private bool isSearchAreaVisible = false;
 
-    protected override async Task OnInitializedAsync()
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        try
+        if (firstRender)
         {
-            isLoading = true;
-
-            var cityResponse = await CityService.GetAllCities();
-            if (cityResponse.Success)
+            try
             {
-                cities = cityResponse.Data;
-            }
+                var propertyResponse = await PropertyService.GetAllPropertiesAsync();
+                var cityResponse = await CityService.GetAllCities();
+                var categoryResponse = await CategoryService.GetAllCategories();
 
-            var categoryResponse = await CategoryService.GetAllCategories();
-            if (categoryResponse.Success)
+                //Check if the property response was successful
+                properties = propertyResponse.Success ? propertyResponse.Data : new List<Services.PropertyReadDto>();
+                if (!propertyResponse.Success)
+                {
+                    Debug.WriteLine($"Error fetching realtors: {propertyResponse}");
+                }
+                // Check if the category response was successful
+                categories = categoryResponse.Success ? categoryResponse.Data : new List<Services.CategoryReadDto>();
+                if (!categoryResponse.Success)
+                {
+                    Debug.WriteLine($"Error fetching categories: {categoryResponse}");
+                }
+                // Check if the city response was successful
+                cities = cityResponse.Success ? cityResponse.Data : new List<Services.CityReadDto>();
+                if (!cityResponse.Success)
+                {
+                    Debug.WriteLine($"Error fetching cities: {cityResponse}");
+                }
+                StateHasChanged();
+            }
+            catch (Exception ex)
             {
-                categories = categoryResponse.Data;
+                Debug.WriteLine($"Error fetching data: {ex.Message}");
             }
-
-            // var propertyResponse = await PropertyService.GetAllProperties();
-            // if (propertyResponse.Success)
-            // {
-            //     properties = propertyResponse.Data;
-            // }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error loading data: {ex.Message}");
-        }
-        finally
-        {
-            isLoading = false;
         }
     }
+    
 
     private async Task GetPropertiesBySearch()
     {
@@ -156,11 +157,11 @@
 
         try
         {
-            // var response = await PropertyService.GetPropertiesBySearch(propertySearchDto);
-            // if (response.Success)
-            // {
-            //     properties = response.Data;
-            // }
+            var response = await PropertyService.GetPropertiesBySearchAsync(propertySearchDto);
+            if (response.Success)
+            {
+                properties = response.Data;
+            }
         }
         catch (Exception ex)
         {

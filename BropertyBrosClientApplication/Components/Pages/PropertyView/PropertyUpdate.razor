@@ -164,47 +164,44 @@
     {
         if (firstRender)
         {
-            if (firstRender)
+            try
             {
-                try
-                {
-                    var propertyResponse = await PropertyService.GetAllPropertiesAsync();
-                    var cityResponse = await CityService.GetAllCities();
-                    var realtorResponse = await RealtorService.GetAllRealtorsAsync();
-                    var categoryResponse = await CategoryService.GetAllCategories();
+                var propertyResponse = await PropertyService.GetAllPropertiesAsync();
+                var cityResponse = await CityService.GetAllCities();
+                var realtorResponse = await RealtorService.GetAllRealtorsAsync();
+                var categoryResponse = await CategoryService.GetAllCategories();
 
-                    //Check if the property response was successful
-                    properties = propertyResponse.Success ? propertyResponse.Data : new List<Services.PropertyReadDto>();
-                    if(!propertyResponse.Success)
-                    {
-                        Debug.WriteLine($"Error fetching realtors: {realtorResponse}");
-                    }
-                    //Check if the realtor response was successful
-                    realtors = realtorResponse.Success ? realtorResponse.Data : new List<Services.RealtorReadDto>();
-                    if (!realtorResponse.Success)
-                    {
-                        Debug.WriteLine($"Error fetching realtors: {realtorResponse}");
-                    }
-                    // Check if the category response was successful
-                    categories = categoryResponse.Success ? categoryResponse.Data : new List<Services.CategoryReadDto>();
-                    if (!categoryResponse.Success)
-                    {
-                        Debug.WriteLine($"Error fetching categories: {categoryResponse}");
-                    }
-                    // Check if the city response was successful
-                    cities = cityResponse.Success ? cityResponse.Data : new List<Services.CityReadDto>();
-                    if (!cityResponse.Success)
-                    {
-                        Debug.WriteLine($"Error fetching cities: {cityResponse}");
-                    }
-                    StateHasChanged();
-                }
-                catch (Exception ex)
+                //Check if the property response was successful
+                properties = propertyResponse.Success ? propertyResponse.Data : new List<Services.PropertyReadDto>();
+                if (!propertyResponse.Success)
                 {
-                    Debug.WriteLine($"Error fetching data: {ex.Message}");
+                    Debug.WriteLine($"Error fetching realtors: {propertyResponse}");
                 }
+                //Check if the realtor response was successful
+                realtors = realtorResponse.Success ? realtorResponse.Data : new List<Services.RealtorReadDto>();
+                if (!realtorResponse.Success)
+                {
+                    Debug.WriteLine($"Error fetching realtors: {realtorResponse}");
+                }
+                // Check if the category response was successful
+                categories = categoryResponse.Success ? categoryResponse.Data : new List<Services.CategoryReadDto>();
+                if (!categoryResponse.Success)
+                {
+                    Debug.WriteLine($"Error fetching categories: {categoryResponse}");
+                }
+                // Check if the city response was successful
+                cities = cityResponse.Success ? cityResponse.Data : new List<Services.CityReadDto>();
+                if (!cityResponse.Success)
+                {
+                    Debug.WriteLine($"Error fetching cities: {cityResponse}");
+                }
+                StateHasChanged();
             }
-		}
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error fetching data: {ex.Message}");
+            }
+        }
 	}
 
     private async Task LoadPropertyDetails()
