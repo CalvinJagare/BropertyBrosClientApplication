@@ -4,8 +4,9 @@
 @using BropertyBrosClientApplication.DTO.RealtorFirm
 @using BropertyBrosClientApplication.Services
 @using BropertyBrosClientApplication.Services.Property
-@inject IPropertyService PropertyService
-@inject IRealtorService RealtorService
+@using BropertyBrosClientApplication.Services.RealtorFirm
+@inject PropertyService PropertyService
+@inject RealtorService RealtorService
 @inject RealtorFirmService RealtorFirmService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
@@ -101,22 +102,34 @@
     private Services.RealtorReadDto? realtor;
     private int currentSlideIndex = 0;
 
-	protected override async Task OnAfterRenderAsync(bool firstRender)
-	{
-		if (firstRender)
-		{
-			var apiResponse = await PropertyService.GetPropertyById(PropertyId);
-			if (apiResponse.Success)
-			{
-				property = apiResponse.Data;
-				if (property != null)
-				{
-					// realtor = await RealtorService.GetRealtorByIdAsync(property.RealtorId);
-					StateHasChanged();
-				}
-			}
-		}
-	}
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var apiResponse = await PropertyService.GetPropertyById(PropertyId);
+            if (apiResponse.Success)
+            {
+                property = apiResponse.Data;
+                if (property?.RealtorId != null)
+                {
+                    var realtorResponse = await RealtorService.GetRealtorByIdAsync(property.RealtorId);
+                    if (realtorResponse.Success)
+                    {
+                        realtor = realtorResponse.Data;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Failed to load realtor: {realtorResponse.Message}");
+                    }
+                }
+                StateHasChanged();
+            }
+            else
+            {
+                Console.WriteLine($"Failed to load property: {apiResponse.Message}");
+            }
+        }
+    }
 
     private async Task ShowNextSlide()
     {

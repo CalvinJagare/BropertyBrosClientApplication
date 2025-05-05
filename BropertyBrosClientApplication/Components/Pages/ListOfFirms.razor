@@ -1,20 +1,24 @@
 ﻿@page "/listoffirms"
 @using BropertyBrosClientApplication.DTO.RealtorFirm
 @using BropertyBrosClientApplication.Services
-@inject RealtorFirmService RealtorFirmService
+@using BropertyBrosClientApplication.Services.RealtorFirm
+@inject IRealtorFirmService RealtorFirmService
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
-@*Author: Calvin*@
-
+@* Author: Calvin *@
 <div class="container py-5">
     <h1 class="dashboard-title text-center mb-4">Realtor Firms We Work With</h1>
 
-    @if (realtorFirms == null)
+    @if (apiResponse == null)
     {
         <p class="text-center">Loading realtor firms...</p>
     }
-    else if (!realtorFirms.Any())
+    else if (!apiResponse.Success)
+    {
+        <p class="text-center text-danger">Failed to load realtor firms. Please try again later.</p>
+    }
+    else if (realtorFirms == null || !realtorFirms.Any())
     {
         <p class="text-center">No realtor firms found.</p>
     }
@@ -35,7 +39,7 @@
                             </div>
                             <p class="card-text">@firm.Description</p>
                             <div class="text-center">
-                                <a href="@firm.WebsiteUrl" class="btn btn-primary">View Website</a>
+                                <a href="@firm.WebsiteUrl" class="btn btn-primary" target="_blank">View Website</a>
                             </div>
                         </div>
                     </div>
@@ -47,9 +51,14 @@
 
 @code {
     private List<Services.RealtorFirmReadDto>? realtorFirms;
+    private ApiResponse<List<Services.RealtorFirmReadDto>>? apiResponse;
 
     protected override async Task OnInitializedAsync()
     {
-        realtorFirms = await RealtorFirmService.GetAllRealtorFirmsAsync();
+        apiResponse = await RealtorFirmService.GetAllRealtorFirms();
+        if (apiResponse.Success)
+        {
+            realtorFirms = apiResponse.Data;
+        }
     }
 }
