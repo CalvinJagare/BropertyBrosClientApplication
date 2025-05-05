@@ -6,6 +6,7 @@
 @using BropertyBrosClientApplication.Services
 @using BropertyBrosClientApplication.Services.Category
 @using BropertyBrosClientApplication.Services.Property
+@using System.Diagnostics
 @inject IPropertyService PropertyService
 @inject IRealtorService RealtorService
 @inject CityService CityService
@@ -13,6 +14,7 @@
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
+@* Author: Daniel, Calvin *@
 <div class="d-flex justify-content-center align-items-center vh-100">
     <div class="container">
         <h1 class="dashboard-title text-center mb-4">Create Property</h1>
@@ -83,9 +85,9 @@
                     <label for="cityDropdown" class="form-label">City</label>
                     <select id="cityDropdown" class="form-select" @bind="newProperty.CityId">
                         <option value="">-- Select a City --</option>
-                        @if (apiCityResponse?.Data != null)
+                        @if (cities != null)
                         {
-                            @foreach (var city in apiCityResponse.Data)
+                            @foreach (var city in cities)
                             {
                                 <option value="@city.Id">@city.CityName</option>
                             }
@@ -119,9 +121,9 @@
 
 @code {
     private Services.PropertyCreateDto newProperty = new();
-    private ApiResponse<List<Services.CityReadDto>>? apiCityResponse = new Services.ApiResponse<List<Services.CityReadDto>> { Success = true };
     private string imageUrls = string.Empty;
 
+    private List<Services.CityReadDto>? cities;
     private List<Services.RealtorReadDto>? realtors;
     private List<Services.CategoryReadDto>? categories;
 
@@ -129,10 +131,35 @@
     {
         if (firstRender)
         {
-            apiCityResponse = await CityService.GetAllCities();
-            if (apiCityResponse.Success)
+            try
+            {
+                var cityResponse = await CityService.GetAllCities();
+                var realtorResponse = await RealtorService.GetAllRealtorsAsync();
+                var categoryResponse = await CategoryService.GetAllCategories();
+
+                //Check if the realtor response was successful
+                realtors = realtorResponse.Success ? realtorResponse.Data : new List<Services.RealtorReadDto>();
+                if (!realtorResponse.Success)
+                {
+                    Debug.WriteLine($"Error fetching realtors: {realtorResponse}");
+                }
+                // Check if the category response was successful
+                categories = categoryResponse.Success ? categoryResponse.Data : new List<Services.CategoryReadDto>();
+                if (!categoryResponse.Success)
+                {
+                    Debug.WriteLine($"Error fetching categories: {categoryResponse}");
+                }
+                // Check if the city response was successful
+                cities = cityResponse.Success ? cityResponse.Data : new List<Services.CityReadDto>();
+                if (!cityResponse.Success)
+                {
+                    Debug.WriteLine($"Error fetching cities: {cityResponse}");
+                }
+                StateHasChanged();
+            }
+			catch (Exception ex)
 			{
-				StateHasChanged();
+				Debug.WriteLine($"Error fetching data: {ex.Message}");
 			}
 		}
 	}
@@ -140,7 +167,7 @@
     private async Task HandleValidSubmit()
     {
         newProperty.ImageUrls = imageUrls.Split(',').Select(url => url.Trim()).ToList();
-        await PropertyService.CreateProperty(newProperty);
+        await PropertyService.CreatePropertyAsync(newProperty);
         NavigationManager.NavigateTo("/propertyoverview");
     }
 

@@ -16,7 +16,7 @@ namespace BropertyBrosClientApplication.Services.Property
             this.client = client;
         }
 
-        public async Task<ApiResponse<PropertyReadDto>> CreateProperty(PropertyCreateDto propertyCreateDto)
+        public async Task<ApiResponse<PropertyReadDto>> CreatePropertyAsync(PropertyCreateDto propertyCreateDto)
         {
             var response = new ApiResponse<PropertyReadDto>
             {
@@ -40,7 +40,7 @@ namespace BropertyBrosClientApplication.Services.Property
             return response;
         }
 
-        public async Task<ApiResponse<Task>> DeleteProperty(int id)
+        public async Task<ApiResponse<Task>> DeletePropertyAsync(int id)
         {
             var response = new ApiResponse<Task>
             {
@@ -65,7 +65,7 @@ namespace BropertyBrosClientApplication.Services.Property
             return response;
         }
 
-        public async Task<ApiResponse<List<PropertyReadDto>>> GetAllProperties()
+        public async Task<ApiResponse<List<PropertyReadDto>>> GetAllPropertiesAsync()
         {
             var response = new ApiResponse<List<PropertyReadDto>>
             {
@@ -89,7 +89,7 @@ namespace BropertyBrosClientApplication.Services.Property
             return response;
         }
 
-        public async Task<ApiResponse<List<PropertyReadDto>>> GetPropertiesByRealtor(int id)
+        public async Task<ApiResponse<List<PropertyReadDto>>> GetPropertiesByRealtorAsync(int id)
         {
             var reponse = new ApiResponse<List<PropertyReadDto>>
             {
@@ -113,7 +113,7 @@ namespace BropertyBrosClientApplication.Services.Property
             return reponse;
         }
 
-        public async Task<ApiResponse<List<PropertyReadDto>>> GetPropertiesBySearch(PropertySearchDto propertySearchDto)
+        public async Task<ApiResponse<List<PropertyReadDto>>> GetPropertiesBySearchAsync(PropertySearchDto propertySearchDto)
         {
             var reponse = new ApiResponse<List<PropertyReadDto>>
             {
@@ -137,7 +137,7 @@ namespace BropertyBrosClientApplication.Services.Property
             return reponse;
         }
 
-        public async Task<ApiResponse<PropertyReadDto>> GetPropertyById(int id)
+        public async Task<ApiResponse<PropertyReadDto>> GetPropertyByIdAsync(int id)
         {
             var response = new ApiResponse<PropertyReadDto>
             {
@@ -162,7 +162,7 @@ namespace BropertyBrosClientApplication.Services.Property
             return response;
         }
 
-        public async Task<ApiResponse<bool>> UpdateProperty(int id, PropertyCreateDto propertyUpdateDto)
+        public async Task<ApiResponse<bool>> UpdatePropertyAsync(int id, PropertyCreateDto propertyUpdateDto)
         {
             var reponse = new ApiResponse<bool>
             {

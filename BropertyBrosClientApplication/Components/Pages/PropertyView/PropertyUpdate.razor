@@ -6,6 +6,7 @@
 @using BropertyBrosClientApplication.Services
 @using BropertyBrosClientApplication.Services.Category
 @using BropertyBrosClientApplication.Services.Property
+@using System.Diagnostics
 @inject IPropertyService PropertyService
 @inject IRealtorService RealtorService
 @inject CityService CityService
@@ -13,6 +14,8 @@
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
+
+@* Author: Daniel, Calvin *@
 <div class="d-flex justify-content-center align-items-center vh-100">
     <div class="container">
         <h1 class="dashboard-title text-center mb-4">Update Property</h1>
@@ -156,24 +159,51 @@
     private Services.PropertyCreateDto? selectedProperty;
     private string imageUrls = string.Empty;
 
-    protected override async Task OnInitializedAsync()
-    {
-        // properties = await PropertyService.GetAllPropertiesAsync();
-        // realtors = await RealtorService.GetAllRealtorsAsync();
-        // cities = await CityService.GetAllCitiesAsync();
-        // categories = await CategoryService.GetAllCategoryAsync();
-    }
 
-	protected override async Task OnAfterRenderAsync(bool firstRender)
-	{
-		if (firstRender)
-		{
-			var apiResponse = await PropertyService.GetAllProperties();
-			if (apiResponse.Success)
-			{
-				properties = apiResponse.Data;
-				StateHasChanged();
-			}
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            if (firstRender)
+            {
+                try
+                {
+                    var propertyResponse = await PropertyService.GetAllPropertiesAsync();
+                    var cityResponse = await CityService.GetAllCities();
+                    var realtorResponse = await RealtorService.GetAllRealtorsAsync();
+                    var categoryResponse = await CategoryService.GetAllCategories();
+
+                    //Check if the property response was successful
+                    properties = propertyResponse.Success ? propertyResponse.Data : new List<Services.PropertyReadDto>();
+                    if(!propertyResponse.Success)
+                    {
+                        Debug.WriteLine($"Error fetching realtors: {realtorResponse}");
+                    }
+                    //Check if the realtor response was successful
+                    realtors = realtorResponse.Success ? realtorResponse.Data : new List<Services.RealtorReadDto>();
+                    if (!realtorResponse.Success)
+                    {
+                        Debug.WriteLine($"Error fetching realtors: {realtorResponse}");
+                    }
+                    // Check if the category response was successful
+                    categories = categoryResponse.Success ? categoryResponse.Data : new List<Services.CategoryReadDto>();
+                    if (!categoryResponse.Success)
+                    {
+                        Debug.WriteLine($"Error fetching categories: {categoryResponse}");
+                    }
+                    // Check if the city response was successful
+                    cities = cityResponse.Success ? cityResponse.Data : new List<Services.CityReadDto>();
+                    if (!cityResponse.Success)
+                    {
+                        Debug.WriteLine($"Error fetching cities: {cityResponse}");
+                    }
+                    StateHasChanged();
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"Error fetching data: {ex.Message}");
+                }
+            }
 		}
 	}
 
@@ -181,7 +211,7 @@
     {
         if (selectedPropertyId.HasValue)
         {
-            var property = await PropertyService.GetPropertyById(selectedPropertyId.Value);
+            var property = await PropertyService.GetPropertyByIdAsync(selectedPropertyId.Value);
             if (property != null)
             {
                 selectedProperty = new Services.PropertyCreateDto
@@ -211,7 +241,7 @@
         if (selectedPropertyId.HasValue && selectedProperty != null)
         {
             selectedProperty.ImageUrls = imageUrls.Split(',').Select(url => url.Trim()).ToList();
-            await PropertyService.UpdateProperty(selectedPropertyId.Value, selectedProperty);
+            await PropertyService.UpdatePropertyAsync(selectedPropertyId.Value, selectedProperty);
             NavigationManager.NavigateTo("/propertyoverview");
         }
     }

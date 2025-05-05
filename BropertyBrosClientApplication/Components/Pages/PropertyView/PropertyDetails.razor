@@ -5,9 +5,9 @@
 @using BropertyBrosClientApplication.Services
 @using BropertyBrosClientApplication.Services.Property
 @using BropertyBrosClientApplication.Services.RealtorFirm
-@inject PropertyService PropertyService
-@inject RealtorService RealtorService
-@inject RealtorFirmService RealtorFirmService
+@inject IPropertyService PropertyService
+@inject IRealtorService RealtorService
+@inject IRealtorFirmService RealtorFirmService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
@@ -106,7 +106,7 @@
     {
         if (firstRender)
         {
-            var apiResponse = await PropertyService.GetPropertyById(PropertyId);
+            var apiResponse = await PropertyService.GetPropertyByIdAsync(PropertyId);
             if (apiResponse.Success)
             {
                 property = apiResponse.Data;

@@ -7,7 +7,7 @@
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 
-@*Author: Daniel*@
+@* Author: Daniel, Calvin *@
 <div class="d-flex justify-content-center align-items-center vh-100">
     <div class="container">
         <h1 class="dashboard-title text-center mb-4">Delete Property</h1>
@@ -58,7 +58,7 @@
 	{
 		if (firstRender)
 		{
-			apiResponse = await PropertyService.GetAllProperties();
+			apiResponse = await PropertyService.GetAllPropertiesAsync();
 			if (apiResponse.Success)
 			{
 				properties = apiResponse.Data;
@@ -77,9 +77,9 @@
                 var confirm = await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete the property at '{property.Address}'?");
                 if (confirm)
                 {
-                    await PropertyService.DeleteProperty(selectedPropertyId.Value);
+                    await PropertyService.DeletePropertyAsync(selectedPropertyId.Value);
                     deleteMessage = $"Property at '{property.Address}' has been deleted.";
-					apiResponse = await PropertyService.GetAllProperties();
+					apiResponse = await PropertyService.GetAllPropertiesAsync();
                     selectedPropertyId = null;
                 }
             }
