@@ -4,8 +4,8 @@
 @using BropertyBrosClientApplication.DTO.RealtorFirm
 @using BropertyBrosClientApplication.Services
 @using BropertyBrosClientApplication.Services.Property
-@inject PropertyService PropertyService
-@inject RealtorService RealtorService
+@inject IPropertyService PropertyService
+@inject IRealtorService RealtorService
 @inject RealtorFirmService RealtorFirmService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
@@ -111,7 +111,7 @@
 				property = apiResponse.Data;
 				if (property != null)
 				{
-					realtor = await RealtorService.GetRealtorByIdAsync(property.RealtorId);
+					// realtor = await RealtorService.GetRealtorByIdAsync(property.RealtorId);
 					StateHasChanged();
 				}
 			}

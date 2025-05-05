@@ -5,10 +5,10 @@
 @using BropertyBrosClientApplication.DTO.CategoryDto
 @using BropertyBrosClientApplication.Services
 @using BropertyBrosClientApplication.Services.Property
-@inject PropertyService PropertyService
-@inject RealtorService RealtorService
+@inject IPropertyService PropertyService
+@inject IRealtorService RealtorService
 @inject CityService CityService
-@inject CategoryService CategoryService
+@inject ICategoryService CategoryService
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
