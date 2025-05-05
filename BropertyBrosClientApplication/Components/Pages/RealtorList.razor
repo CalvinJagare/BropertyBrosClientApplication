@@ -1,5 +1,5 @@
 ﻿@page "/realtorlist"
-@inject IRealtorService RealtorService
+@inject IRealtorService realtorService
 @rendermode InteractiveServer
 @*Author: Arlind*@
 
@@ -31,10 +31,11 @@
                 </div>
             }
         </div>
+
+        <p class="text-center">@responseMessage</p>
     }
     else
     {
-        <p class="text-center realtorlist-no-realtors-text">No realtors found.</p>
     }
 </div>
 
@@ -42,20 +43,19 @@
 @code {
     private List<Services.RealtorReadDto>? realtors;
     private bool isLoading = true;
+    string? responseMessage;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        try
+        if (firstRender)
         {
-            // realtors = await RealtorService.GetAllRealtorsAsync();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error loading realtors: {ex.Message}");
-        }
-        finally
-        {
+            ApiResponse<List<RealtorReadDto>> response = await realtorService.GetAllRealtorsAsync();
+
+            realtors = response.Data.ToList();
+            responseMessage = response.Message;
+
             isLoading = false;
+            StateHasChanged();
         }
     }
 }
