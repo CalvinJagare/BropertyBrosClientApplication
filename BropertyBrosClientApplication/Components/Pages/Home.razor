@@ -251,14 +251,14 @@
 
     private List<Services.PropertyReadDto>? latestProperties;
 
-    protected override async Task OnInitializedAsync()
-    {
-        // var allProperties = await PropertyService.GetAllPropertiesAsync();
-        // latestProperties = allProperties
-        //     .OrderByDescending(p => p.CreatedAt)
-        //     .Take(3)
-        //     .ToList();
-    }
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     var allProperties = await PropertyService.GetAllPropertiesAsync();
+    //     latestProperties = allProperties
+    //         .OrderByDescending(p => p.CreatedAt)
+    //         .Take(3)
+    //         .ToList();
+    // }
 
     private void NavigateToDetails(int propertyId)
     {
