@@ -253,11 +253,11 @@
 
     protected override async Task OnInitializedAsync()
     {
-        var allProperties = await PropertyService.GetAllPropertiesAsync();
-        latestProperties = allProperties
-            .OrderByDescending(p => p.CreatedAt)
-            .Take(3)
-            .ToList();
+        // var allProperties = await PropertyService.GetAllPropertiesAsync();
+        // latestProperties = allProperties
+        //     .OrderByDescending(p => p.CreatedAt)
+        //     .Take(3)
+        //     .ToList();
     }
 
     private void NavigateToDetails(int propertyId)

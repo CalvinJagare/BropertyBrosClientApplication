@@ -529,3 +529,11 @@ h1:focus {
 .bg-light {
     background-color: #f8f9fa !important;
 }
+
+.gradient-card {
+    background: linear-gradient(to bottom, rgb(2, 31, 66), rgb(50, 75, 120));
+    color: white;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
