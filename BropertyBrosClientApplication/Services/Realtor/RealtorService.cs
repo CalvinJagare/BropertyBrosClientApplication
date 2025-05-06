@@ -115,5 +115,26 @@ namespace BropertyBrosClientApplication.Services.Realtor
 
             return response;
         }
+
+        public async Task<ApiResponse<List<RealtorReadDto>>> GetRealtorsBySearchAsync(RealtorSearchDto dto)
+        {
+            ApiResponse<List<RealtorReadDto>> response = new();
+
+            try
+            {
+                await GetBearerToken();
+                ICollection<RealtorReadDto> collection = await client.GetRealtorsBySearchAsync(dto);
+
+                response.Data = collection.ToList();
+                response.Success = true;
+            }
+            catch (ApiException ex)
+            {
+                response.Success = false;
+                response.Message = ex.Message;
+            }
+
+            return response;
+        }
     }
 }
