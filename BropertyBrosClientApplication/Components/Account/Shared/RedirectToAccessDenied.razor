@@ -1,0 +1,11 @@
+﻿<h3>RedirectToAccessDenied</h3>
+
+@inject NavigationManager NavigationManager
+
+@code {
+    protected override void OnInitialized()
+    {
+        NavigationManager.NavigateTo("/accessdenied", forceLoad: true);
+    }
+}
+

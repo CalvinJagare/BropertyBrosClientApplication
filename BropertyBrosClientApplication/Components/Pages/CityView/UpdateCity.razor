@@ -1,0 +1,90 @@
+﻿@page "/updatecity"
+@rendermode InteractiveServer
+@using BropertyBrosClientApplication.DTO.City
+@using BropertyBrosClientApplication.Services
+@inject ICityService cityService
+@inject NavigationManager navManager
+
+@* Author: Arlind *@
+
+<h3>Update City</h3>
+
+@if (!string.IsNullOrEmpty(message))
+{
+    <div class="alert alert-danger">@message</div>
+}
+
+@if (!string.IsNullOrWhiteSpace(successMessage))
+{
+    <div class="alert alert-success">@successMessage</div>
+    <button class="btn btn-success mt-2" @onclick='() => navManager.NavigateTo("/cityoverview")'>
+        Go back to city overview
+    </button>
+}
+
+<EditForm Model="apiResponse.Data" OnValidSubmit="HandleUpdate">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="form-group">
+        <label for="cityId">City ID</label>
+        <InputNumber class="form-control" @bind-Value="apiResponse.Data.Id" />
+    </div>
+
+    <div class="form-group">
+        <label for="cityName">City Name</label>
+        <InputText class="form-control" @bind-Value="apiResponse.Data.CityName" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update City</button>
+</EditForm>
+
+@code {
+    private ApiResponse<BropertyBrosClientApplication.DTO.City.CityReadDto> apiResponse =
+        new ApiResponse<BropertyBrosClientApplication.DTO.City.CityReadDto>
+            {
+                Data = new DTO.City.CityReadDto { Id = 0, CityName = string.Empty },
+                Success = true
+            };
+
+    private string? message = null;
+    private string? successMessage = null;
+
+    private async Task HandleUpdate()
+    {
+            message = null;
+            successMessage = null;
+
+           
+            if (string.IsNullOrWhiteSpace(apiResponse.Data.CityName))
+            {
+                message = "City Name cannot be empty.";
+                return;
+            }
+
+            var updateDto = new BropertyBrosClientApplication.Services.CityCreateDto
+                {
+                    CityName = apiResponse.Data.CityName
+                };
+
+            
+            Console.WriteLine($"Skickar City ID: {apiResponse.Data.Id}, Namn: {updateDto.CityName}");
+
+            var response = await cityService.UpdateCity(apiResponse.Data.Id, updateDto);
+
+            if (response != null && response.Success)
+            {
+                successMessage = "City updated successfully!";
+                message = null;
+                navManager.NavigateTo("/cityoverview", forceLoad: true);
+            }
+            else
+            {
+                message = response?.Message ?? "Update failed, but no error message was returned.";
+                successMessage = null;
+            }
+       
+    }
+
+
+}
