@@ -1,7 +1,8 @@
 ﻿@page "/PersonalRealtorPage/{id:int}"
 @using BropertyBrosClientApplication.Services.Property
-@inject RealtorService RealtorService
-@inject PropertyService PropertyService
+@using System.Diagnostics
+@inject IRealtorService RealtorService
+@inject IPropertyService PropertyService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
@@ -97,10 +98,35 @@
     [Parameter]
     public int id { get; set; }
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        // realtor = await RealtorService.GetRealtorByIdAsync(id);
-        // properties = await PropertyService.GetPropertiesByRealtor(id);
+        if (firstRender)
+        {
+            try
+            {
+                var propertyResponse = await PropertyService.GetPropertiesByRealtorAsync(id);
+                var realtorResponse = await RealtorService.GetRealtorByIdAsync(id);
+
+
+                //Check if the property response was successful
+                properties = propertyResponse.Success ? propertyResponse.Data : new List<Services.PropertyReadDto>();
+                if (!propertyResponse.Success)
+                {
+                    Debug.WriteLine($"Error fetching realtors: {propertyResponse}");
+                }
+                //Check if the realtor response was successful
+                realtor = realtorResponse.Success ? realtorResponse.Data : new Services.RealtorReadDto();
+                if (!realtorResponse.Success)
+                {
+                    Debug.WriteLine($"Error fetching realtors: {realtorResponse}");
+                }
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error fetching data: {ex.Message}");
+            }
+        }
     }
 
     private async Task GoBack()
@@ -112,13 +138,4 @@
     {
         NavigationManager.NavigateTo($"/propertydetails/{propertyId}");
     }
-
-    // protected override async Task OnAfterRenderAsync(bool firstRender)
-    // {
-    // 	if(!firstRender)
-    // 	{
-    // 		firstRender = true;
-    // 		await JSRuntime.InvokeVoidAsync("goToTopOfPage");
-    // 	}
-    // }
 }
