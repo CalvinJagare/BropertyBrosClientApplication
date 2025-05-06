@@ -173,7 +173,7 @@ namespace BropertyBrosClientApplication.Services.Property
             try
             {
                 await GetBearerToken();
-                var data = client.PropertyPUTAsync(id, propertyUpdateDto);
+                await client.PropertyPUTAsync(id, propertyUpdateDto);
                 reponse = new ApiResponse<bool>
                 {
                     Data = true,
