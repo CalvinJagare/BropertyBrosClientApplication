@@ -1,7 +1,8 @@
 ﻿@page "/realtorfirmoverview"
 @using BropertyBrosClientApplication.DTO.RealtorFirm
 @using BropertyBrosClientApplication.Services
-@inject RealtorFirmService RealtorFirmService
+@using BropertyBrosClientApplication.Services.RealtorFirm
+@inject IRealtorFirmService RealtorFirmService
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
@@ -46,10 +47,23 @@
 
 @code {
     private List<Services.RealtorFirmReadDto>? realtorFirms;
+    private string? errorMessage;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        realtorFirms = await RealtorFirmService.GetAllRealtorFirmsAsync();
+        if (firstRender)
+        {
+            var response = await RealtorFirmService.GetAllRealtorFirms();
+            if (response.Success)
+            {
+                realtorFirms = response.Data;
+            }
+            else
+            {
+                errorMessage = response.Message ?? "Failed to load realtor firms.";
+            }
+            StateHasChanged();
+        }
     }
 
     private void GoBack()

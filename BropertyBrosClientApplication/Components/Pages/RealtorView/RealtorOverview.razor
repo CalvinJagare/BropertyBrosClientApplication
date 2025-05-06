@@ -1,7 +1,5 @@
 ﻿@page "/realtoroverview"
-@using BropertyBrosClientApplication.DTO.Realtor
-@using BropertyBrosClientApplication.Services
-@inject RealtorService RealtorService
+@inject IRealtorService realtorService
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
@@ -45,11 +43,20 @@
 </div>
 
 @code {
-    private List<Services.RealtorReadDto>? realtors;
+    private List<RealtorReadDto>? realtors;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        realtors = await RealtorService.GetAllRealtorsAsync();
+        if (firstRender)
+        {
+            var realtorsResponse = await realtorService.GetAllRealtorsAsync();
+
+            if (realtorsResponse.Success)
+            {
+                realtors = realtorsResponse.Data;
+                StateHasChanged();
+            }
+        }
     }
 
     private void GoBack()

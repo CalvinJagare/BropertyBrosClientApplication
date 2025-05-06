@@ -1,16 +1,14 @@
 ﻿@page "/createproperty"
-@using BropertyBrosClientApplication.DTO.City
-@using BropertyBrosClientApplication.DTO.Properties
-@using BropertyBrosClientApplication.DTO.Realtor
-@using BropertyBrosClientApplication.DTO.CategoryDto
-@using BropertyBrosClientApplication.Services
-@inject PropertyService PropertyService
-@inject RealtorService RealtorService
+@using System.Diagnostics
+@inject IPropertyService PropertyService
+@inject IRealtorService RealtorService
 @inject CityService CityService
-@inject CategoryService CategoryService
+@inject ICategoryService CategoryService
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
+@* Author: Daniel *@
+@* Co-Author: Calvin *@
 <div class="d-flex justify-content-center align-items-center vh-100">
     <div class="container">
         <h1 class="dashboard-title text-center mb-4">Create Property</h1>
@@ -119,16 +117,46 @@
     private Services.PropertyCreateDto newProperty = new();
     private string imageUrls = string.Empty;
 
-    private List<Services.RealtorReadDto>? realtors;
     private List<Services.CityReadDto>? cities;
+    private List<Services.RealtorReadDto>? realtors;
     private List<Services.CategoryReadDto>? categories;
-
-    protected override async Task OnInitializedAsync()
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        realtors = await RealtorService.GetAllRealtorsAsync();
-        // cities = await CityService.GetAllCitiesAsync();
-        categories = await CategoryService.GetAllCategoryAsync();
-    }
+        if (firstRender)
+        {
+            try
+            {
+                var cityResponse = await CityService.GetAllCities();
+                var realtorResponse = await RealtorService.GetAllRealtorsAsync();
+                var categoryResponse = await CategoryService.GetAllCategories();
+
+                //Check if the realtor response was successful
+                realtors = realtorResponse.Success ? realtorResponse.Data : new List<Services.RealtorReadDto>();
+                if (!realtorResponse.Success)
+                {
+                    Debug.WriteLine($"Error fetching realtors: {realtorResponse}");
+                }
+                // Check if the category response was successful
+                categories = categoryResponse.Success ? categoryResponse.Data : new List<Services.CategoryReadDto>();
+                if (!categoryResponse.Success)
+                {
+                    Debug.WriteLine($"Error fetching categories: {categoryResponse}");
+                }
+                // Check if the city response was successful
+                cities = cityResponse.Success ? cityResponse.Data : new List<Services.CityReadDto>();
+                if (!cityResponse.Success)
+                {
+                    Debug.WriteLine($"Error fetching cities: {cityResponse}");
+                }
+                StateHasChanged();
+            }
+			catch (Exception ex)
+			{
+				Debug.WriteLine($"Error fetching data: {ex.Message}");
+			}
+		}
+	}
 
     private async Task HandleValidSubmit()
     {

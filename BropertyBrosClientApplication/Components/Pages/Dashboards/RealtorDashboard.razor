@@ -1,0 +1,68 @@
+﻿@page "/realtordashboard"
+
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="container">
+        <h1 class="dashboard-title text-center mb-4">Realtor Dashboard</h1>
+        <div class="row g-4 justify-content-center">
+            @foreach (var card in Cards)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card shadow-sm">
+                        <div class="card-header gradient-header text-white">
+                            @card.Header
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group list-group-flush">
+                                @foreach (var option in card.Options)
+                                {
+                                    <li class="list-group-item">
+                                        <a href="@option.Href" class="text-decoration-none">@option.Text</a>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    private List<Card> Cards = new()
+    {
+        new Card
+        {
+            Header = "Manage My Properties",
+            Options = new List<Option>
+            {
+                new Option { Text = "Propertie Overview", Href = "/propertyoverview" },
+                new Option { Text = "Create Property", Href = "/createproperty" },
+                new Option { Text = "Update Property", Href = "/updateproperty" },
+                new Option { Text = "Delete Property", Href = "/deleteproperty" }
+            }
+        },
+        new Card
+        {
+            Header = "Manage My Info",
+            Options = new List<Option>
+            {
+                new Option { Text = "View Profile", Href = "/" },
+                new Option { Text = "Update Profile", Href = "/" },
+                new Option { Text = "Change Password", Href = "/" }
+            }
+        }
+    };
+
+    private class Card
+    {
+        public string Header { get; set; } = string.Empty;
+        public List<Option> Options { get; set; } = new();
+    }
+
+    private class Option
+    {
+        public string Text { get; set; } = string.Empty;
+        public string Href { get; set; } = string.Empty;
+    }
+}

@@ -1,7 +1,8 @@
 ﻿@page "/deletecategory"
 @using BropertyBrosClientApplication.DTO.CategoryDto
 @using BropertyBrosClientApplication.Services
-@inject CategoryService CategoryService
+@using BropertyBrosClientApplication.Services.Category
+@inject ICategoryService CategoryService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
@@ -52,10 +53,19 @@
     private List<Services.CategoryReadDto>? categories;
     private int? selectedCategoryId;
     private string? deleteMessage;
+    private bool isFirstRender = true;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        categories = await CategoryService.GetAllCategoryAsync();
+        if (firstRender)
+        {
+            var response = await CategoryService.GetAllCategories();
+            if (response.Success)
+            {
+                categories = response.Data;
+                StateHasChanged();
+            }
+        }
     }
 
     private async Task ConfirmDelete()
@@ -68,10 +78,8 @@
                 var confirm = await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete the category '{category.CategoryName}'?");
                 if (confirm)
                 {
-                    await CategoryService.DeleteCategoryAsync(selectedCategoryId.Value);
-                    deleteMessage = $"Category '{category.CategoryName}' has been deleted.";
-                    categories = await CategoryService.GetAllCategoryAsync();
-                    selectedCategoryId = null;
+                    var response = await CategoryService.DeleteCategory(selectedCategoryId.Value);
+                    NavigationManager.NavigateTo("/categoryoverview");
                 }
             }
         }
@@ -82,4 +90,3 @@
         NavigationManager.NavigateTo("/admindashboard");
     }
 }
-

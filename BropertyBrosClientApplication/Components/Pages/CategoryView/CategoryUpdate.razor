@@ -1,7 +1,8 @@
 ﻿@page "/updatecategory"
 @using BropertyBrosClientApplication.DTO.CategoryDto
 @using BropertyBrosClientApplication.Services
-@inject CategoryService CategoryService
+@using BropertyBrosClientApplication.Services.Category
+@inject ICategoryService CategoryService
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
@@ -47,7 +48,7 @@
                         </div>
 
                         <div class="text-center">
-                            <button type="submit" class="btn btn-primary">Update</button>
+                            <button type="submit" class="btn btn-primary" @onclick="Updated">Update</button>
                         </div>
                     </EditForm>
                 }
@@ -67,29 +68,35 @@
     private List<Services.CategoryReadDto>? categories;
     private int? selectedCategoryId;
     private Services.CategoryCreateDto? selectedCategory;
+    private bool isFirstRender = true;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        categories = await CategoryService.GetAllCategoryAsync();
+        if (firstRender)
+        {
+            var response = await CategoryService.GetAllCategories();
+            if (response.Success)
+            {
+                categories = response.Data;
+                StateHasChanged();
+            }
+        }
     }
 
     private async Task LoadCategoryDetails()
     {
         if (selectedCategoryId.HasValue)
         {
-            Console.WriteLine($"Loading details for category ID: {selectedCategoryId.Value}");
-            var category = await CategoryService.GetCategoryByIdAsync(selectedCategoryId.Value);
-            if (category != null)
+            var response = await CategoryService.GetCategoryById(selectedCategoryId.Value);
+            if (response.Success && response.Data != null)
             {
                 selectedCategory = new Services.CategoryCreateDto
                     {
-                        CategoryName = category.CategoryName
+                        CategoryName = response.Data.CategoryName
                     };
-                Console.WriteLine($"Loaded category: {selectedCategory.CategoryName}");
             }
             else
             {
-                Console.WriteLine("Category not found.");
                 selectedCategory = null;
             }
         }
@@ -103,14 +110,21 @@
     {
         if (selectedCategoryId.HasValue && selectedCategory != null)
         {
-            Console.WriteLine($"Updating category ID: {selectedCategoryId.Value} with name: {selectedCategory.CategoryName}");
-            await CategoryService.UpdateCategoryAsync(selectedCategoryId.Value, selectedCategory);
-            NavigationManager.NavigateTo("/categoryoverview");
+            var response = await CategoryService.UpdateCategory(selectedCategoryId.Value, selectedCategory);
+            if (response.Success)
+            {
+                NavigationManager.NavigateTo("/categoryoverview");
+            }
         }
     }
 
     private void GoBack()
     {
         NavigationManager.NavigateTo("/admindashboard");
+    }
+
+    private void Updated()
+    {
+        NavigationManager.NavigateTo("/categoryoverview");
     }
 }
