@@ -50,6 +50,7 @@ namespace BropertyBrosClientApplication
             {
                 var httpClient = provider.GetRequiredService<HttpClient>();
                 httpClient.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]);
+                var apiKey = builder.Configuration["ApiSettings:ApiKey"];
                 return new Client(httpClient);
             });
 
