@@ -1,11 +1,4 @@
 ﻿@page "/createproperty"
-@using BropertyBrosClientApplication.DTO.CategoryDto
-@using BropertyBrosClientApplication.DTO.City
-@using BropertyBrosClientApplication.DTO.Properties
-@using BropertyBrosClientApplication.DTO.Realtor
-@using BropertyBrosClientApplication.Services
-@using BropertyBrosClientApplication.Services.Category
-@using BropertyBrosClientApplication.Services.Property
 @using System.Diagnostics
 @inject IPropertyService PropertyService
 @inject IRealtorService RealtorService
@@ -14,7 +7,8 @@
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
-@* Author: Daniel, Calvin *@
+@* Author: Daniel *@
+@* Co-Author: Calvin *@
 <div class="d-flex justify-content-center align-items-center vh-100">
     <div class="container">
         <h1 class="dashboard-title text-center mb-4">Create Property</h1>
@@ -126,7 +120,7 @@
     private List<Services.CityReadDto>? cities;
     private List<Services.RealtorReadDto>? realtors;
     private List<Services.CategoryReadDto>? categories;
-
+    
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
