@@ -1,5 +1,6 @@
 ﻿@page "/realtorlist"
 @inject IRealtorService realtorService
+@inject IRealtorFirmService realtorFirmService
 @rendermode InteractiveServer
 @*Author: Arlind*@
 
@@ -25,16 +26,16 @@
                     <input type="number" class="form-control" @bind="realtorSearchDto.LastName" placeholder="Enter last name" />
                 </div>
 
-                @* <div class="col-md-6">
-                    <label for="category" class="form-label">Category</label>
-                    <select id="category" class="form-select" @bind="realtorSearchDto.RealtorFirmId">
+                 <div class="col-md-6">
+                    <label for="firmDropdown" class="form-label">Firm</label>
+                    <select id="firmDropdown" class="form-select" @bind="realtorSearchDto.RealtorFirmId">
                         <option value="">-- Select Realtor firm --</option>
                         @foreach (var r in realtorFirms)
                         {
-                            <option value="@category.Id">@category.CategoryName</option>
+                            <option value="@(r.Id)">@r.CompanyName</option>
                         }
                     </select>
-                </div> *@
+                </div> 
 
                 <div class="col-12 text-center">
                     <button type="button" class="btn btn-primary" @onclick="GetRealtorsBySearch">Search</button>
@@ -80,7 +81,7 @@
 @code {
     private List<Services.RealtorReadDto>? realtors;
     private RealtorSearchDto realtorSearchDto = new();
-    // private List<RealtorFirmReadDto> realtorFirms = new();
+    private List<RealtorFirmReadDto> realtorFirms = new();
     private bool isLoading = true;
 
     string? responseMessage;
@@ -95,7 +96,9 @@
             realtors = realtorsResponse.Data.ToList();
             responseMessage = realtorsResponse.Message;
 
-            // ApiResponse<List<RealtorFirmReadDto>> realtorFirmsResponse = await realtorFirmService.GetAllRealtorFirmsAsync();
+            ApiResponse<List<RealtorFirmReadDto>> realtorFirmsResponse = await realtorFirmService.GetAllRealtorFirms();
+
+			realtorFirms = realtorFirmsResponse.Data.ToList();
 
             isLoading = false;
             StateHasChanged();
