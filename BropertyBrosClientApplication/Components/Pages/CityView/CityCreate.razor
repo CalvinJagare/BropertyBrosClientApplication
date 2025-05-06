@@ -1,7 +1,7 @@
 ﻿@page "/createcity"
 @using BropertyBrosClientApplication.DTO.City
 @using BropertyBrosClientApplication.Services
-@inject CityService CityService
+@inject ICityService CityService
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
@@ -11,7 +11,7 @@
     <div class="container">
         <h1 class="dashboard-title text-center mb-4">Create City</h1>
 
-        <div class="card shadow-sm p-4">
+        <div class="card shadow-sm p-4 gradient-card">
             <EditForm Model="newCity" OnValidSubmit="HandleValidSubmit">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
@@ -33,15 +33,34 @@
 </div>
 
 @code {
-    private Services.CityCreateDto newCity = new();
+    private BropertyBrosClientApplication.DTO.City.CityCreateDto newCity = new();
 
     private async Task HandleValidSubmit()
     {
-        // await CityService.CreateCityAsync(newCity);
-        NavigationManager.NavigateTo("/cityoverview");
+        var serviceDto = new BropertyBrosClientApplication.Services.CityCreateDto
+            {
+                CityName = newCity.CityName
+            };
+
+        var response = await CityService.CreateCity(serviceDto);
+        if (response != null && response.Success)
+        {
+            // Vänta pyttelite för att låta Blazor slutföra submit.
+            await Task.Delay(100);
+
+            NavigationManager.NavigateTo("/cityoverview", forceLoad: true);
+        }
+
+        else
+        {
+            Console.WriteLine("Failed to create city.");
+        }
     }
+
+
     private void GoBack()
     {
         NavigationManager.NavigateTo("/admindashboard");
     }
 }
+

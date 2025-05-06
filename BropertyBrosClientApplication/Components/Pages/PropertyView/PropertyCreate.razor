@@ -13,93 +13,105 @@
     <div class="container">
         <h1 class="dashboard-title text-center mb-4">Create Property</h1>
 
-        <div class="card shadow-sm p-4">
+        <div class="card shadow-sm p-4 gradient-card">
             <EditForm Model="newProperty" OnValidSubmit="HandleValidSubmit">
                 <DataAnnotationsValidator />
                 <ValidationSummary />
 
-                <div class="mb-3">
-                    <label for="address" class="form-label">Address</label>
-                    <InputText id="address" class="form-control" @bind-Value="newProperty.Address" />
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="price" class="form-label">Price</label>
+                            <InputNumber id="price" class="form-control" @bind-Value="newProperty.Price" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="monthlyFee" class="form-label">Monthly Fee</label>
+                            <InputNumber id="monthlyFee" class="form-control" @bind-Value="newProperty.MonthlyFee" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="yearlyFee" class="form-label">Yearly Fee</label>
+                            <InputNumber id="yearlyFee" class="form-control" @bind-Value="newProperty.YearlyFee" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="realtorDropdown" class="form-label">Realtor</label>
+                            <select id="realtorDropdown" class="form-select" @bind="newProperty.RealtorId">
+                                <option value="">-- Select a Realtor --</option>
+                                @if (realtors != null)
+                                {
+                                    @foreach (var realtor in realtors)
+                                    {
+                                        <option value="@realtor.Id">@($"{realtor.FirstName} {realtor.LastName}")</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="cityDropdown" class="form-label">City</label>
+                            <select id="cityDropdown" class="form-select" @bind="newProperty.CityId">
+                                <option value="">-- Select a City --</option>
+                                @if (cities != null)
+                                {
+                                    @foreach (var city in cities)
+                                    {
+                                        <option value="@city.Id">@city.CityName</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="categoryDropdown" class="form-label">Category</label>
+                            <select id="categoryDropdown" class="form-select" @bind="newProperty.CategoryId">
+                                <option value="">-- Select a Category --</option>
+                                @if (categories != null)
+                                {
+                                    @foreach (var category in categories)
+                                    {
+                                        <option value="@category.Id">@category.CategoryName</option>
+                                    }
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="address" class="form-label">Address</label>
+                            <InputText id="address" class="form-control" @bind-Value="newProperty.Address" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="livingAreaKvm" class="form-label">Living Area (Kvm)</label>
+                            <InputNumber id="livingAreaKvm" class="form-control" @bind-Value="newProperty.LivingAreaKvm" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="ancillaryAreaKvm" class="form-label">Ancillary Area (Kvm)</label>
+                            <InputNumber id="ancillaryAreaKvm" class="form-control" @bind-Value="newProperty.AncillaryAreaKvm" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="landAreaKvm" class="form-label">Land Area (Kvm)</label>
+                            <InputNumber id="landAreaKvm" class="form-control" @bind-Value="newProperty.LandAreaKvm" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="numberOfRooms" class="form-label">Number of Rooms</label>
+                            <InputNumber id="numberOfRooms" class="form-control" @bind-Value="newProperty.NumberOfRooms" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="buildYear" class="form-label">Build Year</label>
+                            <InputNumber id="buildYear" class="form-control" @bind-Value="newProperty.BuildYear" />
+                        </div>
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <label for="price" class="form-label">Price</label>
-                    <InputNumber id="price" class="form-control" @bind-Value="newProperty.Price" />
-                </div>
-                <div class="mb-3">
-                    <label for="monthlyFee" class="form-label">Monthly Fee</label>
-                    <InputNumber id="monthlyFee" class="form-control" @bind-Value="newProperty.MonthlyFee" />
-                </div>
-                <div class="mb-3">
-                    <label for="yearlyFee" class="form-label">Yearly Fee</label>
-                    <InputNumber id="yearlyFee" class="form-control" @bind-Value="newProperty.YearlyFee" />
-                </div>
-                <div class="mb-3">
-                    <label for="livingAreaKvm" class="form-label">Living Area (Kvm)</label>
-                    <InputNumber id="livingAreaKvm" class="form-control" @bind-Value="newProperty.LivingAreaKvm" />
-                </div>
-                <div class="mb-3">
-                    <label for="ancillaryAreaKvm" class="form-label">Ancillary Area (Kvm)</label>
-                    <InputNumber id="ancillaryAreaKvm" class="form-control" @bind-Value="newProperty.AncillaryAreaKvm" />
-                </div>
-                <div class="mb-3">
-                    <label for="landAreaKvm" class="form-label">Land Area (Kvm)</label>
-                    <InputNumber id="landAreaKvm" class="form-control" @bind-Value="newProperty.LandAreaKvm" />
-                </div>
-                <div class="mb-3">
-                    <label for="description" class="form-label">Description</label>
-                    <InputTextArea id="description" class="form-control" @bind-Value="newProperty.Description" />
-                </div>
-                <div class="mb-3">
-                    <label for="numberOfRooms" class="form-label">Number of Rooms</label>
-                    <InputNumber id="numberOfRooms" class="form-control" @bind-Value="newProperty.NumberOfRooms" />
-                </div>
-                <div class="mb-3">
-                    <label for="buildYear" class="form-label">Build Year</label>
-                    <InputNumber id="buildYear" class="form-control" @bind-Value="newProperty.BuildYear" />
-                </div>
-                <div class="mb-3">
-                    <label for="imageUrls" class="form-label">Image URLs (separate all URLs with a comma)</label>
-                    <InputText id="imageUrls" class="form-control" @bind-Value="imageUrls" />
-                </div>
-                <div class="mb-3">
-                    <label for="realtorDropdown" class="form-label">Realtor</label>
-                    <select id="realtorDropdown" class="form-select" @bind="newProperty.RealtorId">
-                        <option value="">-- Select a Realtor --</option>
-                        @if (realtors != null)
-                        {
-                            @foreach (var realtor in realtors)
-                            {
-                                <option value="@realtor.Id">@($"{realtor.FirstName} {realtor.LastName}")</option>
-                            }
-                        }
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label for="cityDropdown" class="form-label">City</label>
-                    <select id="cityDropdown" class="form-select" @bind="newProperty.CityId">
-                        <option value="">-- Select a City --</option>
-                        @if (cities != null)
-                        {
-                            @foreach (var city in cities)
-                            {
-                                <option value="@city.Id">@city.CityName</option>
-                            }
-                        }
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label for="categoryDropdown" class="form-label">Category</label>
-                    <select id="categoryDropdown" class="form-select" @bind="newProperty.CategoryId">
-                        <option value="">-- Select a Category --</option>
-                        @if (categories != null)
-                        {
-                            @foreach (var category in categories)
-                            {
-                                <option value="@category.Id">@category.CategoryName</option>
-                            }
-                        }
-                    </select>
+
+                <div class="row mt-4">
+                    <div class="col-md-12">
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <InputTextArea id="description" class="form-control" @bind-Value="newProperty.Description" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="imageUrls" class="form-label">Image URLs (separate all URLs with a comma)</label>
+                            <InputText id="imageUrls" class="form-control" @bind-Value="imageUrls" />
+                        </div>
+                    </div>
                 </div>
 
                 <div class="text-center">
@@ -112,6 +124,7 @@
         </div>
     </div>
 </div>
+
 
 @code {
     private Services.PropertyCreateDto newProperty = new();
