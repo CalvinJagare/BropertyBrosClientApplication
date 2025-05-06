@@ -6,6 +6,7 @@
 @rendermode InteractiveServer
 
 @* Author: Calvin *@
+@* Co-Author: Daniel *@
 <div class="container py-5">
     <h1 class="dashboard-title text-center mb-4">Realtor Firms We Work With</h1>
 
@@ -52,12 +53,16 @@
     private List<Services.RealtorFirmReadDto>? realtorFirms;
     private ApiResponse<List<Services.RealtorFirmReadDto>>? apiResponse;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        apiResponse = await RealtorFirmService.GetAllRealtorFirms();
-        if (apiResponse.Success)
+        if (firstRender)
         {
-            realtorFirms = apiResponse.Data;
+            apiResponse = await RealtorFirmService.GetAllRealtorFirms();
+            if (apiResponse.Success)
+            {
+                realtorFirms = apiResponse.Data;
+                StateHasChanged();
+            }
         }
     }
 }
