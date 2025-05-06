@@ -513,3 +513,19 @@ h1:focus {
     object-fit: contain;
     border-radius: 8px;
 }
+
+.login-card {
+    min-width: 800px !important;
+    max-width: 1000px !important;
+    border-radius: 8px;
+    background-color: #ffffff;
+    padding: 2rem;
+}
+
+.vh-100 {
+    min-height: 100vh;
+}
+
+.bg-light {
+    background-color: #f8f9fa !important;
+}
