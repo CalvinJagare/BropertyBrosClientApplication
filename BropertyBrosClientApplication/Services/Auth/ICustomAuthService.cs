@@ -1,7 +1,7 @@
 ﻿using BropertyBrosClientApplication.DTO.User;
 using System.Threading.Tasks;
 
-namespace BropertyBrosClientApplication.Services
+namespace BropertyBrosClientApplication.Services.Auth
 {
     public interface ICustomAuthService
     {

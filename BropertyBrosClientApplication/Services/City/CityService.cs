@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Net.Http.Json;
 using System.Text.Json;
 
-namespace BropertyBrosClientApplication.Services
+namespace BropertyBrosClientApplication.Services.City
 {
     //Author: Arlind
     public class CityService : BaseHttpService, ICityService

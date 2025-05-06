@@ -5,7 +5,7 @@ using System.Net.Http.Json;
 using BropertyBrosClientApplication.Providers;
 
 
-namespace BropertyBrosClientApplication.Services
+namespace BropertyBrosClientApplication.Services.Auth
 {
     public class CustomAuthService : ICustomAuthService
     {
