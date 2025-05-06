@@ -49,7 +49,7 @@ namespace BropertyBrosClientApplication
             {
                 var httpClient = provider.GetRequiredService<HttpClient>();
                 httpClient.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]);
-                return new Client(httpClient);
+                return new Client(httpClient.BaseAddress.ToString(), httpClient);
             });
 
             builder.Services.AddScoped<IAuthService, AuthService>();

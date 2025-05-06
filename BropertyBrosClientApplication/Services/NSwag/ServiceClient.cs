@@ -20,7 +20,7 @@
 #pragma warning disable 8625 // Disable "CS8625 Cannot convert null literal to non-nullable reference type"
 #pragma warning disable 8765 // Disable "CS8765 Nullability of type of parameter doesn't match overridden member (possibly because of nullability attributes)."
 
-namespace SleepAidTrackerClient.Services
+namespace BropertyBrosClientApplication.Services
 {
     using System = global::System;
 
@@ -245,12 +245,12 @@ namespace SleepAidTrackerClient.Services
 
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<RealtorReadDto> GetRealtorsBySearchAsync(RealtorSearchDto body);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<RealtorReadDto>> GetRealtorsBySearchAsync(RealtorSearchDto body);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task<RealtorReadDto> GetRealtorsBySearchAsync(RealtorSearchDto body, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task<System.Collections.Generic.ICollection<RealtorReadDto>> GetRealtorsBySearchAsync(RealtorSearchDto body, System.Threading.CancellationToken cancellationToken);
 
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
@@ -2254,7 +2254,7 @@ namespace SleepAidTrackerClient.Services
 
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task<RealtorReadDto> GetRealtorsBySearchAsync(RealtorSearchDto body)
+        public virtual System.Threading.Tasks.Task<System.Collections.Generic.ICollection<RealtorReadDto>> GetRealtorsBySearchAsync(RealtorSearchDto body)
         {
             return GetRealtorsBySearchAsync(body, System.Threading.CancellationToken.None);
         }
@@ -2262,7 +2262,7 @@ namespace SleepAidTrackerClient.Services
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task<RealtorReadDto> GetRealtorsBySearchAsync(RealtorSearchDto body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task<System.Collections.Generic.ICollection<RealtorReadDto>> GetRealtorsBySearchAsync(RealtorSearchDto body, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -2307,7 +2307,7 @@ namespace SleepAidTrackerClient.Services
                         var status_ = (int)response_.StatusCode;
                         if (status_ == 200)
                         {
-                            var objectResponse_ = await ReadObjectResponseAsync<RealtorReadDto>(response_, headers_, cancellationToken).ConfigureAwait(false);
+                            var objectResponse_ = await ReadObjectResponseAsync<System.Collections.Generic.ICollection<RealtorReadDto>>(response_, headers_, cancellationToken).ConfigureAwait(false);
                             if (objectResponse_.Object == null)
                             {
                                 throw new ApiException("Response was null which was not expected.", status_, objectResponse_.Text, headers_, null);
