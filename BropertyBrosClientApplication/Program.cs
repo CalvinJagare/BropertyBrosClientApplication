@@ -7,6 +7,7 @@ using BropertyBrosClientApplication.Providers;
 using BropertyBrosClientApplication.Services;
 using BropertyBrosClientApplication.Services.Auth;
 using BropertyBrosClientApplication.Services.Category;
+using BropertyBrosClientApplication.Services.City;
 using BropertyBrosClientApplication.Services.Property;
 using BropertyBrosClientApplication.Services.Realtor;
 using BropertyBrosClientApplication.Services.RealtorFirm;
@@ -44,15 +45,12 @@ namespace BropertyBrosClientApplication
             builder.Services.AddAuthorizationCore();
             builder.Services.AddScoped<CityService>();
 
-            builder.Services.AddScoped<ICityService, CityService>();
-            builder.Services.AddScoped<RealtorFirmService>();
-
 
             builder.Services.AddScoped<IClient>(provider =>
             {
                 var httpClient = provider.GetRequiredService<HttpClient>();
                 httpClient.BaseAddress = new Uri(builder.Configuration["ApiSettings:BaseUrl"]);
-                return new Client(httpClient.BaseAddress.ToString(), httpClient);
+                return new Client(httpClient);
             });
 
             builder.Services.AddScoped<IAuthService, AuthService>();
@@ -81,10 +79,9 @@ namespace BropertyBrosClientApplication
             app.UseAntiforgery();
 
             app.UseAuthorization();
-            
+
             app.MapRazorComponents<App>()
                 .AddInteractiveServerRenderMode();
-
 
 
             app.Run();

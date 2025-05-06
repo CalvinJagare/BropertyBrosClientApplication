@@ -1,7 +1,7 @@
 ﻿using BropertyBrosClientApplication.DTO.User;
 using System.Net.Http.Json;
 
-namespace BropertyBrosClientApplication.Services
+namespace BropertyBrosClientApplication.Services.Auth
 {
     public class UserService
     {

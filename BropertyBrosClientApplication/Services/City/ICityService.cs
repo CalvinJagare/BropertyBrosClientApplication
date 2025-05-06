@@ -1,6 +1,6 @@
 ﻿using Azure;
 using BropertyBrosClientApplication.DTO.City;
-namespace BropertyBrosClientApplication.Services
+namespace BropertyBrosClientApplication.Services.City
 // Author: Arlind 
 {
     public interface ICityService
