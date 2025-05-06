@@ -1,5 +1,4 @@
 ﻿@page "/"
-@using BropertyBrosClientApplication.DTO.Properties
 @using BropertyBrosClientApplication.Services
 @using BropertyBrosClientApplication.Services.Property
 @using Microsoft.CodeAnalysis
@@ -251,14 +250,19 @@
 
     private List<Services.PropertyReadDto>? latestProperties;
 
-    // protected override async Task OnInitializedAsync()
-    // {
-    //     var allProperties = await PropertyService.GetAllPropertiesAsync();
-    //     latestProperties = allProperties
-    //         .OrderByDescending(p => p.CreatedAt)
-    //         .Take(3)
-    //         .ToList();
-    // }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var allPropertiesResponse = await PropertyService.GetAllPropertiesAsync();
+            var allProperties = allPropertiesResponse.Data;
+            latestProperties = allProperties
+                .OrderByDescending(p => p.CreatedAt)
+                .Take(3)
+                .ToList();
+			StateHasChanged();
+        }
+    }
 
     private void NavigateToDetails(int propertyId)
     {
