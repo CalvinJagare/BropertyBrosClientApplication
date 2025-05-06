@@ -44,6 +44,9 @@ namespace BropertyBrosClientApplication
             builder.Services.AddAuthorizationCore();
             builder.Services.AddScoped<CityService>();
 
+            builder.Services.AddScoped<ICityService, CityService>();
+            builder.Services.AddScoped<RealtorFirmService>();
+
 
             builder.Services.AddScoped<IClient>(provider =>
             {
@@ -78,9 +81,10 @@ namespace BropertyBrosClientApplication
             app.UseAntiforgery();
 
             app.UseAuthorization();
-
+            
             app.MapRazorComponents<App>()
                 .AddInteractiveServerRenderMode();
+
 
 
             app.Run();

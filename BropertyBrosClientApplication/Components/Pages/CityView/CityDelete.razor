@@ -1,10 +1,11 @@
 ﻿@page "/deletecity"
+@rendermode InteractiveServer
 @using BropertyBrosClientApplication.DTO.City
 @using BropertyBrosClientApplication.Services
-@inject CityService CityService
+@inject ICityService CityService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
-@rendermode InteractiveServer
+
 
 @* Author: Arlind *@
 
@@ -36,10 +37,16 @@
                     </button>
                 </div>
 
-                @if (deleteMessage != null)
+                @if (!string.IsNullOrEmpty(successMessage))
+                {
+                    <p class="text-success text-center">@successMessage</p>
+                }
+
+                @if (!string.IsNullOrEmpty(deleteMessage))
                 {
                     <p class="text-danger text-center">@deleteMessage</p>
                 }
+
             }
         </div>
         <div class="text-center mt-3">
@@ -52,30 +59,75 @@
     private List<Services.CityReadDto>? cities;
     private int? selectedCityId;
     private string? deleteMessage;
+    private string? successMessage;
 
-    protected override async Task OnInitializedAsync()
+    private bool hasLoaded = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-
-    }
-
-    private async Task ConfirmDelete()
-    {
-        if (selectedCityId.HasValue)
+        if (firstRender)
         {
-            var city = cities?.FirstOrDefault(c => c.Id == selectedCityId.Value);
-            if (city != null)
+            var response = await CityService.GetAllCities();
+            if (response.Success)
             {
-                var confirm = await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete the city '{city.CityName}'?");
-                if (confirm)
-                {
-                    // await CityService.DeleteCityAsync(selectedCityId.Value);
-                    deleteMessage = $"City '{city.CityName}' has been deleted.";
-                    // cities = await CityService.GetAllCitiesAsync();
-                    selectedCityId = null;
-                }
+                cities = response.Data;
             }
+            else
+            {
+                deleteMessage = "Failed to load cities.";
+            }
+            hasLoaded = true;
+
+            StateHasChanged();
         }
     }
+
+   
+    private async Task ConfirmDelete()
+    {
+        
+        deleteMessage = null;
+        successMessage = null;
+
+        if (!selectedCityId.HasValue)
+        {
+            deleteMessage = "Please select a city.";
+            return;
+        }
+
+        var city = cities?.FirstOrDefault(c => c.Id == selectedCityId.Value);
+        if (city == null)
+        {
+            deleteMessage = "Selected city not found.";
+            return;
+        }
+
+        
+        var confirm = await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete the city '{city.CityName}'?");
+        if (!confirm)
+        {
+            deleteMessage = "Deletion cancelled.";
+            return;
+        }
+
+        var deleteResponse = await CityService.DeleteCity(selectedCityId.Value);
+        if (deleteResponse != null && deleteResponse.Success)
+        {
+            successMessage = $"City '{city.CityName}' has been deleted.";
+            deleteMessage = null;
+
+            
+            cities?.Remove(city);
+            selectedCityId = null;
+        }
+        else
+        {
+            deleteMessage = "Failed to delete the city.";
+            successMessage = null;
+        }
+    }
+
+
 
     private void GoBack()
     {
