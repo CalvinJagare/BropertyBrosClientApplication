@@ -6,7 +6,8 @@ using System.Text.Json;
 
 namespace BropertyBrosClientApplication.Services.Property
 {
-    //Author: Daniel, Calvin, Emil
+    //Author: Daniel
+    //Co-author: Emil
     public class PropertyService : BaseHttpService, IPropertyService
     {
         private readonly IClient client;
