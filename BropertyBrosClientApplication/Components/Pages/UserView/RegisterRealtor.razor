@@ -1,0 +1,114 @@
+﻿@page "/users/registerrealtor"
+@using BropertyBrosClientApplication.Services
+@inject IRealtorFirmService realtorFirmService
+@inject IRealtorService realtorService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+<h3>Register</h3>
+@if (string.IsNullOrEmpty(errorMessage) == false)
+{
+    <div class="alert alert-danger">
+        <p>@errorMessage</p>
+    </div>
+}
+@if (string.IsNullOrEmpty(responseMessage) == false)
+{
+    <div class="alert alert-success">
+        <p>@responseMessage</p>
+    </div>
+}
+
+
+<div>
+    <EditForm Model="RegistrationUserModel" OnValidSubmit="HandleRegistration" FormName="Register">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+        <div class="form-group">
+            <label for="email">Email</label>
+            <InputText id="email" type="email" class="form-control" @bind-Value="RegistrationUserModel.Email" />
+            <ValidationMessage For="@(() => RegistrationUserModel.Email)" />
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <InputText id="password" type="password" class="form-control" @bind-Value="RegistrationUserModel.Password" />
+            <ValidationMessage For="@(() => RegistrationUserModel.Password)" />
+        </div>
+        <div>
+            <label for="firstname">First Name</label>
+            <InputText id="firstname" type="firstname" class="form-control" @bind-Value="RegistrationUserModel.FirstName" />
+            <ValidationMessage For="@(() => RegistrationUserModel.FirstName)" />
+        </div>
+        <div>
+            <label for="lastname">Last Name</label>
+            <InputText id="lastname" type="lastname" class="form-control" @bind-Value="RegistrationUserModel.LastName" />
+            <ValidationMessage For="@(() => RegistrationUserModel.LastName)" />
+        </div>
+        <div>
+            <label for="profileurl">ProfileUrl</label>
+            <InputText id="profileurl" type="lastname" class="form-control" @bind-Value="RegistrationUserModel.ProfileUrl" />
+            <ValidationMessage For="@(() => RegistrationUserModel.ProfileUrl)" />
+        </div>
+        <div>
+            <label for="phonenumber">PhoneNumber</label>
+            <InputText id="phonenumber" type="lastname" class="form-control" @bind-Value="RegistrationUserModel.PhoneNumber" />
+            <ValidationMessage For="@(() => RegistrationUserModel.PhoneNumber)" />
+        </div>
+
+        <div>
+            <label>Realtor firm</label>
+            @if (realtorFirms.Count > 0)
+            {
+                <select class="form-select" @bind="@RegistrationUserModel.RealtorFirmId">
+                    @foreach (var r in realtorFirms)
+                    {
+                        <option value="@r.Id">@r.CompanyName</option>
+                    }
+                </select>
+            }
+        </div>
+        <button type="submit" class="btn btn-primary">Register</button>
+    </EditForm>
+</div>
+@code {
+    RegisterRealtorDto RegistrationUserModel = new RegisterRealtorDto();
+    List<RealtorFirmReadDto> realtorFirms = new();
+    string errorMessage = string.Empty;
+    string responseMessage = string.Empty;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            ApiResponse<List<RealtorFirmReadDto>> response = await realtorFirmService.GetAllRealtorFirms();
+
+            if (response.Data != null)
+            {
+                realtorFirms = response.Data;
+            }
+
+            responseMessage = response.Message;
+
+            StateHasChanged();
+        }
+    }
+
+    private async Task HandleRegistration()
+    {
+        try
+        {
+            ApiResponse response = await realtorService.RegisterRealtorAsync(RegistrationUserModel);
+
+            responseMessage = response.Message;
+
+            // NavigationManager.NavigateTo("/users/login");
+        }
+        catch (ApiException aex)
+        {
+            if (aex.StatusCode >= 200 && aex.StatusCode <= 299)
+            {
+                NavigationManager.NavigateTo("/users/login");
+            }
+            errorMessage = aex.Response;
+        }
+    }
+}

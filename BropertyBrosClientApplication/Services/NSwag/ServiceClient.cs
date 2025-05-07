@@ -29,12 +29,12 @@ namespace BropertyBrosClientApplication.Services
     {
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task RegisterAsync(UserDto body);
+        System.Threading.Tasks.Task RegisterRealtorAsync(RegisterRealtorDto body);
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        System.Threading.Tasks.Task RegisterAsync(UserDto body, System.Threading.CancellationToken cancellationToken);
+        System.Threading.Tasks.Task RegisterRealtorAsync(RegisterRealtorDto body, System.Threading.CancellationToken cancellationToken);
 
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
@@ -349,15 +349,15 @@ namespace BropertyBrosClientApplication.Services
 
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual System.Threading.Tasks.Task RegisterAsync(UserDto body)
+        public virtual System.Threading.Tasks.Task RegisterRealtorAsync(RegisterRealtorDto body)
         {
-            return RegisterAsync(body, System.Threading.CancellationToken.None);
+            return RegisterRealtorAsync(body, System.Threading.CancellationToken.None);
         }
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public virtual async System.Threading.Tasks.Task RegisterAsync(UserDto body, System.Threading.CancellationToken cancellationToken)
+        public virtual async System.Threading.Tasks.Task RegisterRealtorAsync(RegisterRealtorDto body, System.Threading.CancellationToken cancellationToken)
         {
             var client_ = _httpClient;
             var disposeClient_ = false;
@@ -373,8 +373,8 @@ namespace BropertyBrosClientApplication.Services
 
                     var urlBuilder_ = new System.Text.StringBuilder();
                     if (!string.IsNullOrEmpty(_baseUrl)) urlBuilder_.Append(_baseUrl);
-                    // Operation Path: "api/Auth/register"
-                    urlBuilder_.Append("api/Auth/register");
+                    // Operation Path: "api/Auth/registerRealtor"
+                    urlBuilder_.Append("api/Auth/registerRealtor");
 
                     PrepareRequest(client_, request_, urlBuilder_);
 
@@ -3275,7 +3275,7 @@ namespace BropertyBrosClientApplication.Services
     }
 
     [System.CodeDom.Compiler.GeneratedCode("NJsonSchema", "14.3.0.0 (NJsonSchema v11.2.0.0 (Newtonsoft.Json v13.0.0.0))")]
-    public partial class UserDto
+    public partial class RegisterRealtorDto
     {
         [Newtonsoft.Json.JsonProperty("email", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required]
@@ -3292,6 +3292,17 @@ namespace BropertyBrosClientApplication.Services
         [Newtonsoft.Json.JsonProperty("lastName", Required = Newtonsoft.Json.Required.Always)]
         [System.ComponentModel.DataAnnotations.Required]
         public string LastName { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("phoneNumber", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public string PhoneNumber { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("profileUrl", Required = Newtonsoft.Json.Required.Always)]
+        [System.ComponentModel.DataAnnotations.Required]
+        public string ProfileUrl { get; set; }
+
+        [Newtonsoft.Json.JsonProperty("realtorFirmId", Required = Newtonsoft.Json.Required.Always)]
+        public int RealtorFirmId { get; set; }
 
     }
 

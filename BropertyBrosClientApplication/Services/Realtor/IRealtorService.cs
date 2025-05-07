@@ -10,5 +10,6 @@
         Task<ApiResponse<RealtorReadDto>> CreateRealtorAsync(RealtorCreateDto dto);
         Task<ApiResponse> DeleteRealtorAsync(int realtorId);
         Task<ApiResponse> UpdateRealtorAsync(int realtorId, RealtorCreateDto dto);
+        Task<ApiResponse> RegisterRealtorAsync(RegisterRealtorDto dto);
     }
 }
