@@ -49,7 +49,7 @@
             <Authorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="admindashboard">
-                        <span class="" aria-hidden="true"></span> Admin Dashboard
+                        <span class="" aria-hidden="true"></span><i class="fa-solid fa-unlock"></i>&nbsp; Admin Dashboard
                     </NavLink>
                 </div>
             </Authorized>
@@ -60,14 +60,14 @@
             <Authorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="realtordashboard">
-                        <span class="" aria-hidden="true"></span> Realtor Dashboard
+                        <span class="" aria-hidden="true"></span><i class="fa-solid fa-screwdriver-wrench"></i>&nbsp; Realtor Dashboard
                     </NavLink>
                 </div>
             </Authorized>
         </AuthorizeView>
 
         <AuthorizeView>
-            @* ta bort inlogg *@
+            @* ta bort inlogg och BARA login, lämna logout*@
             <NotAuthorized>                
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="/users/login">
