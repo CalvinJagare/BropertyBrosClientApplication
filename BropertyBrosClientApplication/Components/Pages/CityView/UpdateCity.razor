@@ -8,53 +8,62 @@
 
 @* Author: Arlind *@
 
-<h3>Update City</h3>
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="container">
+        <h1 class="dashboard-title text-center mb-4">Update City</h1>
 
-@if (!string.IsNullOrEmpty(message))
-{
-    <div class="alert alert-danger">@message</div>
-}
-
-@if (!string.IsNullOrWhiteSpace(successMessage))
-{
-    <div class="alert alert-success">@successMessage</div>
-    <button class="btn btn-success mt-2" @onclick='() => navManager.NavigateTo("/cityoverview")'>
-        Go back to city overview
-    </button>
-}
-
-@if (cities == null)
-{
-    <p>Loading cities...</p>
-}
-else
-{
-    <div class="form-group mb-3">
-        <label for="cityDropdown">Select a City</label>
-        <select id="cityDropdown" class="form-select" @onchange="LoadCityData">
-            <option value="">-- Select a City --</option>
-            @foreach (var city in cities)
+        <div class="card shadow-sm p-4 gradient-card">
+            @if (!string.IsNullOrEmpty(message))
             {
-                <option value="@city.Id">@city.CityName</option>
+                <div class="alert alert-danger">@message</div>
             }
-        </select>
 
+            @if (!string.IsNullOrWhiteSpace(successMessage))
+            {
+                <div class="alert alert-success">@successMessage</div>
+                <button class="btn btn-success mt-2" @onclick='() => navManager.NavigateTo("/cityoverview")'>
+                    Go back to city overview
+                </button>
+            }
+
+            @if (cities == null)
+            {
+                <p class="text-center">Loading cities...</p>
+            }
+            else
+            {
+                <div class="mb-3">
+                    <label for="cityDropdown" class="form-label">Select a City</label>
+                    <select id="cityDropdown" class="form-select" @onchange="LoadCityData">
+                        <option value="">-- Select a City --</option>
+                        @foreach (var city in cities)
+                        {
+                            <option value="@city.Id">@city.CityName</option>
+                        }
+                    </select>
+                </div>
+            }
+
+            <EditForm Model="apiResponse.Data" OnValidSubmit="HandleUpdate">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="mb-3">
+                    <label for="cityName" class="form-label">City Name</label>
+                    <InputText id="cityName" class="form-control" @bind-Value="apiResponse.Data.CityName" />
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary">Update City</button>
+                </div>
+            </EditForm>
+        </div>
+
+        <div class="text-center mt-3">
+            <button class="btn btn-secondary" @onclick='() => navManager.NavigateTo("/admindashboard")'>Back</button>
+        </div>
     </div>
-}
-
-<EditForm Model="apiResponse.Data" OnValidSubmit="HandleUpdate">
-    <DataAnnotationsValidator />
-    <ValidationSummary />
-
-    
-
-    <div class="form-group mb-3">
-        <label for="cityName">City Name</label>
-        <InputText id="cityName" class="form-control" @bind-Value="apiResponse.Data.CityName" />
-    </div>
-
-    <button type="submit" class="btn btn-primary">Update City</button>
-</EditForm>
+</div>
 
 
 @code {
