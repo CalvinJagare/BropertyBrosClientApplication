@@ -1,16 +1,15 @@
 ﻿@page "/updateproperty"
-@using BropertyBrosClientApplication.DTO.Properties
-@using BropertyBrosClientApplication.DTO.Realtor
-@using BropertyBrosClientApplication.DTO.City
-@using BropertyBrosClientApplication.DTO.CategoryDto
-@using BropertyBrosClientApplication.Services
-@inject PropertyService PropertyService
-@inject RealtorService RealtorService
+@using System.Diagnostics
+@inject IPropertyService PropertyService
+@inject IRealtorService RealtorService
 @inject CityService CityService
-@inject CategoryService CategoryService
+@inject ICategoryService CategoryService
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
+
+@* Author: Daniel *@
+@* Co-Author: Calvin *@
 <div class="d-flex justify-content-center align-items-center vh-100">
     <div class="container">
         <h1 class="dashboard-title text-center mb-4">Update Property</h1>
@@ -143,6 +142,8 @@
 </div>
 
 @code {
+
+
     private List<Services.PropertyReadDto>? properties;
     private List<Services.RealtorReadDto>? realtors;
     private List<Services.CityReadDto>? cities;
@@ -152,13 +153,50 @@
     private Services.PropertyCreateDto? selectedProperty;
     private string imageUrls = string.Empty;
 
-    protected override async Task OnInitializedAsync()
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        properties = await PropertyService.GetAllPropertiesAsync();
-        realtors = await RealtorService.GetAllRealtorsAsync();
-        // cities = await CityService.GetAllCitiesAsync();
-        categories = await CategoryService.GetAllCategoryAsync();
-    }
+        if (firstRender)
+        {
+            try
+            {
+                var propertyResponse = await PropertyService.GetAllPropertiesAsync();
+                var cityResponse = await CityService.GetAllCities();
+                var realtorResponse = await RealtorService.GetAllRealtorsAsync();
+                var categoryResponse = await CategoryService.GetAllCategories();
+
+                //Check if the property response was successful
+                properties = propertyResponse.Success ? propertyResponse.Data : new List<Services.PropertyReadDto>();
+                if (!propertyResponse.Success)
+                {
+                    Debug.WriteLine($"Error fetching realtors: {propertyResponse}");
+                }
+                //Check if the realtor response was successful
+                realtors = realtorResponse.Success ? realtorResponse.Data : new List<Services.RealtorReadDto>();
+                if (!realtorResponse.Success)
+                {
+                    Debug.WriteLine($"Error fetching realtors: {realtorResponse}");
+                }
+                // Check if the category response was successful
+                categories = categoryResponse.Success ? categoryResponse.Data : new List<Services.CategoryReadDto>();
+                if (!categoryResponse.Success)
+                {
+                    Debug.WriteLine($"Error fetching categories: {categoryResponse}");
+                }
+                // Check if the city response was successful
+                cities = cityResponse.Success ? cityResponse.Data : new List<Services.CityReadDto>();
+                if (!cityResponse.Success)
+                {
+                    Debug.WriteLine($"Error fetching cities: {cityResponse}");
+                }
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error fetching data: {ex.Message}");
+            }
+        }
+	}
 
     private async Task LoadPropertyDetails()
     {
@@ -169,22 +207,22 @@
             {
                 selectedProperty = new Services.PropertyCreateDto
                     {
-                        Address = property.Address,
-                        Price = property.Price,
-                        MonthlyFee = property.MonthlyFee,
-                        YearlyFee = property.YearlyFee,
-                        LivingAreaKvm = property.LivingAreaKvm,
-                        AncillaryAreaKvm = property.AncillaryAreaKvm,
-                        LandAreaKvm = property.LandAreaKvm,
-                        Description = property.Description,
-                        NumberOfRooms = property.NumberOfRooms,
-                        BuildYear = property.BuildYear,
-                        ImageUrls = property.ImageUrls,
-                        RealtorId = property.RealtorId,
-                        CityId = property.CityId,
-                        CategoryId = property.CategoryId
+                        Address = property.Data.Address,
+                        Price = property.Data.Price,
+                        MonthlyFee = property.Data.MonthlyFee,
+                        YearlyFee = property.Data.YearlyFee,
+                        LivingAreaKvm = property.Data.LivingAreaKvm,
+                        AncillaryAreaKvm = property.Data.AncillaryAreaKvm,
+                        LandAreaKvm = property.Data.LandAreaKvm,
+                        Description = property.Data.Description,
+                        NumberOfRooms = property.Data.NumberOfRooms,
+                        BuildYear = property.Data.BuildYear,
+                        ImageUrls = property.Data.ImageUrls,
+                        RealtorId = property.Data.RealtorId,
+                        CityId = property.Data.CityId,
+                        CategoryId = property.Data.CategoryId
                     };
-                imageUrls = string.Join(", ", property.ImageUrls);
+                imageUrls = string.Join(", ", property.Data.ImageUrls);
             }
         }
     }

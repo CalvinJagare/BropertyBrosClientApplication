@@ -11,7 +11,7 @@
                 <div class="col-md-6 col-lg-4">
                     <div class="card shadow-sm">
                         <div class="card-header gradient-header text-white">
-                            @card.Header
+                            @((MarkupString)card.Header)
                         </div>
                         <div class="card-body">
                             <ul class="list-group list-group-flush">
@@ -35,7 +35,7 @@
     {
         new Card
         {
-            Header = "Manage Properties",
+            Header = "<i class='fa-solid fa-house-user'></i> Manage Properties",
             Options = new List<Option>
             {
                 new Option { Text = "Propertie Overview", Href = "/propertyoverview" },
@@ -46,7 +46,7 @@
         },
         new Card
         {
-            Header = "Manage Realtors",
+            Header = "<i class='fa-solid fa-person'></i> Manage Realtors",
             Options = new List<Option>
             {
                 new Option { Text = "Realtors Overview", Href = "/realtoroverview" },
@@ -57,7 +57,7 @@
         },
         new Card
         {
-            Header = "Manage Realtor Firms",
+            Header = "<i class='fa-solid fa-briefcase'></i> Manage Realtor Firms",
             Options = new List<Option>
             {
                 new Option { Text = "Realtors Firm Overview", Href = "/realtorfirmoverview" },
@@ -68,7 +68,7 @@
         },
         new Card
         {
-            Header = "Manage Categories",
+            Header = "<i class='fa-solid fa-list'></i> Manage Categories",
             Options = new List<Option>
             {
                 new Option { Text = "Categories Overview", Href = "/categoryoverview" },
@@ -79,7 +79,7 @@
         },
         new Card
         {
-            Header = "Manage Cities",
+            Header = "<i class='fa-solid fa-city'></i> Manage Cities",
             Options = new List<Option>
             {
                 new Option { Text = "City Overview", Href = "/cityoverview" },

@@ -1,11 +1,10 @@
 ﻿@page "/propertyoverview"
-@using BropertyBrosClientApplication.DTO.Properties
-@using BropertyBrosClientApplication.Services
-@inject PropertyService PropertyService
+@inject IPropertyService PropertyService
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
-
+@* Author: Daniel *@
+@* Co-Author: Calvin *@
 <div class="d-flex justify-content-center align-items-center vh-100">
     <div class="container">
         <h1 class="dashboard-title text-center mb-4">Properties Overview</h1>
@@ -46,11 +45,20 @@
 
 @code {
     private List<Services.PropertyReadDto>? properties;
+    private ApiResponse<List<Services.PropertyReadDto>>? apiResponse = new ApiResponse<List<Services.PropertyReadDto>> { Success = true };
 
-    protected override async Task OnInitializedAsync()
-    {
-        properties = await PropertyService.GetAllPropertiesAsync();
-    }
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			apiResponse = await PropertyService.GetAllPropertiesAsync();
+			if (apiResponse.Success)
+			{
+				properties = apiResponse.Data;
+				StateHasChanged();
+			}
+		}
+	}
 
     private void GoBack()
     {

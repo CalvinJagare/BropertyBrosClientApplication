@@ -1,7 +1,8 @@
 ﻿@page "/deleterealtorfirm"
 @using BropertyBrosClientApplication.DTO.RealtorFirm
 @using BropertyBrosClientApplication.Services
-@inject RealtorFirmService RealtorFirmService
+@using BropertyBrosClientApplication.Services.RealtorFirm
+@inject IRealtorFirmService RealtorFirmService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
@@ -53,9 +54,21 @@
     private int? selectedFirmId;
     private string? deleteMessage;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        realtorFirms = await RealtorFirmService.GetAllRealtorFirmsAsync();
+        if (firstRender)
+        {
+            var response = await RealtorFirmService.GetAllRealtorFirms();
+            if (response.Success)
+            {
+                realtorFirms = response.Data;
+            }
+            else
+            {
+                deleteMessage = response.Message ?? "Failed to load realtor firms.";
+            }
+            StateHasChanged();
+        }
     }
 
     private async Task ConfirmDelete()
@@ -68,10 +81,21 @@
                 var confirm = await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete the firm '{firm.CompanyName}'?");
                 if (confirm)
                 {
-                    await RealtorFirmService.DeleteRealtorFirmAsync(selectedFirmId.Value);
-                    deleteMessage = $"Firm '{firm.CompanyName}' has been deleted.";
-                    realtorFirms = await RealtorFirmService.GetAllRealtorFirmsAsync();
-                    selectedFirmId = null;
+                    var response = await RealtorFirmService.DeleteRealtorFirm(selectedFirmId.Value);
+                    if (response.Success)
+                    {
+                        deleteMessage = $"Firm '{firm.CompanyName}' has been deleted.";
+                        var refreshResponse = await RealtorFirmService.GetAllRealtorFirms();
+                        if (refreshResponse.Success)
+                        {
+                            realtorFirms = refreshResponse.Data;
+                        }
+                        selectedFirmId = null;
+                    }
+                    else
+                    {
+                        deleteMessage = response.Message ?? "Failed to delete the realtor firm.";
+                    }
                 }
             }
         }

@@ -1,9 +1,6 @@
 ﻿@page "/createrealtor"
-@using BropertyBrosClientApplication.DTO.Realtor
-@using BropertyBrosClientApplication.DTO.RealtorFirm
-@using BropertyBrosClientApplication.Services
-@inject RealtorService RealtorService
-@inject RealtorFirmService RealtorFirmService
+@inject IRealtorService realtorService
+@* @inject RealtorFirmService RealtorFirmService *@
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
@@ -42,7 +39,9 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="realtorFirmDropdown" class="form-label">Realtor Firm</label>
+                    <label for="realtorFirmId" class="form-label">Realtor Firm Id</label>
+                    <InputNumber id="realtorFirmId" class="form-control" @bind-Value="newRealtor.RealtorFirmId" />
+                    @* <label for="realtorFirmDropdown" class="form-label">Realtor Firm</label>
                     <select id="realtorFirmDropdown" class="form-select" @bind="newRealtor.RealtorFirmId">
                         <option value="">-- Select a Realtor Firm --</option>
                         @if (realtorFirms != null)
@@ -52,7 +51,7 @@
                                 <option value="@firm.Id">@firm.CompanyName</option>
                             }
                         }
-                    </select>
+                    </select> *@
                 </div>
 
                 <div class="text-center">
@@ -67,17 +66,17 @@
 </div>
 
 @code {
-    private Services.RealtorCreateDto newRealtor = new();
-    private List<Services.RealtorFirmReadDto>? realtorFirms;
+    private RealtorCreateDto newRealtor = new();
+    private List<RealtorFirmReadDto>? realtorFirms;
 
-    protected override async Task OnInitializedAsync()
-    {
-        realtorFirms = await RealtorFirmService.GetAllRealtorFirmsAsync();
-    }
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     // realtorFirms = await RealtorFirmService.GetAllRealtorFirmsAsync();
+    // }
 
     private async Task HandleValidSubmit()
     {
-        await RealtorService.CreateRealtorAsync(newRealtor);
+        await realtorService.CreateRealtorAsync(newRealtor);
         NavigationManager.NavigateTo("/realtoroverview");
     }
 

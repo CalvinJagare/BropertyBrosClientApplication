@@ -1,12 +1,11 @@
 ﻿@page "/deleteproperty"
-@using BropertyBrosClientApplication.DTO.Properties
-@using BropertyBrosClientApplication.Services
-@inject PropertyService PropertyService
+@inject IPropertyService PropertyService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 
-@*Author: Daniel*@
+@* Author: Daniel *@
+@* Co-Author: Calvin *@
 <div class="d-flex justify-content-center align-items-center vh-100">
     <div class="container">
         <h1 class="dashboard-title text-center mb-4">Delete Property</h1>
@@ -49,13 +48,22 @@
 
 @code {
     private List<Services.PropertyReadDto>? properties;
+	private ApiResponse<List<Services.PropertyReadDto>>? apiResponse = new ApiResponse<List<Services.PropertyReadDto>> { Success = true };
     private int? selectedPropertyId;
     private string? deleteMessage;
 
-    protected override async Task OnInitializedAsync()
-    {
-        properties = await PropertyService.GetAllPropertiesAsync();
-    }
+	protected override async Task OnAfterRenderAsync(bool firstRender)
+	{
+		if (firstRender)
+		{
+			apiResponse = await PropertyService.GetAllPropertiesAsync();
+			if (apiResponse.Success)
+			{
+				properties = apiResponse.Data;
+				StateHasChanged();
+			}
+		}
+	}
 
     private async Task ConfirmDelete()
     {
@@ -69,7 +77,7 @@
                 {
                     await PropertyService.DeletePropertyAsync(selectedPropertyId.Value);
                     deleteMessage = $"Property at '{property.Address}' has been deleted.";
-                    properties = await PropertyService.GetAllPropertiesAsync();
+					apiResponse = await PropertyService.GetAllPropertiesAsync();
                     selectedPropertyId = null;
                 }
             }

@@ -33,6 +33,7 @@ namespace BropertyBrosClientApplication.Services.Auth
 
         public async Task Logout()
         {
+            await localStorage.RemoveItemAsync("token");
             await ((ApiAuthStateProvider)authenticationStateProvider).LoggedOut();
         }
     }

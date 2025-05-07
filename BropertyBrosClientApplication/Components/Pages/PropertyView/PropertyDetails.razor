@@ -1,11 +1,7 @@
 ﻿@page "/propertydetails/{PropertyId:int}"
-@using BropertyBrosClientApplication.DTO.Properties
-@using BropertyBrosClientApplication.DTO.Realtor
-@using BropertyBrosClientApplication.DTO.RealtorFirm
-@using BropertyBrosClientApplication.Services
-@inject PropertyService PropertyService
-@inject RealtorService RealtorService
-@inject RealtorFirmService RealtorFirmService
+@inject IPropertyService PropertyService
+@inject IRealtorService RealtorService
+@inject IRealtorFirmService RealtorFirmService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
@@ -100,13 +96,32 @@
     private Services.RealtorReadDto? realtor;
     private int currentSlideIndex = 0;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        property = await PropertyService.GetPropertyByIdAsync(PropertyId);
-        if (property != null)
+        if (firstRender)
         {
-            realtor = await RealtorService.GetRealtorByIdAsync(property.RealtorId);
-
+            var apiResponse = await PropertyService.GetPropertyByIdAsync(PropertyId);
+            if (apiResponse.Success)
+            {
+                property = apiResponse.Data;
+                if (property?.RealtorId != null)
+                {
+                    var realtorResponse = await RealtorService.GetRealtorByIdAsync(property.RealtorId);
+                    if (realtorResponse.Success)
+                    {
+                        realtor = realtorResponse.Data;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Failed to load realtor: {realtorResponse.Message}");
+                    }
+                }
+                StateHasChanged();
+            }
+            else
+            {
+                Console.WriteLine($"Failed to load property: {apiResponse.Message}");
+            }
         }
     }
 
