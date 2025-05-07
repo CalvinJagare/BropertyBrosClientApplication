@@ -58,6 +58,7 @@ namespace BropertyBrosClientApplication
             builder.Services.AddScoped<IRealtorService, RealtorService>();
             builder.Services.AddScoped<IPropertyService, PropertyService>();
             builder.Services.AddScoped<IRealtorFirmService, RealtorFirmService>();
+            builder.Services.AddScoped<ICityService, CityService>();
 
             var app = builder.Build();
 
