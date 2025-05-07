@@ -136,5 +136,26 @@ namespace BropertyBrosClientApplication.Services.Realtor
 
             return response;
         }
+
+        public async Task<ApiResponse> RegisterRealtorAsync(RegisterRealtorDto dto)
+        {
+            ApiResponse response = new();
+
+            try
+            {
+                await GetBearerToken();
+                await client.RegisterRealtorAsync(dto);
+
+                response.Message = "Realtor has been registered";
+                response.Success = true;
+            }
+            catch (ApiException ex)
+            {
+                response.Success = false;
+                response.Message = ex.Message;
+            }
+
+            return response;
+        }
     }
 }
