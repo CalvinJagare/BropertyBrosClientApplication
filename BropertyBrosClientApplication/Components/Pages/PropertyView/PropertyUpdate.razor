@@ -6,6 +6,7 @@
 @inject CityService CityService
 @inject ICategoryService CategoryService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 
 
@@ -250,8 +251,8 @@
         }
     }
 
-    private void GoBack()
+    private async Task GoBack()
     {
-        NavigationManager.NavigateTo("/admindashboard");
+        await JSRuntime.InvokeVoidAsync("history.back");
     }
 }

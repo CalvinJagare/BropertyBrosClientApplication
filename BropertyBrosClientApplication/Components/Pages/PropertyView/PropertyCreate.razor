@@ -6,6 +6,7 @@
 @inject CityService CityService
 @inject ICategoryService CategoryService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 
 @* Author: Daniel *@
@@ -179,8 +180,8 @@
         NavigationManager.NavigateTo("/propertyoverview");
     }
 
-    private void GoBack()
+    private async Task GoBack()
     {
-        NavigationManager.NavigateTo("/admindashboard");
+        await JSRuntime.InvokeVoidAsync("history.back");
     }
 }

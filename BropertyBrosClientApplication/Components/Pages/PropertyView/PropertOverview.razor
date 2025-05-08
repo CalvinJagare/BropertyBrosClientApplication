@@ -1,6 +1,7 @@
 ﻿@page "/propertyoverview"
 @inject IPropertyService PropertyService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 
 @* Author: Daniel *@
@@ -60,8 +61,8 @@
 		}
 	}
 
-    private void GoBack()
+    private async Task GoBack()
     {
-        NavigationManager.NavigateTo("/admindashboard");
+        await JSRuntime.InvokeVoidAsync("history.back");
     }
 }

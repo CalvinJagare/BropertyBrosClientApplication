@@ -1,6 +1,7 @@
 ﻿@page "/updaterealtor"
 @inject IRealtorService realtorService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 
 @* Author: Emil *@
@@ -121,8 +122,8 @@
         NavigationManager.NavigateTo("/realtoroverview");
     }
 
-    private void GoBack()
+    private async Task GoBack()
     {
-        NavigationManager.NavigateTo("/admindashboard");
+        await JSRuntime.InvokeVoidAsync("history.back");
     }
 }

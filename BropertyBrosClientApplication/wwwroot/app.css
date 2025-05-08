@@ -537,3 +537,13 @@ h1:focus {
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
+.custom-card-width {
+    max-width: 400px; 
+    width: 100%; 
+}
+
+.firm-logo {
+    max-width: 150px; 
+    height: auto;
+}
