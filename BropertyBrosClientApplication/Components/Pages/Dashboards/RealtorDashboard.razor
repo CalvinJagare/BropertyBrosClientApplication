@@ -24,22 +24,21 @@
 }
 
 <div class="d-flex justify-content-center align-items-center vh-100">
-    <div class="card shadow-lg p-4 w-75">
-        <div class="row">
-            <div class="col-md-4 text-center">
-                <img src="@realtor?.ProfileUrl" alt="Profile Picture" class="img-thumbnail profile-picture mb-3" />
-                <h3>@($"{realtor?.FirstName} {realtor?.LastName}")</h3>
-                <p><strong>Email:</strong> <a href="mailto:@realtor?.Email">@realtor?.Email</a></p>
-                <p><strong>Phone:</strong> @realtor?.PhoneNumber</p>
-                @if (!string.IsNullOrEmpty(realtor?.LogoUrl))
-                {
-                    <div class="mt-4">
-                        <img src="@realtor.LogoUrl" alt="Firm Logo" class="img-thumbnail firm-logo" />
-                        <p class="mt-2"><strong>@realtor.CompanyName</strong></p>
-                    </div>
-                }
-            </div>
-
+    <div class="card shadow-lg p-4 w-100 d-flex flex-row">
+        <div class="box col-md-4 text-center realtor-dashboard-profile me-4">
+            <img src="@realtor?.ProfileUrl" alt="Profile Picture" class="profile-picture mb-3" />
+            <h3>@($"{realtor?.FirstName} {realtor?.LastName}")</h3>
+            <p><strong>Email:</strong> <a href="mailto:@realtor?.Email">@realtor?.Email</a></p>
+            <p><strong>Phone:</strong> @realtor?.PhoneNumber</p>
+            @if (!string.IsNullOrEmpty(realtor?.LogoUrl))
+            {
+                <div class="mt-4">
+                    <img src="@realtor.LogoUrl" alt="Firm Logo" class="img-thumbnail firm-logo" />
+                    <p class="mt-2"><strong>@realtor.CompanyName</strong></p>
+                </div>
+            }
+        </div>
+      
             <div class="col-md-8">
                 <h4 class="text-center mb-4">Dashboard Options</h4>
                 <div class="d-flex flex-column align-items-center gap-4">
@@ -65,10 +64,11 @@
                         }
                     }
                 </div>
-            </div>
+            }
         </div>
     </div>
 </div>
+
 
 @code {
     string? responseMessage;

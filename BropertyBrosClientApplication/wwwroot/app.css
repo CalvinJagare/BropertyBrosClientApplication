@@ -538,12 +538,32 @@ h1:focus {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
+.box {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 16px;
+    background-color: #f9f9f9;
+    flex: 1; 
+}
+
 .custom-card-width {
-    max-width: 400px; 
     width: 100%; 
 }
 
-.firm-logo {
-    max-width: 150px; 
-    height: auto;
+.card.shadow-lg {
+    margin: 0; 
+    padding: 16px; 
+}
+
+.d-flex.flex-row {
+    gap: 16px; 
+}
+
+.card.shadow-lg {
+    margin: 0 auto; 
+    padding: 16px; 
+    padding-left: 24px; 
+    padding-right: 24px; 
+    max-width: 95%; 
+    box-sizing: border-box; 
 }
