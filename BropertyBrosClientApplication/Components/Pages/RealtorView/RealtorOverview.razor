@@ -5,42 +5,53 @@
 
 @* Author: Emil *@
 
-<div class="d-flex justify-content-center align-items-center vh-100">
-    <div class="container">
-        <h1 class="dashboard-title text-center mb-4">Realtors Overview</h1>
+<AuthorizeView Roles="Admin" Context="authContext">
+    <Authorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="container">
+                <h1 class="dashboard-title text-center mb-4">Realtors Overview</h1>
 
-        @if (realtors == null)
-        {
-            <p class="text-center">Loading...</p>
-        }
-        else if (!realtors.Any())
-        {
-            <p class="text-center">No realtors found.</p>
-        }
-        else
-        {
-            <div class="row g-4">
-                @foreach (var realtor in realtors)
+                @if (realtors == null)
                 {
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card shadow-sm">
-                            <div class="card-body">
-                                <h5 class="card-title text-center">
-                                    <NavLink class="text-decoration-none text-primary" href="@($"/realtoroverview/{realtor.Id}")">
-                                        @($"{realtor.FirstName} {realtor.LastName}")
-                                    </NavLink>
-                                </h5>
+                    <p class="text-center">Loading...</p>
+                }
+                else if (!realtors.Any())
+                {
+                    <p class="text-center">No realtors found.</p>
+                }
+                else
+                {
+                    <div class="row g-4">
+                        @foreach (var realtor in realtors)
+                        {
+                            <div class="col-md-6 col-lg-4">
+                                <div class="card shadow-sm">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-center">
+                                            <NavLink class="text-decoration-none text-primary" href="@($"/realtoroverview/{realtor.Id}")">
+                                                @($"{realtor.FirstName} {realtor.LastName}")
+                                            </NavLink>
+                                        </h5>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                        }
                     </div>
                 }
+                <div class="text-center mt-3">
+                    <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+                </div>
             </div>
-        }
-        <div class="text-center mt-3">
-            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
         </div>
-    </div>
-</div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="text-center alert alert-danger">
+                <h3>Admins only</h3>
+            </div>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     private List<RealtorReadDto>? realtors;

@@ -4,44 +4,46 @@
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
-<div class="d-flex justify-content-center align-items-center vh-100">
-    <div class="container">
-        <h1 class="dashboard-title text-center mb-4">Create Realtor</h1>
+<AuthorizeView Roles="Admin" Context="authContext">
+    <Authorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="container">
+                <h1 class="dashboard-title text-center mb-4">Create Realtor</h1>
 
-        <div class="card shadow-sm p-4 gradient-card">
-            <EditForm Model="newRealtor" OnValidSubmit="HandleValidSubmit">
-                <DataAnnotationsValidator />
-                <ValidationSummary />
+                <div class="card shadow-sm p-4 gradient-card">
+                    <EditForm Model="newRealtor" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
 
-                <div class="mb-3">
-                    <label for="firstName" class="form-label">First Name</label>
-                    <InputText id="firstName" class="form-control" @bind-Value="newRealtor.FirstName" />
-                </div>
+                        <div class="mb-3">
+                            <label for="firstName" class="form-label">First Name</label>
+                            <InputText id="firstName" class="form-control" @bind-Value="newRealtor.FirstName" />
+                        </div>
 
-                <div class="mb-3">
-                    <label for="lastName" class="form-label">Last Name</label>
-                    <InputText id="lastName" class="form-control" @bind-Value="newRealtor.LastName" />
-                </div>
+                        <div class="mb-3">
+                            <label for="lastName" class="form-label">Last Name</label>
+                            <InputText id="lastName" class="form-control" @bind-Value="newRealtor.LastName" />
+                        </div>
 
-                <div class="mb-3">
-                    <label for="phoneNumber" class="form-label">Phone Number</label>
-                    <InputText id="phoneNumber" class="form-control" @bind-Value="newRealtor.PhoneNumber" />
-                </div>
+                        <div class="mb-3">
+                            <label for="phoneNumber" class="form-label">Phone Number</label>
+                            <InputText id="phoneNumber" class="form-control" @bind-Value="newRealtor.PhoneNumber" />
+                        </div>
 
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
-                    <InputText id="email" class="form-control" @bind-Value="newRealtor.Email" />
-                </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <InputText id="email" class="form-control" @bind-Value="newRealtor.Email" />
+                        </div>
 
-                <div class="mb-3">
-                    <label for="profileUrl" class="form-label">Profile URL</label>
-                    <InputText id="profileUrl" class="form-control" @bind-Value="newRealtor.ProfileUrl" />
-                </div>
+                        <div class="mb-3">
+                            <label for="profileUrl" class="form-label">Profile URL</label>
+                            <InputText id="profileUrl" class="form-control" @bind-Value="newRealtor.ProfileUrl" />
+                        </div>
 
-                <div class="mb-3">
-                    <label for="realtorFirmId" class="form-label">Realtor Firm Id</label>
-                    <InputNumber id="realtorFirmId" class="form-control" @bind-Value="newRealtor.RealtorFirmId" />
-                    @* <label for="realtorFirmDropdown" class="form-label">Realtor Firm</label>
+                        <div class="mb-3">
+                            <label for="realtorFirmId" class="form-label">Realtor Firm Id</label>
+                            <InputNumber id="realtorFirmId" class="form-control" @bind-Value="newRealtor.RealtorFirmId" />
+                            @* <label for="realtorFirmDropdown" class="form-label">Realtor Firm</label>
                     <select id="realtorFirmDropdown" class="form-select" @bind="newRealtor.RealtorFirmId">
                         <option value="">-- Select a Realtor Firm --</option>
                         @if (realtorFirms != null)
@@ -52,18 +54,27 @@
                             }
                         }
                     </select> *@
-                </div>
+                        </div>
 
-                <div class="text-center">
-                    <button type="submit" class="btn btn-primary">Create</button>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Create</button>
+                        </div>
+                    </EditForm>
                 </div>
-            </EditForm>
+                <div class="text-center mt-3">
+                    <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+                </div>
+            </div>
         </div>
-        <div class="text-center mt-3">
-            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+    </Authorized>
+    <NotAuthorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="text-center alert alert-danger">
+                <h3>Admins only</h3>
+            </div>
         </div>
-    </div>
-</div>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     private RealtorCreateDto newRealtor = new();

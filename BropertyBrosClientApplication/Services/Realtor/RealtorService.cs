@@ -55,6 +55,27 @@ namespace BropertyBrosClientApplication.Services.Realtor
             return response;
         }
 
+        public async Task<ApiResponse<RealtorReadDto>> GetRealtorByUserIdAsync(string userId)
+        {
+            ApiResponse<RealtorReadDto> response = new();
+
+            try
+            {
+                await GetBearerToken();
+                RealtorReadDto data = await client.GetRealtorByUserIdAsync(userId);
+
+                response.Data = data;
+                response.Success = true;
+            }
+            catch (ApiException ex)
+            {
+                response.Success = false;
+                response.Message = ex.Message;
+            }
+
+            return response;
+        }
+
         public async Task<ApiResponse<RealtorReadDto>> CreateRealtorAsync(RealtorCreateDto dto)
         {
             ApiResponse<RealtorReadDto> response = new();

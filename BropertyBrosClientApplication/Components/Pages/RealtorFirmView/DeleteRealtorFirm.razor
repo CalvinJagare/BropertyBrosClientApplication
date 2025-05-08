@@ -8,45 +8,56 @@
 
 @* //Author: Calvin *@
 
-<div class="d-flex justify-content-center align-items-center vh-100">
-    <div class="container">
-        <h1 class="dashboard-title text-center mb-4">Delete Realtor Firm</h1>
+<AuthorizeView Roles="Admin" Context="authContext">
+    <Authorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="container">
+                <h1 class="dashboard-title text-center mb-4">Delete Realtor Firm</h1>
 
-        <div class="card shadow-sm p-4 gradient-card">
-            @if (realtorFirms == null)
-            {
-                <p class="text-center">Loading realtor firms...</p>
-            }
-            else
-            {
-                <div class="mb-3">
-                    <label for="firmDropdown" class="form-label">Select a Realtor Firm</label>
-                    <select id="firmDropdown" class="form-select" @bind="selectedFirmId">
-                        <option value="">-- Select a Realtor Firm --</option>
-                        @foreach (var firm in realtorFirms)
+                <div class="card shadow-sm p-4 gradient-card">
+                    @if (realtorFirms == null)
+                    {
+                        <p class="text-center">Loading realtor firms...</p>
+                    }
+                    else
+                    {
+                        <div class="mb-3">
+                            <label for="firmDropdown" class="form-label">Select a Realtor Firm</label>
+                            <select id="firmDropdown" class="form-select" @bind="selectedFirmId">
+                                <option value="">-- Select a Realtor Firm --</option>
+                                @foreach (var firm in realtorFirms)
+                                {
+                                    <option value="@firm.Id">@firm.CompanyName</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="text-center mb-3">
+                            <button class="btn btn-danger" @onclick="ConfirmDelete">
+                                Delete Selected Firm
+                            </button>
+                        </div>
+
+                        @if (deleteMessage != null)
                         {
-                            <option value="@firm.Id">@firm.CompanyName</option>
+                            <p class="text-danger text-center">@deleteMessage</p>
                         }
-                    </select>
+                    }
                 </div>
-
-                <div class="text-center mb-3">
-                    <button class="btn btn-danger" @onclick="ConfirmDelete">
-                        Delete Selected Firm
-                    </button>
+                <div class="text-center mt-3">
+                    <button class="btn btn-secondary" @onclick="GoBack">Back</button>
                 </div>
-
-                @if (deleteMessage != null)
-                {
-                    <p class="text-danger text-center">@deleteMessage</p>
-                }
-            }
+            </div>
         </div>
-        <div class="text-center mt-3">
-            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+    </Authorized>
+    <NotAuthorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="text-center alert alert-danger">
+                <h3>Admins only</h3>
+            </div>
         </div>
-    </div>
-</div>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     private List<Services.RealtorFirmReadDto>? realtorFirms;
