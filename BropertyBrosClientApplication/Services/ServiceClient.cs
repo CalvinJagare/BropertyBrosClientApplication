@@ -47,6 +47,17 @@ namespace BropertyBrosClientApplication.Services
 
         /// <returns>OK</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// (-----------------------------
+        /// System.Threading.Tasks.Task<AuthResponseDto> LoginAsync(LoginUserDto body);
+
+        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+        /// <returns>OK</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        ///System.Threading.Tasks.Task<AuthResponseDto> LoginAsync(LoginUserDto body, System.Threading.CancellationToken cancellationToken);
+
+        /// <returns>OK</returns>
+        /// <exception cref="ApiException">A server side error occurred.</exception>
+        /// --------------------------------)
         System.Threading.Tasks.Task<System.Collections.Generic.ICollection<CategoryReadDto>> CategoryAllAsync();
 
         /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
