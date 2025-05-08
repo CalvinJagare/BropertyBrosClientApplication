@@ -1,18 +1,17 @@
-﻿@page "/createproperty"
+﻿@page "/createproperty/{realtorId:int}"
 @using System.Diagnostics
 @using BropertyBrosClientApplication.Services.City
 @inject IPropertyService PropertyService
-@inject IRealtorService RealtorService
-@inject CityService CityService
+@inject ICityService CityService
 @inject ICategoryService CategoryService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 
 @* Author: Daniel *@
-@* Co-Author: Calvin *@
+@* Co-Author: Calvin, Emil *@
 
-<AuthorizeView Roles="Admin" Context="authContext">
+<AuthorizeView Roles="User" Context="authContext">
     <Authorized>
         <div class="d-flex justify-content-center align-items-center vh-100">
             <div class="container">
@@ -36,19 +35,6 @@
                                 <div class="mb-3">
                                     <label for="yearlyFee" class="form-label">Yearly Fee</label>
                                     <InputNumber id="yearlyFee" class="form-control" @bind-Value="newProperty.YearlyFee" />
-                                </div>
-                                <div class="mb-3">
-                                    <label for="realtorDropdown" class="form-label">Realtor</label>
-                                    <select id="realtorDropdown" class="form-select" @bind="newProperty.RealtorId">
-                                        <option value="">-- Select a Realtor --</option>
-                                        @if (realtors != null)
-                                        {
-                                            @foreach (var realtor in realtors)
-                                            {
-                                                <option value="@realtor.Id">@($"{realtor.FirstName} {realtor.LastName}")</option>
-                                            }
-                                        }
-                                    </select>
                                 </div>
 
                                 <div class="mb-3">
@@ -142,6 +128,9 @@
 
 
 @code {
+    [Parameter]
+    public int RealtorId { get; set; }
+
     private Services.PropertyCreateDto newProperty = new();
     private string imageUrls = string.Empty;
 
@@ -156,15 +145,7 @@
             try
             {
                 var cityResponse = await CityService.GetAllCities();
-                var realtorResponse = await RealtorService.GetAllRealtorsAsync();
                 var categoryResponse = await CategoryService.GetAllCategories();
-
-                //Check if the realtor response was successful
-                realtors = realtorResponse.Success ? realtorResponse.Data : new List<Services.RealtorReadDto>();
-                if (!realtorResponse.Success)
-                {
-                    Debug.WriteLine($"Error fetching realtors: {realtorResponse}");
-                }
 
                 // Check if the category response was successful
                 categories = categoryResponse.Success ? categoryResponse.Data : new List<Services.CategoryReadDto>();
@@ -189,6 +170,7 @@
 
     private async Task HandleValidSubmit()
     {
+        newProperty.RealtorId = RealtorId;
         newProperty.ImageUrls = imageUrls.Split(',').Select(url => url.Trim()).ToList();
         await PropertyService.CreatePropertyAsync(newProperty);
         NavigationManager.NavigateTo("/propertyoverview");

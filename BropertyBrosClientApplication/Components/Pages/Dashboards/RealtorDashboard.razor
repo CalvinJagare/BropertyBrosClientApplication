@@ -8,6 +8,8 @@
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
+@* Author: Arlind, Calvin, Emil *@
+
 @if (string.IsNullOrEmpty(errorMessage) == false)
 {
     <div class="alert alert-danger">
@@ -134,8 +136,7 @@
                                 Header = "<i class='fa-solid fa-person'></i> Manage My Info",
                                 Options = new List<Option>
                                 {
-                                    new Option { Text = "View Profile", Href = $"/realtoroverview/{realtor.Id}" },
-                                    new Option { Text = "Update Profile", Href = $"/updaterealtor/{realtor.Id}" },
+                                    new Option { Text = "My Profile", Href = $"/realtordetails/{realtor.Id}" },
                                     new Option { Text = "Change Password", Href = "/" }
                                 }
                             }
