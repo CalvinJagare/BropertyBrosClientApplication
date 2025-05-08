@@ -173,7 +173,7 @@
         newProperty.RealtorId = RealtorId;
         newProperty.ImageUrls = imageUrls.Split(',').Select(url => url.Trim()).ToList();
         await PropertyService.CreatePropertyAsync(newProperty);
-        NavigationManager.NavigateTo("/propertyoverview/{realtor.Id}");
+        await JSRuntime.InvokeVoidAsync("history.back");
     }
 
     private async Task GoBack()
