@@ -1,13 +1,13 @@
-﻿@page "/deleteproperty"
+﻿@page "/deleteproperty/{realtorId:int}"
 @inject IPropertyService PropertyService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 
 @* Author: Daniel *@
-@* Co-Author: Calvin *@
+@* Co-Author: Calvin, Emil *@
 
-<AuthorizeView Roles="Admin" Context="authContext">
+<AuthorizeView Roles="User" Context="authContext">
     <Authorized>
         <div class="d-flex justify-content-center align-items-center vh-100">
             <div class="container">
@@ -59,6 +59,9 @@
 </AuthorizeView>
 
 @code {
+    [Parameter]
+    public int RealtorId { get; set; }
+
     private List<Services.PropertyReadDto>? properties;
     private ApiResponse<List<Services.PropertyReadDto>>? apiResponse = new ApiResponse<List<Services.PropertyReadDto>> { Success = true };
     private int? selectedPropertyId;
@@ -68,7 +71,7 @@
     {
         if (firstRender)
         {
-            apiResponse = await PropertyService.GetAllPropertiesAsync();
+            apiResponse = await PropertyService.GetPropertiesByRealtorAsync(RealtorId);
             if (apiResponse.Success)
             {
                 properties = apiResponse.Data;

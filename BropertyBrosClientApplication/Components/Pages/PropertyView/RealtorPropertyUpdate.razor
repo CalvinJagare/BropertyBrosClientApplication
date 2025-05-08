@@ -1,4 +1,4 @@
-﻿@page "/updateproperty"
+﻿@page "/updateproperty/{realtorId:int}"
 @using System.Diagnostics
 @using BropertyBrosClientApplication.Services.City
 @inject IPropertyService PropertyService
@@ -11,9 +11,9 @@
 
 
 @* Author: Daniel *@
-@* Co-Author: Calvin *@
+@* Co-Author: Calvin, Emil *@
 
-<AuthorizeView Roles="Admin" Context="authContext">
+<AuthorizeView Roles="User" Context="authContext">
     <Authorized>
         <div class="d-flex justify-content-center align-items-center vh-100">
             <div class="container">
@@ -62,19 +62,6 @@
                                         <div class="mb-3">
                                             <label for="yearlyFee" class="form-label">Yearly Fee</label>
                                             <InputNumber id="yearlyFee" class="form-control" @bind-Value="selectedProperty.YearlyFee" />
-                                        </div>
-                                        <div class="mb-3">
-                                            <label for="realtorDropdown" class="form-label">Realtor</label>
-                                            <select id="realtorDropdown" class="form-select" @bind="selectedProperty.RealtorId">
-                                                <option value="">-- Select a Realtor --</option>
-                                                @if (realtors != null)
-                                                {
-                                                    @foreach (var realtor in realtors)
-                                                    {
-                                                        <option value="@realtor.Id">@($"{realtor.FirstName} {realtor.LastName}")</option>
-                                                    }
-                                                }
-                                            </select>
                                         </div>
                                         <div class="mb-3">
                                             <label for="cityDropdown" class="form-label">City</label>
@@ -168,10 +155,10 @@
 </AuthorizeView>
 
 @code {
-
+    [Parameter]
+    public int RealtorId { get; set; }
 
     private List<Services.PropertyReadDto>? properties;
-    private List<Services.RealtorReadDto>? realtors;
     private List<Services.CityReadDto>? cities;
     private List<Services.CategoryReadDto>? categories;
 
@@ -186,9 +173,8 @@
         {
             try
             {
-                var propertyResponse = await PropertyService.GetAllPropertiesAsync();
+                var propertyResponse = await PropertyService.GetPropertiesByRealtorAsync(RealtorId);
                 var cityResponse = await CityService.GetAllCities();
-                var realtorResponse = await RealtorService.GetAllRealtorsAsync();
                 var categoryResponse = await CategoryService.GetAllCategories();
 
                 //Check if the property response was successful
@@ -196,12 +182,6 @@
                 if (!propertyResponse.Success)
                 {
                     Debug.WriteLine($"Error fetching realtors: {propertyResponse}");
-                }
-                //Check if the realtor response was successful
-                realtors = realtorResponse.Success ? realtorResponse.Data : new List<Services.RealtorReadDto>();
-                if (!realtorResponse.Success)
-                {
-                    Debug.WriteLine($"Error fetching realtors: {realtorResponse}");
                 }
                 // Check if the category response was successful
                 categories = categoryResponse.Success ? categoryResponse.Data : new List<Services.CategoryReadDto>();
@@ -224,31 +204,32 @@
         }
     }
 
-    private async Task LoadPropertyDetails()
+    private void LoadPropertyDetails()
     {
         if (selectedPropertyId.HasValue)
         {
-            var property = await PropertyService.GetPropertyByIdAsync(selectedPropertyId.Value);
+            var property = properties.FirstOrDefault(x => x.Id == selectedPropertyId);
+
             if (property != null)
             {
                 selectedProperty = new Services.PropertyCreateDto
                     {
-                        Address = property.Data.Address,
-                        Price = property.Data.Price,
-                        MonthlyFee = property.Data.MonthlyFee,
-                        YearlyFee = property.Data.YearlyFee,
-                        LivingAreaKvm = property.Data.LivingAreaKvm,
-                        AncillaryAreaKvm = property.Data.AncillaryAreaKvm,
-                        LandAreaKvm = property.Data.LandAreaKvm,
-                        Description = property.Data.Description,
-                        NumberOfRooms = property.Data.NumberOfRooms,
-                        BuildYear = property.Data.BuildYear,
-                        ImageUrls = property.Data.ImageUrls,
-                        RealtorId = property.Data.RealtorId,
-                        CityId = property.Data.CityId,
-                        CategoryId = property.Data.CategoryId
+                        Address = property.Address,
+                        Price = property.Price,
+                        MonthlyFee = property.MonthlyFee,
+                        YearlyFee = property.YearlyFee,
+                        LivingAreaKvm = property.LivingAreaKvm,
+                        AncillaryAreaKvm = property.AncillaryAreaKvm,
+                        LandAreaKvm = property.LandAreaKvm,
+                        Description = property.Description,
+                        NumberOfRooms = property.NumberOfRooms,
+                        BuildYear = property.BuildYear,
+                        ImageUrls = property.ImageUrls,
+                        RealtorId = property.RealtorId,
+                        CityId = property.CityId,
+                        CategoryId = property.CategoryId
                     };
-                imageUrls = string.Join(", ", property.Data.ImageUrls);
+                imageUrls = string.Join(", ", property.ImageUrls);
             }
         }
     }
