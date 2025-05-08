@@ -1,0 +1,15 @@
+﻿@using BropertyBrosClientApplication.Providers
+@inject AuthenticationStateProvider authStateProvider
+
+@code {
+    bool stateReady = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !stateReady)
+        {
+            await ((ApiAuthStateProvider)authStateProvider).GetAuthenticationStateAsync();
+            stateReady = true;
+        }
+    }
+}
