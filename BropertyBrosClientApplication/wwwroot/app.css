@@ -543,27 +543,27 @@ h1:focus {
     border-radius: 8px;
     padding: 16px;
     background-color: #f9f9f9;
-    flex: 1; /* Allow the box to take up available space */
+    flex: 1; 
 }
 
 .custom-card-width {
-    width: 100%; /* Ensure cards take up full width of their container */
+    width: 100%; 
 }
 
 .card.shadow-lg {
-    margin: 0; /* Remove any default margins */
-    padding: 16px; /* Add consistent padding */
+    margin: 0; 
+    padding: 16px; 
 }
 
 .d-flex.flex-row {
-    gap: 16px; /* Add spacing between the personal details and cards */
+    gap: 16px; 
 }
 
 .card.shadow-lg {
-    margin: 0 auto; /* Center the card */
-    padding: 16px; /* Existing padding */
-    padding-left: 24px; /* Add slight padding to the left */
-    padding-right: 24px; /* Add slight padding to the right */
-    max-width: 95%; /* Ensure the card doesn't take up the full width */
-    box-sizing: border-box; /* Ensure padding doesn't affect the width */
+    margin: 0 auto; 
+    padding: 16px; 
+    padding-left: 24px; 
+    padding-right: 24px; 
+    max-width: 95%; 
+    box-sizing: border-box; 
 }
