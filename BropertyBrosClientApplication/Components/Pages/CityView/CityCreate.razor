@@ -7,30 +7,41 @@
 
 @* Author: Arlind *@
 
-<div class="d-flex justify-content-center align-items-center vh-100">
-    <div class="container">
-        <h1 class="dashboard-title text-center mb-4">Create City</h1>
+<AuthorizeView Roles="Admin" Context="authContext">
+    <Authorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="container">
+                <h1 class="dashboard-title text-center mb-4">Create City</h1>
 
-        <div class="card shadow-sm p-4 gradient-card">
-            <EditForm Model="newCity" OnValidSubmit="HandleValidSubmit">
-                <DataAnnotationsValidator />
-                <ValidationSummary />
+                <div class="card shadow-sm p-4 gradient-card">
+                    <EditForm Model="newCity" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
 
-                <div class="mb-3">
-                    <label for="cityName" class="form-label">City Name</label>
-                    <InputText id="cityName" class="form-control" @bind-Value="newCity.CityName" />
+                        <div class="mb-3">
+                            <label for="cityName" class="form-label">City Name</label>
+                            <InputText id="cityName" class="form-control" @bind-Value="newCity.CityName" />
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Create</button>
+                        </div>
+                    </EditForm>
                 </div>
-
-                <div class="text-center">
-                    <button type="submit" class="btn btn-primary">Create</button>
+                <div class="text-center mt-3">
+                    <button class="btn btn-secondary" @onclick="GoBack">Back</button>
                 </div>
-            </EditForm>
+            </div>
         </div>
-        <div class="text-center mt-3">
-            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+    </Authorized>
+    <NotAuthorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="text-center alert alert-danger">
+                <h3>Admins only</h3>
+            </div>
         </div>
-    </div>
-</div>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     private BropertyBrosClientApplication.DTO.City.CityCreateDto newCity = new();

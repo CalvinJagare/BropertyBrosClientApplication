@@ -6,60 +6,72 @@
 
 @* Author: Daniel *@
 @* Co-Author: Calvin *@
-<div class="d-flex justify-content-center align-items-center vh-100">
-    <div class="container">
-        <h1 class="dashboard-title text-center mb-4">Properties Overview</h1>
 
-        @if (properties == null)
-        {
-            <p class="text-center">Loading...</p>
-        }
-        else if (!properties.Any())
-        {
-            <p class="text-center">No properties found.</p>
-        }
-        else
-        {
-            <div class="row g-4">
-                @foreach (var property in properties)
+<AuthorizeView Roles="Admin,User" Context="authContext">
+    <Authorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="container">
+                <h1 class="dashboard-title text-center mb-4">Properties Overview</h1>
+
+                @if (properties == null)
                 {
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card shadow-sm">
-                            <div class="card-body">
-                                <h5 class="card-title text-center">
-                                    <NavLink class="text-decoration-none text-primary" href="@($"/propertydetails/{property.Id}")">
-                                        @property.Address
-                                    </NavLink>
+                    <p class="text-center">Loading...</p>
+                }
+                else if (!properties.Any())
+                {
+                    <p class="text-center">No properties found.</p>
+                }
+                else
+                {
+                    <div class="row g-4">
+                        @foreach (var property in properties)
+                        {
+                            <div class="col-md-6 col-lg-4">
+                                <div class="card shadow-sm">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-center">
+                                            <NavLink class="text-decoration-none text-primary" href="@($"/propertydetails/{property.Id}")">
+                                                @property.Address
+                                            </NavLink>
 
-                                </h5>
+                                        </h5>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                        }
                     </div>
                 }
+                <div class="text-center mt-3">
+                    <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+                </div>
             </div>
-        }
-        <div class="text-center mt-3">
-            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
         </div>
-    </div>
-</div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="text-center alert alert-danger">
+                <h3>Admins and realtors only</h3>
+            </div>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     private List<Services.PropertyReadDto>? properties;
     private ApiResponse<List<Services.PropertyReadDto>>? apiResponse = new ApiResponse<List<Services.PropertyReadDto>> { Success = true };
 
-	protected override async Task OnAfterRenderAsync(bool firstRender)
-	{
-		if (firstRender)
-		{
-			apiResponse = await PropertyService.GetAllPropertiesAsync();
-			if (apiResponse.Success)
-			{
-				properties = apiResponse.Data;
-				StateHasChanged();
-			}
-		}
-	}
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            apiResponse = await PropertyService.GetAllPropertiesAsync();
+            if (apiResponse.Success)
+            {
+                properties = apiResponse.Data;
+                StateHasChanged();
+            }
+        }
+    }
 
     private async Task GoBack()
     {
