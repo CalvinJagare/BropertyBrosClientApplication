@@ -38,7 +38,7 @@ namespace BropertyBrosClientApplication.Providers
 
             var tokenContent = jwtSecurityToken.ReadJwtToken(savedToken);
 
-            if (tokenContent.ValidTo < DateTime.Now)
+            if (tokenContent.ValidTo < DateTime.Now.ToUniversalTime())
             {
                 return new AuthenticationState(user);
             }
