@@ -538,12 +538,32 @@ h1:focus {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.custom-card-width {
-    max-width: 400px; 
-    width: 100%; 
+.box {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 16px;
+    background-color: #f9f9f9;
+    flex: 1; /* Allow the box to take up available space */
 }
 
-.firm-logo {
-    max-width: 150px; 
-    height: auto;
+.custom-card-width {
+    width: 100%; /* Ensure cards take up full width of their container */
+}
+
+.card.shadow-lg {
+    margin: 0; /* Remove any default margins */
+    padding: 16px; /* Add consistent padding */
+}
+
+.d-flex.flex-row {
+    gap: 16px; /* Add spacing between the personal details and cards */
+}
+
+.card.shadow-lg {
+    margin: 0 auto; /* Center the card */
+    padding: 16px; /* Existing padding */
+    padding-left: 24px; /* Add slight padding to the left */
+    padding-right: 24px; /* Add slight padding to the right */
+    max-width: 95%; /* Ensure the card doesn't take up the full width */
+    box-sizing: border-box; /* Ensure padding doesn't affect the width */
 }
