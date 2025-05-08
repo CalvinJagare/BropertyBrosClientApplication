@@ -1,63 +1,89 @@
 ﻿@page "/createrealtorfirm"
-@using BropertyBrosClientApplication.DTO.RealtorFirm
 @using BropertyBrosClientApplication.Services
-@inject RealtorFirmService RealtorFirmService
+@using BropertyBrosClientApplication.Services.RealtorFirm
+@inject IRealtorFirmService RealtorFirmService
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
 @* //Author: Calvin *@
 
-<div class="d-flex justify-content-center align-items-center vh-100">
-    <div class="container">
-        <h1 class="dashboard-title text-center mb-4">Create Realtor Firm</h1>
+<AuthorizeView Roles="Admin" Context="authContext">
+    <Authorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="container">
+                <h1 class="dashboard-title text-center mb-4">Create Realtor Firm</h1>
 
-        <div class="card shadow-sm p-4">
-            <EditForm Model="newFirm" OnValidSubmit="HandleValidSubmit">
-                <DataAnnotationsValidator />
-                <ValidationSummary />
+                <div class="card shadow-sm p-4 gradient-card">
+                    <EditForm Model="newFirm" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
 
-                <div class="mb-3">
-                    <label for="companyName" class="form-label">Company Name</label>
-                    <InputText id="companyName" class="form-control" @bind-Value="newFirm.CompanyName" />
+                        <div class="mb-3">
+                            <label for="companyName" class="form-label">Company Name</label>
+                            <InputText id="companyName" class="form-control" @bind-Value="newFirm.CompanyName" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <InputTextArea id="description" class="form-control" @bind-Value="newFirm.Description" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="logoUrl" class="form-label">Logo URL</label>
+                            <InputText id="logoUrl" class="form-control" @bind-Value="newFirm.LogoUrl" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="websiteUrl" class="form-label">Website URL</label>
+                            <InputText id="websiteUrl" class="form-control" @bind-Value="newFirm.WebsiteUrl" />
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Create</button>
+                        </div>
+                    </EditForm>
                 </div>
-
-                <div class="mb-3">
-                    <label for="description" class="form-label">Description</label>
-                    <InputTextArea id="description" class="form-control" @bind-Value="newFirm.Description" />
+                <div class="text-center mt-3">
+                    <button class="btn btn-secondary" @onclick="GoBack">Back</button>
                 </div>
-
-                <div class="mb-3">
-                    <label for="logoUrl" class="form-label">Logo URL</label>
-                    <InputText id="logoUrl" class="form-control" @bind-Value="newFirm.LogoUrl" />
-                </div>
-
-                <div class="mb-3">
-                    <label for="websiteUrl" class="form-label">Website URL</label>
-                    <InputText id="websiteUrl" class="form-control" @bind-Value="newFirm.WebsiteUrl" />
-                </div>
-
-                <div class="text-center">
-                    <button type="submit" class="btn btn-primary">Create</button>
-                </div>
-            </EditForm>
+            </div>
         </div>
-        <div class="text-center mt-3">
-            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+    </Authorized>
+    <NotAuthorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="text-center alert alert-danger">
+                <h3>Admins only</h3>
+            </div>
         </div>
-    </div>
-</div>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
-    private RealtorFirmCreateDto newFirm = new();
+    private Services.RealtorFirmCreateDto newFirm = new();
+    private string? errorMessage;
 
     private async Task HandleValidSubmit()
     {
-        await RealtorFirmService.CreateRealtorFirmAsync(newFirm);
-        NavigationManager.NavigateTo("/realtorfirmoverview");
+        errorMessage = null;
+
+        var response = await RealtorFirmService.CreateRealtorFirm(newFirm);
+
+        if (response.Success)
+        {
+            NavigationManager.NavigateTo("/realtorfirmoverview");
+        }
+        else
+        {
+            errorMessage = response.Message ?? "An error occurred while creating the realtor firm.";
+        }
     }
 
     private void GoBack()
     {
         NavigationManager.NavigateTo("/admindashboard");
+    }
+    private void Created()
+    {
+        NavigationManager.NavigateTo("/realtorfirmoverview");
     }
 }

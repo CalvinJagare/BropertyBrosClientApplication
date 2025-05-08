@@ -1,0 +1,183 @@
+﻿@page "/createproperty/{realtorId:int}"
+@using System.Diagnostics
+@using BropertyBrosClientApplication.Services.City
+@inject IPropertyService PropertyService
+@inject ICityService CityService
+@inject ICategoryService CategoryService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+
+@* Author: Daniel *@
+@* Co-Author: Calvin, Emil *@
+
+<AuthorizeView Roles="User" Context="authContext">
+    <Authorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="container">
+                <h1 class="dashboard-title text-center mb-4">Create Property</h1>
+
+                <div class="card shadow-sm p-4 gradient-card">
+                    <EditForm Model="newProperty" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="price" class="form-label">Price</label>
+                                    <InputNumber id="price" class="form-control" @bind-Value="newProperty.Price" />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="monthlyFee" class="form-label">Monthly Fee</label>
+                                    <InputNumber id="monthlyFee" class="form-control" @bind-Value="newProperty.MonthlyFee" />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="yearlyFee" class="form-label">Yearly Fee</label>
+                                    <InputNumber id="yearlyFee" class="form-control" @bind-Value="newProperty.YearlyFee" />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="cityDropdown" class="form-label">City</label>
+                                    <select id="cityDropdown" class="form-select" @bind="newProperty.CityId">
+                                        <option value="">-- Select a City --</option>
+                                        @if (cities != null)
+                                        {
+                                            @foreach (var city in cities)
+                                            {
+                                                <option value="@city.Id">@city.CityName</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="categoryDropdown" class="form-label">Category</label>
+                                    <select id="categoryDropdown" class="form-select" @bind="newProperty.CategoryId">
+                                        <option value="">-- Select a Category --</option>
+                                        @if (categories != null)
+                                        {
+                                            @foreach (var category in categories)
+                                            {
+                                                <option value="@category.Id">@category.CategoryName</option>
+                                            }
+                                        }
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="address" class="form-label">Address</label>
+                                    <InputText id="address" class="form-control" @bind-Value="newProperty.Address" />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="livingAreaKvm" class="form-label">Living Area (Kvm)</label>
+                                    <InputNumber id="livingAreaKvm" class="form-control" @bind-Value="newProperty.LivingAreaKvm" />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="ancillaryAreaKvm" class="form-label">Ancillary Area (Kvm)</label>
+                                    <InputNumber id="ancillaryAreaKvm" class="form-control" @bind-Value="newProperty.AncillaryAreaKvm" />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="landAreaKvm" class="form-label">Land Area (Kvm)</label>
+                                    <InputNumber id="landAreaKvm" class="form-control" @bind-Value="newProperty.LandAreaKvm" />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="numberOfRooms" class="form-label">Number of Rooms</label>
+                                    <InputNumber id="numberOfRooms" class="form-control" @bind-Value="newProperty.NumberOfRooms" />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="buildYear" class="form-label">Build Year</label>
+                                    <InputNumber id="buildYear" class="form-control" @bind-Value="newProperty.BuildYear" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Description</label>
+                                    <InputTextArea id="description" class="form-control" @bind-Value="newProperty.Description" />
+                                </div>
+                                <div class="mb-3">
+                                    <label for="imageUrls" class="form-label">Image URLs (separate all URLs with a comma)</label>
+                                    <InputText id="imageUrls" class="form-control" @bind-Value="imageUrls" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Create</button>
+                        </div>
+                    </EditForm>
+                </div>
+                <div class="text-center mt-3">
+                    <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+                </div>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="text-center alert alert-danger">
+                <h3>Admins and realtors only</h3>
+            </div>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    [Parameter]
+    public int RealtorId { get; set; }
+
+    private Services.PropertyCreateDto newProperty = new();
+    private string imageUrls = string.Empty;
+
+    private List<Services.CityReadDto>? cities;
+    private List<Services.RealtorReadDto>? realtors;
+    private List<Services.CategoryReadDto>? categories;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                var cityResponse = await CityService.GetAllCities();
+                var categoryResponse = await CategoryService.GetAllCategories();
+
+                // Check if the category response was successful
+                categories = categoryResponse.Success ? categoryResponse.Data : new List<Services.CategoryReadDto>();
+                if (!categoryResponse.Success)
+                {
+                    Debug.WriteLine($"Error fetching categories: {categoryResponse}");
+                }
+                // Check if the city response was successful
+                cities = cityResponse.Success ? cityResponse.Data : new List<Services.CityReadDto>();
+                if (!cityResponse.Success)
+                {
+                    Debug.WriteLine($"Error fetching cities: {cityResponse}");
+                }
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error fetching data: {ex.Message}");
+            }
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        newProperty.RealtorId = RealtorId;
+        newProperty.ImageUrls = imageUrls.Split(',').Select(url => url.Trim()).ToList();
+        await PropertyService.CreatePropertyAsync(newProperty);
+        await JSRuntime.InvokeVoidAsync("history.back");
+    }
+
+    private async Task GoBack()
+    {
+        await JSRuntime.InvokeVoidAsync("history.back");
+    }
+}

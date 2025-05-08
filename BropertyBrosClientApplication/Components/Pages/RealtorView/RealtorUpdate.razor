@@ -1,90 +1,110 @@
 ﻿@page "/updaterealtor"
-@using BropertyBrosClientApplication.DTO.Realtor
-@using BropertyBrosClientApplication.Services
-@inject RealtorService RealtorService
+@inject IRealtorService realtorService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 
 @* Author: Emil *@
 @* Behöver Fixa ID Intag för Firms *@
-<div class="d-flex justify-content-center align-items-center vh-100">
-    <div class="container">
-        <h1 class="dashboard-title text-center mb-4">Update Realtor</h1>
-        <div class="card shadow-sm p-4">
-            @if (realtors == null)
-            {
-                <p class="text-center">Loading realtors...</p>
-            }
-            else
-            {
-                <div class="mb-3">
-                    <label for="realtorDropdown" class="form-label">Select a Realtor</label>
-                    <select id="realtorDropdown" class="form-select" @onchange="ChangeRealtor">
-                        <option value="">-- Select a Realtor --</option>
-                        @foreach (var realtor in realtors)
-                        {
-                            <option value="@realtor.Id">@($"{realtor.FirstName} {realtor.LastName}")</option>
-                        }
-                    </select>
+
+<AuthorizeView Roles="Admin" Context="authContext">
+    <Authorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="container">
+                <h1 class="dashboard-title text-center mb-4">Update Realtor</h1>
+                <div class="card shadow-sm p-4 gradient-card">
+                    @if (realtors == null)
+                    {
+                        <p class="text-center">Loading realtors...</p>
+                    }
+                    else
+                    {
+                        <div class="mb-3">
+                            <label for="realtorDropdown" class="form-label">Select a Realtor</label>
+                            <select id="realtorDropdown" class="form-select" @onchange="ChangeRealtor">
+                                <option value="">-- Select a Realtor --</option>
+                                @foreach (var realtor in realtors)
+                                {
+                                    <option value="@realtor.Id">@($"{realtor.FirstName} {realtor.LastName}")</option>
+                                }
+                            </select>
+                        </div>
+                    }
+                    @if (realtor != null)
+                    {
+                        <EditForm Model="realtor" OnValidSubmit="HandleValidSubmit">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary />
+
+                            <div class="mb-3">
+                                <label for="firstName" class="form-label">First Name</label>
+                                <InputText id="firstName" class="form-control" @bind-Value="realtor.FirstName" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="lastName" class="form-label">Last Name</label>
+                                <InputText id="lastName" class="form-control" @bind-Value="realtor.LastName" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="phoneNumber" class="form-label">Phone Number</label>
+                                <InputText id="phoneNumber" class="form-control" @bind-Value="realtor.PhoneNumber" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <InputText id="email" class="form-control" @bind-Value="realtor.Email" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="profileUrl" class="form-label">Profile URL</label>
+                                <InputText id="profileUrl" class="form-control" @bind-Value="realtor.ProfileUrl" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label for="realtorFirmId" class="form-label">Realtor Firm ID</label>
+                                <InputNumber id="realtorFirmId" class="form-control" @bind-Value="realtor.RealtorFirmId" />
+                            </div>
+
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary">Update</button>
+                            </div>
+                        </EditForm>
+                    }
                 </div>
-            }
-            @if (realtor != null)
-            {
-                <EditForm Model="realtor" OnValidSubmit="HandleValidSubmit">
-                    <DataAnnotationsValidator />
-                    <ValidationSummary />
 
-                    <div class="mb-3">
-                        <label for="firstName" class="form-label">First Name</label>
-                        <InputText id="firstName" class="form-control" @bind-Value="realtor.FirstName" />
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="lastName" class="form-label">Last Name</label>
-                        <InputText id="lastName" class="form-control" @bind-Value="realtor.LastName" />
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="phoneNumber" class="form-label">Phone Number</label>
-                        <InputText id="phoneNumber" class="form-control" @bind-Value="realtor.PhoneNumber" />
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="email" class="form-label">Email</label>
-                        <InputText id="email" class="form-control" @bind-Value="realtor.Email" />
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="profileUrl" class="form-label">Profile URL</label>
-                        <InputText id="profileUrl" class="form-control" @bind-Value="realtor.ProfileUrl" />
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="realtorFirmId" class="form-label">Realtor Firm ID</label>
-                        <InputNumber id="realtorFirmId" class="form-control" @bind-Value="realtor.RealtorFirmId" />
-                    </div>
-
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-primary">Update</button>
-                    </div>
-                </EditForm>
-            }
+                <div class="text-center mt-3">
+                    <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+                </div>
+            </div>
         </div>
-
-        <div class="text-center mt-3">
-            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+    </Authorized>
+    <NotAuthorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="text-center alert alert-danger">
+                <h3>Admins only</h3>
+            </div>
         </div>
-    </div>
-</div>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     public int? realtorId { get; set; } = null;
     private List<RealtorReadDto>? realtors = new();
     private RealtorCreateDto? realtor;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        realtors = await RealtorService.GetAllRealtorsAsync();
+        if (firstRender)
+        {
+            var realtorsResponse = await realtorService.GetAllRealtorsAsync();
+
+            if (realtorsResponse.Success)
+            {
+                realtors = realtorsResponse.Data;
+                StateHasChanged();
+            }
+        }
     }
 
     private async Task ChangeRealtor(ChangeEventArgs e)
@@ -92,26 +112,30 @@
         if (int.TryParse((string?)e.Value, out int selectedId))
         {
             realtorId = selectedId;
-            var dto = await RealtorService.GetRealtorByIdAsync(realtorId.Value);
-            realtor = new()
-                {
-                    FirstName = dto.FirstName,
-                    LastName = dto.LastName,
-                    PhoneNumber = dto.PhoneNumber,
-                    Email = dto.Email,
-                    ProfileUrl = dto.ProfileUrl
-                };
+            var realtorResponse = await realtorService.GetRealtorByIdAsync(realtorId.Value);
+
+            if (realtorResponse.Success)
+            {
+                realtor = new()
+                    {
+                        FirstName = realtorResponse.Data.FirstName,
+                        LastName = realtorResponse.Data.LastName,
+                        PhoneNumber = realtorResponse.Data.PhoneNumber,
+                        Email = realtorResponse.Data.Email,
+                        ProfileUrl = realtorResponse.Data.ProfileUrl
+                    };
+            }
         }
     }
 
     private async Task HandleValidSubmit()
     {
-        await RealtorService.UpdateRealtorAsync(realtorId.Value, realtor);
+        await realtorService.UpdateRealtorAsync(realtorId.Value, realtor);
         NavigationManager.NavigateTo("/realtoroverview");
     }
 
-    private void GoBack()
+    private async Task GoBack()
     {
-        NavigationManager.NavigateTo("/admindashboard");
+        await JSRuntime.InvokeVoidAsync("history.back");
     }
 }

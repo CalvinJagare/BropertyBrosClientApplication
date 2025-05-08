@@ -1,55 +1,73 @@
 ﻿@page "/categoryoverview"
-@using BropertyBrosClientApplication.DTO.CategoryDto
 @using BropertyBrosClientApplication.Services
-@inject CategoryService CategoryService
+@using BropertyBrosClientApplication.Services.Category
+@inject ICategoryService CategoryService
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
-@* Author: Calvin *@
+<AuthorizeView Roles="Admin" Context="authContext">
+    <Authorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="container">
+                <h1 class="dashboard-title text-center mb-4">Categories Overview</h1>
 
-<div class="d-flex justify-content-center align-items-center vh-100">
-    <div class="container">
-        <h1 class="dashboard-title text-center mb-4">Categories Overview</h1>
-
-        @if (categories == null)
-        {
-            <p class="text-center">Loading...</p>
-        }
-        else if (!categories.Any())
-        {
-            <p class="text-center">No categories found.</p>
-        }
-        else
-        {
-            <div class="row g-4">
-                @foreach (var category in categories)
+                @if (categories == null)
                 {
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card shadow-sm">
-                            <div class="card-body">
-                                <h5 class="card-title text-center">
-                                    <NavLink class="text-decoration-none text-primary" href="/updatecategory">
-                                        @category.CategoryName
-                                    </NavLink>
-                                </h5>
+                    <p class="text-center">Loading...</p>
+                }
+                else if (!categories.Any())
+                {
+                    <p class="text-center">No categories found.</p>
+                }
+                else
+                {
+                    <div class="row g-4">
+                        @foreach (var category in categories)
+                        {
+                            <div class="col-md-6 col-lg-4">
+                                <div class="card shadow-sm">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-center">
+                                            <NavLink class="text-decoration-none text-primary" href="/updatecategory">
+                                                @category.CategoryName
+                                            </NavLink>
+                                        </h5>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                        }
                     </div>
                 }
+                <div class="text-center mt-3">
+                    <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+                </div>
             </div>
-        }
-        <div class="text-center mt-3">
-            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
         </div>
-    </div>
-</div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="text-center alert alert-danger">
+                <h3>Admins only</h3>
+            </div>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
-    private List<CategoryReadDto>? categories;
+    private List<Services.CategoryReadDto>? categories;
+    private ApiResponse<List<Services.CategoryReadDto>>? apiResponse = new ApiResponse<List<Services.CategoryReadDto>> { Success = true };
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        categories = await CategoryService.GetAllCategoryAsync();
+        if (firstRender)
+        {
+            apiResponse = await CategoryService.GetAllCategories();
+            if (apiResponse.Success)
+            {
+                categories = apiResponse.Data;
+                StateHasChanged();
+            }
+        }
     }
 
     private void GoBack()
@@ -57,4 +75,3 @@
         NavigationManager.NavigateTo("/admindashboard");
     }
 }
-

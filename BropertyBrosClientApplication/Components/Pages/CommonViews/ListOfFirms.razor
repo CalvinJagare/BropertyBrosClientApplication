@@ -1,0 +1,68 @@
+﻿@page "/listoffirms"
+@using BropertyBrosClientApplication.Services
+@using BropertyBrosClientApplication.Services.RealtorFirm
+@inject IRealtorFirmService RealtorFirmService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+@* Author: Calvin *@
+@* Co-Author: Daniel *@
+<div class="container py-5">
+    <h1 class="dashboard-title text-center mb-4">Realtor Firms We Work With</h1>
+
+    @if (apiResponse == null)
+    {
+        <p class="text-center">Loading realtor firms...</p>
+    }
+    else if (!apiResponse.Success)
+    {
+        <p class="text-center text-danger">Failed to load realtor firms. Please try again later.</p>
+    }
+    else if (realtorFirms == null || !realtorFirms.Any())
+    {
+        <p class="text-center">No realtor firms found.</p>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var firm in realtorFirms)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                @if (!string.IsNullOrEmpty(firm.LogoUrl))
+                                {
+                                    <img src="@firm.LogoUrl" alt="Firm Logo" class="img-thumbnail me-3" style="width: 75px; height: 75px; object-fit: cover;">
+                                }
+                                <h5 class="card-title mb-0">@firm.CompanyName</h5>
+                            </div>
+                            <p class="card-text">@firm.Description</p>
+                            <div class="text-center">
+                                <a href="@firm.WebsiteUrl" class="btn btn-primary" target="_blank">View Website</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private List<Services.RealtorFirmReadDto>? realtorFirms;
+    private ApiResponse<List<Services.RealtorFirmReadDto>>? apiResponse;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            apiResponse = await RealtorFirmService.GetAllRealtorFirms();
+            if (apiResponse.Success)
+            {
+                realtorFirms = apiResponse.Data;
+                StateHasChanged();
+            }
+        }
+    }
+}

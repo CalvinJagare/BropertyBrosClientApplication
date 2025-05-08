@@ -1,6 +1,9 @@
-﻿@implements IDisposable
+﻿@using BropertyBrosClientApplication.Services.Auth
+@inject IAuthService AuthService
+@implements IDisposable
 
 @inject NavigationManager NavigationManager
+@rendermode InteractiveServer
 
 <div class="top-row  navbar navbar-dark" style="height: 250px; padding: 0;">
     <div class="container-fluid" style="padding: 0;">
@@ -18,84 +21,69 @@
 
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="/" Match="NavLinkMatch.All">
-                <span class="" aria-hidden="true"></span> Home
+                <span class="" aria-hidden="true"></span><i class="fa-solid fa-house"></i>&nbsp; Home
             </NavLink>
         </div>
 
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="/propertypostings">
-                <span class="" aria-hidden="true"></span> Our Properties
+                <span class="" aria-hidden="true"></span><i class="fa-solid fa-location-dot"></i>&nbsp; Our Properties
             </NavLink>
         </div>
 
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="/realtorlist">
-                <span class="" aria-hidden="true"></span> Realtors
+                <span class="" aria-hidden="true"></span><i class="fa-solid fa-handshake"></i>&nbsp; Realtors
             </NavLink>
         </div>
 
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="/listoffirms">
-                <span class="" aria-hidden="true"></span> Realtor Firms
+                <span class="" aria-hidden="true"></span><i class="fa-solid fa-briefcase"></i>&nbsp; Realtor Firms
             </NavLink>
+
         </div>
 
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="testpagegetrealtorandproperties">
-                <span class="" aria-hidden="true"></span> (TEMP) Realtor Properties
-            </NavLink>
-        </div>
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="testpagesearchproperties">
-                <span class="" aria-hidden="true"></span> (TEMP)Search Properties
-            </NavLink>
-        </div>
  
-
-        <!--Admin Alternativ-->
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="admindashboard">
-                <span class="" aria-hidden="true"></span> Admin Dashboard
-            </NavLink>
-        </div>
-        <!--Admin Alternativ-->
-
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="auth">
-                <span class="bi bi-lock-nav-menu" aria-hidden="true"></span> Auth Required
-            </NavLink>
-        </div>       
-        <AuthorizeView>
+        <AuthorizeView Roles="Admin">
             <Authorized>
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Manage">
-                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> @context.User.Identity?.Name
+                    <NavLink class="nav-link" href="admindashboard">
+                        <span class="" aria-hidden="true"></span><i class="fa-solid fa-unlock"></i>&nbsp; Admin Dashboard
                     </NavLink>
-                </div>
-                <div class="nav-item px-3">
-                    <form action="Account/Logout" method="post">
-                        <AntiforgeryToken />
-                        <input type="hidden" name="ReturnUrl" value="@currentUrl" />
-                        <button type="submit" class="nav-link">
-                            <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
-                        </button>
-                    </form>
                 </div>
             </Authorized>
-            <NotAuthorized>
+        </AuthorizeView>
+        
+
+        <AuthorizeView Roles="User">
+            <Authorized>
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Register">
-                        <span class="bi bi-person-nav-menu" aria-hidden="true"></span> Register
+                    <NavLink class="nav-link" href="realtordashboard">
+                        <span class="" aria-hidden="true"></span><i class="fa-solid fa-screwdriver-wrench"></i>&nbsp; Realtor Dashboard
                     </NavLink>
                 </div>
+            </Authorized>
+        </AuthorizeView>
+
+        <AuthorizeView>
+            @* ta bort inlogg och BARA login, lämna logout*@
+            <NotAuthorized>                
                 <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Account/Login">
-                        <span class="bi bi-person-badge-nav-menu" aria-hidden="true"></span> Login
+                    <NavLink class="nav-link" href="/users/login">
+                        <span class="" aria-hidden="true"></span> Login
                     </NavLink>
                 </div>
             </NotAuthorized>
+            <Authorized>
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" @onclick="HandleLogout">
+                        <span class="" aria-hidden="true"></span><i class="fa-solid fa-right-from-bracket"></i>&nbsp; Logout
+                    </NavLink>
+                </div>
+            </Authorized>
         </AuthorizeView>
+       
     </nav>
 </div>
 
@@ -118,6 +106,12 @@
     public void Dispose()
     {
         NavigationManager.LocationChanged -= OnLocationChanged;
+    }
+
+    private async Task HandleLogout()
+    {
+        await AuthService.Logout();
+        NavigationManager.NavigateTo("/users/login", true);
     }
 }
 

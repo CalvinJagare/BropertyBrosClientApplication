@@ -1,0 +1,141 @@
+﻿@page "/PersonalRealtorPage/{id:int}"
+@using BropertyBrosClientApplication.Services.Property
+@using System.Diagnostics
+@inject IRealtorService RealtorService
+@inject IPropertyService PropertyService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+
+@*Author: Daniel*@
+
+<div class="container mb-5">
+    <div class="card shadow-lg p-4 gradient-card">
+        @if (realtor == null)
+        {
+            <h1 class="text-center">Realtor Details</h1>
+            <p class="text-center">Loading...</p>
+        }
+        else
+        {
+            <div class="text-center mb-4">
+                <img src="@(realtor.ProfileUrl)" alt="Realtor Profile" class="img-thumbnail profile-picture mb-3" />
+                <h2 class="realtor-name">@($"{realtor.FirstName} {realtor.LastName}")</h2>
+            </div>
+
+            <div class="row mb-4 justify-content-center">
+                <div class="col-md-8">
+                    <div class="card shadow-sm p-4 text-center personal-details-card">
+                        <h5 class="card-title">Personal Details</h5>
+                        <p class="card-text"><strong>Phone:</strong> @realtor.PhoneNumber</p>
+                        <p class="card-text"><strong>Email:</strong> <a href="mailto:@realtor.Email">@realtor.Email</a></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="card shadow-sm p-4 text-center company-details-card">
+                        <img src="@(realtor.LogoUrl)" alt="Company Logo" class="img-thumbnail company-logo mb-3 mx-auto" />
+                        <h5 class="card-title">@realtor.CompanyName</h5>
+                        <p class="card-text"><strong>Website:</strong> <a href="@realtor.WebsiteUrl" target="_blank">@realtor.WebsiteUrl</a></p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    @*Author: Calvin*@
+    <div class="container mt-5">
+        <h3 class="text-center mb-4">Properties Managed by @realtor?.FirstName</h3>
+        @if (properties == null)
+        {
+            <p class="text-center">Loading properties...</p>
+        }
+        else if (!properties.Any())
+        {
+            <p class="text-center">No properties found for this realtor.</p>
+        }
+        else
+        {
+            <div class="row g-4">
+                @foreach (var property in properties)
+                {
+                    <div class="col-12">
+                        <div class="card shadow-sm h-100">
+                            <div class="row g-0">
+                                <div class="col-md-4">
+                                    <img src="@(property.ImageUrls?.FirstOrDefault())" class="img-fluid rounded-start" alt="Property Image">
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="card-body">
+                                        <h5 class="card-title">@property.Address</h5>
+                                        <p class="card-text text-muted">@property.CityName</p>
+                                        <p class="card-text"><strong>Living Area:</strong> @property.LivingAreaKvm m²</p>
+                                        <p class="card-text"><strong>Total Costs:</strong> $@(property.Price + property.MonthlyFee + property.YearlyFee)</p>
+                                        <button class="btn btn-primary" @onclick="() => NavigateToPropertyDetails(property.Id)">Read More</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="text-center mt-4">
+        <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+    </div>
+</div>
+
+
+@code {
+
+    private RealtorReadDto? realtor;
+
+    private List<PropertyReadDto>? properties;
+
+    [Parameter]
+    public int id { get; set; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                var propertyResponse = await PropertyService.GetPropertiesByRealtorAsync(id);
+                var realtorResponse = await RealtorService.GetRealtorByIdAsync(id);
+
+
+                //Check if the property response was successful
+                properties = propertyResponse.Success ? propertyResponse.Data : new List<Services.PropertyReadDto>();
+                if (!propertyResponse.Success)
+                {
+                    Debug.WriteLine($"Error fetching realtors: {propertyResponse}");
+                }
+                //Check if the realtor response was successful
+                realtor = realtorResponse.Success ? realtorResponse.Data : new Services.RealtorReadDto();
+                if (!realtorResponse.Success)
+                {
+                    Debug.WriteLine($"Error fetching realtors: {realtorResponse}");
+                }
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error fetching data: {ex.Message}");
+            }
+        }
+    }
+
+    private async Task GoBack()
+    {
+        await JSRuntime.InvokeVoidAsync("history.back");
+    }
+
+    private void NavigateToPropertyDetails(int propertyId)
+    {
+        NavigationManager.NavigateTo($"/propertydetails/{propertyId}");
+    }
+}

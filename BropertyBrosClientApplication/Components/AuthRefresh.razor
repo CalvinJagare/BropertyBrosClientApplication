@@ -1,0 +1,19 @@
+﻿@using BropertyBrosClientApplication.Providers
+@rendermode InteractiveServer
+@inject AuthenticationStateProvider authStateProvider
+@inject NavigationManager navManager
+
+@* Author: Emil *@
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        navManager.LocationChanged += OnLocationChanged;
+    }
+
+    private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        await ((ApiAuthStateProvider)authStateProvider).GetAuthenticationStateAsync();
+        StateHasChanged();
+    }
+}

@@ -1,0 +1,135 @@
+﻿@page "/realtorlist"
+@using BropertyBrosClientApplication.Services
+@using BropertyBrosClientApplication.Services.RealtorFirm
+@inject IRealtorService realtorService
+@inject IRealtorFirmService realtorFirmService
+@rendermode InteractiveServer
+@*Author: Arlind*@
+
+<div class="realtorlist-container mb-5">
+    <h1 class="realtorlist-title text-center mb-4">Registered Realtors</h1>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Search Realtors</h5>
+            <button class="btn btn-link text-decoration-none" @onclick="ToggleSearchArea">
+                @(isSearchAreaVisible ? "Hide" : "Show") Filters
+            </button>
+        </div>
+        <div class="card-body collapse @(isSearchAreaVisible ? "show" : "")" id="searchArea">
+            <form class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">First Name</label>
+                    <input type="text" class="form-control" @bind="realtorSearchDto.FirstName" placeholder="Enter first name" />
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Last Name</label>
+                    <input type="number" class="form-control" @bind="realtorSearchDto.LastName" placeholder="Enter last name" />
+                </div>
+
+                 <div class="col-md-6">
+                    <label for="firmDropdown" class="form-label">Firm</label>
+                    <select id="firmDropdown" class="form-select" @bind="realtorSearchDto.RealtorFirmId">
+                        <option value="">-- Select Realtor firm --</option>
+                        @foreach (var r in realtorFirms)
+                        {
+                            <option value="@(r.Id)">@r.CompanyName</option>
+                        }
+                    </select>
+                </div> 
+
+                <div class="col-12 text-center">
+                    <button type="button" class="btn btn-primary" @onclick="GetRealtorsBySearch">Search</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (isLoading)
+    {
+        <p class="text-center realtorlist-loading-text">Loading realtors...</p>
+    }
+    else if (realtors?.Count > 0)
+    {
+        <div class="row g-4">
+            @foreach (var realtor in realtors)
+            {
+                <div class="col-md-6 col-lg-4">
+                    <NavLink class="text-decoration-none" href="@($"/PersonalRealtorPage/{realtor.Id}")">
+                        <div class="card shadow-sm h-100 realtorlist-card">
+                            <img src="@realtor.ProfileUrl" class="card-img-top realtorlist-img" alt="Realtor Profile" />
+                            <div class="card-body text-center">
+                                <h5 class="realtorlist-card-title">@realtor.FirstName @realtor.LastName</h5>
+                                <p class="realtorlist-card-text">
+                                    <strong>Phone:</strong> @realtor.PhoneNumber<br />
+                                    <strong>Email:</strong> <a href="mailto:@realtor.Email">@realtor.Email</a><br />
+                                </p>
+                            </div>
+                        </div>
+                    </NavLink>
+                </div>
+            }
+        </div>
+
+        <p class="text-center">@responseMessage</p>
+    }
+    else
+    {
+    }
+</div>
+
+
+@code {
+    private List<Services.RealtorReadDto>? realtors;
+    private RealtorSearchDto realtorSearchDto = new();
+    private List<RealtorFirmReadDto> realtorFirms = new();
+    private bool isLoading = true;
+
+    string? responseMessage;
+    bool isSearchAreaVisible = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            ApiResponse<List<RealtorReadDto>> realtorsResponse = await realtorService.GetAllRealtorsAsync();
+
+            realtors = realtorsResponse.Data.ToList();
+            responseMessage = realtorsResponse.Message;
+
+            ApiResponse<List<RealtorFirmReadDto>> realtorFirmsResponse = await realtorFirmService.GetAllRealtorFirms();
+
+			realtorFirms = realtorFirmsResponse.Data.ToList();
+
+            isLoading = false;
+            StateHasChanged();
+        }
+    }
+
+    private async Task GetRealtorsBySearch()
+    {
+        isLoading = true;
+
+        try
+        {
+            var response = await realtorService.GetRealtorsBySearchAsync(realtorSearchDto);
+
+            realtors = response.Data.ToList();
+
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void ToggleSearchArea()
+    {
+        isSearchAreaVisible = !isSearchAreaVisible;
+    }
+}

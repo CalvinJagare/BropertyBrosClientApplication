@@ -1,0 +1,141 @@
+﻿@page "/users/registerrealtor"
+@using BropertyBrosClientApplication.Services
+@inject IRealtorFirmService realtorFirmService
+@inject IRealtorService realtorService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+
+<div class="d-flex justify-content-center align-items-center vh-100">
+    <div class="container">
+        <h1 class="dashboard-title text-center mb-4">Register Realtor</h1>
+        <div class="card shadow-sm p-4 gradient-card">
+            @if (string.IsNullOrEmpty(errorMessage) == false)
+            {
+                <div class="alert alert-danger">
+                    <p>@errorMessage</p>
+                </div>
+            }
+            @if (string.IsNullOrEmpty(responseMessage) == false)
+            {
+                <div class="alert alert-success">
+                    <p>Realtor Added!</p>
+                </div>
+            }
+
+            <EditForm Model="RegistrationUserModel" OnValidSubmit="HandleRegistration" FormName="Register">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <InputText id="email" type="email" class="form-control" @bind-Value="RegistrationUserModel.Email" />
+                    <ValidationMessage For="@(() => RegistrationUserModel.Email)" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">Password</label>
+                    <InputText id="password" type="password" class="form-control" @bind-Value="RegistrationUserModel.Password" />
+                    <ValidationMessage For="@(() => RegistrationUserModel.Password)" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="firstname" class="form-label">First Name</label>
+                    <InputText id="firstname" type="text" class="form-control" @bind-Value="RegistrationUserModel.FirstName" />
+                    <ValidationMessage For="@(() => RegistrationUserModel.FirstName)" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="lastname" class="form-label">Last Name</label>
+                    <InputText id="lastname" type="text" class="form-control" @bind-Value="RegistrationUserModel.LastName" />
+                    <ValidationMessage For="@(() => RegistrationUserModel.LastName)" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="profileurl" class="form-label">Profile URL</label>
+                    <InputText id="profileurl" type="text" class="form-control" @bind-Value="RegistrationUserModel.ProfileUrl" />
+                    <ValidationMessage For="@(() => RegistrationUserModel.ProfileUrl)" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="phonenumber" class="form-label">Phone Number</label>
+                    <InputText id="phonenumber" type="text" class="form-control" @bind-Value="RegistrationUserModel.PhoneNumber" />
+                    <ValidationMessage For="@(() => RegistrationUserModel.PhoneNumber)" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="realtorFirm" class="form-label">Realtor Firm</label>
+                    @if (realtorFirms.Count > 0)
+                    {
+                        <select id="realtorFirm" class="form-select" @bind="@RegistrationUserModel.RealtorFirmId">
+                            @foreach (var r in realtorFirms)
+                            {
+                                <option value="@r.Id">@r.CompanyName</option>
+                            }
+                        </select>
+                    }
+                </div>
+
+                <div class="text-center">
+                    <button type="submit" class="btn btn-primary" @onclick="Created">Register</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+</div>
+
+<div class="text-center mt-3">
+    <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+</div>
+@code {
+    RegisterRealtorDto RegistrationUserModel = new RegisterRealtorDto();
+    List<RealtorFirmReadDto> realtorFirms = new();
+    string errorMessage = string.Empty;
+    string responseMessage = string.Empty;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            ApiResponse<List<RealtorFirmReadDto>> response = await realtorFirmService.GetAllRealtorFirms();
+
+            if (response.Data != null)
+            {
+                realtorFirms = response.Data;
+            }
+
+            responseMessage = response.Message;
+
+            StateHasChanged();
+        }
+    }
+
+    private async Task HandleRegistration()
+    {
+        try
+        {
+            ApiResponse response = await realtorService.RegisterRealtorAsync(RegistrationUserModel);
+
+            responseMessage = response.Message;
+
+            // NavigationManager.NavigateTo("/users/login");
+        }
+        catch (ApiException aex)
+        {
+            if (aex.StatusCode >= 200 && aex.StatusCode <= 299)
+            {
+                NavigationManager.NavigateTo("/users/login");
+            }
+            errorMessage = aex.Response;
+        }
+    }
+
+    private void Created()
+    {
+        NavigationManager.NavigateTo("/realtoroverview");
+    }
+    private async Task GoBack()
+    {
+        await JSRuntime.InvokeVoidAsync("history.back");
+    }
+}

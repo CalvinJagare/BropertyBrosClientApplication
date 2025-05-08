@@ -1,47 +1,77 @@
 ﻿@page "/createcity"
-@using BropertyBrosClientApplication.DTO.City
 @using BropertyBrosClientApplication.Services
-@inject CityService CityService
+@using BropertyBrosClientApplication.Services.City
+@inject ICityService CityService
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
 @* Author: Arlind *@
 
-<div class="d-flex justify-content-center align-items-center vh-100">
-    <div class="container">
-        <h1 class="dashboard-title text-center mb-4">Create City</h1>
+<AuthorizeView Roles="Admin" Context="authContext">
+    <Authorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="container">
+                <h1 class="dashboard-title text-center mb-4">Create City</h1>
 
-        <div class="card shadow-sm p-4">
-            <EditForm Model="newCity" OnValidSubmit="HandleValidSubmit">
-                <DataAnnotationsValidator />
-                <ValidationSummary />
+                <div class="card shadow-sm p-4 gradient-card">
+                    <EditForm Model="newCity" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
 
-                <div class="mb-3">
-                    <label for="cityName" class="form-label">City Name</label>
-                    <InputText id="cityName" class="form-control" @bind-Value="newCity.CityName" />
+                        <div class="mb-3">
+                            <label for="cityName" class="form-label">City Name</label>
+                            <InputText id="cityName" class="form-control" @bind-Value="newCity.CityName" />
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Create</button>
+                        </div>
+                    </EditForm>
                 </div>
-
-                <div class="text-center">
-                    <button type="submit" class="btn btn-primary">Create</button>
+                <div class="text-center mt-3">
+                    <button class="btn btn-secondary" @onclick="GoBack">Back</button>
                 </div>
-            </EditForm>
+            </div>
         </div>
-        <div class="text-center mt-3">
-            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+    </Authorized>
+    <NotAuthorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="text-center alert alert-danger">
+                <h3>Admins only</h3>
+            </div>
         </div>
-    </div>
-</div>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
-    private CityCreateDto newCity = new();
+    private BropertyBrosClientApplication.DTO.City.CityCreateDto newCity = new();
 
     private async Task HandleValidSubmit()
     {
-        await CityService.CreateCityAsync(newCity);
-        NavigationManager.NavigateTo("/cityoverview");
+        var serviceDto = new BropertyBrosClientApplication.Services.CityCreateDto
+            {
+                CityName = newCity.CityName
+            };
+
+        var response = await CityService.CreateCity(serviceDto);
+        if (response != null && response.Success)
+        {
+            // Vänta pyttelite för att låta Blazor slutföra submit.
+            await Task.Delay(100);
+
+            NavigationManager.NavigateTo("/cityoverview", forceLoad: true);
+        }
+
+        else
+        {
+            Console.WriteLine("Failed to create city.");
+        }
     }
+
+
     private void GoBack()
     {
         NavigationManager.NavigateTo("/admindashboard");
     }
 }
+

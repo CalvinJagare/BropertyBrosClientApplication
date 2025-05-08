@@ -1,50 +1,66 @@
 ﻿@page "/createcategory"
-@using BropertyBrosClientApplication.DTO.CategoryDto
 @using BropertyBrosClientApplication.Services
-@inject CategoryService CategoryService
+@using BropertyBrosClientApplication.Services.Category
+@inject ICategoryService CategoryService
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
 @* Author: Calvin *@
 
-<div class="d-flex justify-content-center align-items-center vh-100">
-    <div class="container">
-        <h1 class="dashboard-title text-center mb-4">Create Category</h1>
+<AuthorizeView Roles="Admin" Context="authContext">
+    <Authorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="container">
+                <h1 class="dashboard-title text-center mb-4">Create Category</h1>
 
-        <div class="card shadow-sm p-4">
-            <EditForm Model="newCategory" OnValidSubmit="HandleValidSubmit">
-                <DataAnnotationsValidator />
-                <ValidationSummary />
+                <div class="card shadow-sm p-4 gradient-card">
+                    <EditForm Model="newCategory" OnValidSubmit="HandleValidSubmit">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
 
-                <div class="mb-3">
-                    <label for="categoryName" class="form-label">Category Name</label>
-                    <InputText id="categoryName" class="form-control" @bind-Value="newCategory.CategoryName" />
+                        <div class="mb-3">
+                            <label for="categoryName" class="form-label">Category Name</label>
+                            <InputText id="categoryName" class="form-control" @bind-Value="newCategory.CategoryName" />
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary" @onclick="Created">Create</button>
+                        </div>
+                    </EditForm>
                 </div>
-
-                <div class="text-center">
-                    <button type="submit" class="btn btn-primary">Create</button>
+                <div class="text-center mt-3">
+                    <button class="btn btn-secondary" @onclick="GoBack">Back</button>
                 </div>
-            </EditForm>
+            </div>
         </div>
-        <div class="text-center mt-3">
-            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+    </Authorized>
+    <NotAuthorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="text-center alert alert-danger">
+                <h3>Admins only</h3>
+            </div>
         </div>
-    </div>   
-</div>
-
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
-    private CategoryCreateDto newCategory = new();
+    private Services.CategoryCreateDto newCategory = new();
 
     private async Task HandleValidSubmit()
     {
-        await CategoryService.CreateCategoryAsync(newCategory);
-        NavigationManager.NavigateTo("/categoryoverview");
+        var response = await CategoryService.CreateCategory(newCategory);
+        if (response.Success)
+        {
+            NavigationManager.NavigateTo("/categoryoverview");
+        }
     }
 
     private void GoBack()
     {
         NavigationManager.NavigateTo("/admindashboard");
     }
+    private void Created()
+    {
+        NavigationManager.NavigateTo("/categoryoverview");
+    }
 }
-

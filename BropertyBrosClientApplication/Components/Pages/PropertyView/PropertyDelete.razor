@@ -1,60 +1,80 @@
 ﻿@page "/deleteproperty"
-@using BropertyBrosClientApplication.DTO.Properties
-@using BropertyBrosClientApplication.Services
-@inject PropertyService PropertyService
+@inject IPropertyService PropertyService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 
-@*Author: Daniel*@
-<div class="d-flex justify-content-center align-items-center vh-100">
-    <div class="container">
-        <h1 class="dashboard-title text-center mb-4">Delete Property</h1>
+@* Author: Daniel *@
+@* Co-Author: Calvin *@
 
-        <div class="card shadow-sm p-4">
-            @if (properties == null)
-            {
-                <p class="text-center">Loading properties...</p>
-            }
-            else
-            {
-                <div class="mb-3">
-                    <label for="propertyDropdown" class="form-label">Select a Property</label>
-                    <select id="propertyDropdown" class="form-select" @bind="selectedPropertyId">
-                        <option value="">-- Select a Property --</option>
-                        @foreach (var property in properties)
+<AuthorizeView Roles="Admin" Context="authContext">
+    <Authorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="container">
+                <h1 class="dashboard-title text-center mb-4">Delete Property</h1>
+
+                <div class="card shadow-sm p-4 gradient-card">
+                    @if (properties == null)
+                    {
+                        <p class="text-center">Loading properties...</p>
+                    }
+                    else
+                    {
+                        <div class="mb-3">
+                            <label for="propertyDropdown" class="form-label">Select a Property</label>
+                            <select id="propertyDropdown" class="form-select" @bind="selectedPropertyId">
+                                <option value="">-- Select a Property --</option>
+                                @foreach (var property in properties)
+                                {
+                                    <option value="@property.Id">@property.Address</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="text-center mb-3">
+                            <button class="btn btn-danger" @onclick="ConfirmDelete">
+                                Delete Selected Property
+                            </button>
+                        </div>
+
+                        @if (deleteMessage != null)
                         {
-                            <option value="@property.Id">@property.Address</option>
+                            <p class="text-danger text-center">@deleteMessage</p>
                         }
-                    </select>
+                    }
                 </div>
-
-                <div class="text-center mb-3">
-                    <button class="btn btn-danger" @onclick="ConfirmDelete">
-                        Delete Selected Property
-                    </button>
+                <div class="text-center mt-3">
+                    <button class="btn btn-secondary" @onclick="GoBack">Back</button>
                 </div>
-
-                @if (deleteMessage != null)
-                {
-                    <p class="text-danger text-center">@deleteMessage</p>
-                }
-            }
+            </div>
         </div>
-        <div class="text-center mt-3">
-            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+    </Authorized>
+    <NotAuthorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="text-center alert alert-danger">
+                <h3>Admins and realtors only</h3>
+            </div>
         </div>
-    </div>
-</div>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
-    private List<PropertyReadDto>? properties;
+    private List<Services.PropertyReadDto>? properties;
+    private ApiResponse<List<Services.PropertyReadDto>>? apiResponse = new ApiResponse<List<Services.PropertyReadDto>> { Success = true };
     private int? selectedPropertyId;
     private string? deleteMessage;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        properties = await PropertyService.GetAllPropertiesAsync();
+        if (firstRender)
+        {
+            apiResponse = await PropertyService.GetAllPropertiesAsync();
+            if (apiResponse.Success)
+            {
+                properties = apiResponse.Data;
+                StateHasChanged();
+            }
+        }
     }
 
     private async Task ConfirmDelete()
@@ -69,15 +89,15 @@
                 {
                     await PropertyService.DeletePropertyAsync(selectedPropertyId.Value);
                     deleteMessage = $"Property at '{property.Address}' has been deleted.";
-                    properties = await PropertyService.GetAllPropertiesAsync();
+                    apiResponse = await PropertyService.GetAllPropertiesAsync();
                     selectedPropertyId = null;
                 }
             }
         }
     }
 
-    private void GoBack()
+    private async Task GoBack()
     {
-        NavigationManager.NavigateTo("/admindashboard");
+        await JSRuntime.InvokeVoidAsync("history.back");
     }
 }

@@ -1,0 +1,106 @@
+﻿@page "/deleteproperty/{realtorId:int}"
+@inject IPropertyService PropertyService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@rendermode InteractiveServer
+
+@* Author: Daniel *@
+@* Co-Author: Calvin, Emil *@
+
+<AuthorizeView Roles="User" Context="authContext">
+    <Authorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="container">
+                <h1 class="dashboard-title text-center mb-4">Delete Property</h1>
+
+                <div class="card shadow-sm p-4 gradient-card">
+                    @if (properties == null)
+                    {
+                        <p class="text-center">Loading properties...</p>
+                    }
+                    else
+                    {
+                        <div class="mb-3">
+                            <label for="propertyDropdown" class="form-label">Select a Property</label>
+                            <select id="propertyDropdown" class="form-select" @bind="selectedPropertyId">
+                                <option value="">-- Select a Property --</option>
+                                @foreach (var property in properties)
+                                {
+                                    <option value="@property.Id">@property.Address</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="text-center mb-3">
+                            <button class="btn btn-danger" @onclick="ConfirmDelete">
+                                Delete Selected Property
+                            </button>
+                        </div>
+
+                        @if (deleteMessage != null)
+                        {
+                            <p class="text-danger text-center">@deleteMessage</p>
+                        }
+                    }
+                </div>
+                <div class="text-center mt-3">
+                    <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+                </div>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="text-center alert alert-danger">
+                <h3>Admins and realtors only</h3>
+            </div>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [Parameter]
+    public int RealtorId { get; set; }
+
+    private List<Services.PropertyReadDto>? properties;
+    private ApiResponse<List<Services.PropertyReadDto>>? apiResponse = new ApiResponse<List<Services.PropertyReadDto>> { Success = true };
+    private int? selectedPropertyId;
+    private string? deleteMessage;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            apiResponse = await PropertyService.GetPropertiesByRealtorAsync(RealtorId);
+            if (apiResponse.Success)
+            {
+                properties = apiResponse.Data;
+                StateHasChanged();
+            }
+        }
+    }
+
+    private async Task ConfirmDelete()
+    {
+        if (selectedPropertyId.HasValue)
+        {
+            var property = properties?.FirstOrDefault(p => p.Id == selectedPropertyId.Value);
+            if (property != null)
+            {
+                var confirm = await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete the property at '{property.Address}'?");
+                if (confirm)
+                {
+                    await PropertyService.DeletePropertyAsync(selectedPropertyId.Value);
+                    deleteMessage = $"Property at '{property.Address}' has been deleted.";
+                    apiResponse = await PropertyService.GetAllPropertiesAsync();
+                    selectedPropertyId = null;
+                }
+            }
+        }
+    }
+
+    private async Task GoBack()
+    {
+        await JSRuntime.InvokeVoidAsync("history.back");
+    }
+}

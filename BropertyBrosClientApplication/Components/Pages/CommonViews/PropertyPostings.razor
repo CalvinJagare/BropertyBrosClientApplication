@@ -1,0 +1,186 @@
+﻿@page "/propertypostings"
+@using System.Diagnostics
+@using BropertyBrosClientApplication.Services.City
+@* @inject IPropertyService PropertyService *@
+@inject CityService CityService
+@inject ICategoryService CategoryService
+@inject IPropertyService PropertyService
+@inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+@*Author: Emil, Calvin*@
+@* Co-Author: Daniel *@
+
+<div class="container py-5">
+    <h1 class="dashboard-title text-center mb-4">Available Properties</h1>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Search Properties</h5>
+            <button class="btn btn-link text-decoration-none" @onclick="ToggleSearchArea">
+                @(isSearchAreaVisible ? "Hide" : "Show") Filters
+            </button>
+        </div>
+        <div class="card-body collapse @(isSearchAreaVisible ? "show" : "")" id="searchArea">
+            <form class="row g-3">
+                <div class="col-md-6">
+                    <label for="minPrice" class="form-label"><i class="fa-solid fa-hand-holding-dollar"></i>&nbsp; Min Price</label>
+                    <input type="number" id="minPrice" class="form-control" @bind="propertySearchDto.MinPrice" placeholder="Enter minimum price" />
+                </div>
+                <div class="col-md-6">
+                    <label for="maxPrice" class="form-label"><i class="fa-solid fa-hand-holding-dollar"></i>&nbsp; Max Price</label>
+                    <input type="number" id="maxPrice" class="form-control" @bind="propertySearchDto.MaxPrice" placeholder="Enter maximum price" />
+                </div>
+
+                <div class="col-md-6">
+                    <label for="minLivingArea" class="form-label"><i class="fa-solid fa-arrow-up-short-wide"></i>&nbsp; Min Living Area (kvm)</label>
+                    <input type="number" id="minLivingArea" class="form-control" @bind="propertySearchDto.MinLivingAreaKvm" placeholder="Enter minimum living area" />
+                </div>
+                <div class="col-md-6">
+                    <label for="maxLivingArea" class="form-label"><i class="fa-solid fa-arrow-up-wide-short"></i>&nbsp; Max Living Area (kvm)</label>
+                    <input type="number" id="maxLivingArea" class="form-control" @bind="propertySearchDto.MaxLivingAreaKvm" placeholder="Enter maximum living area" />
+                </div>
+
+                <div class="col-md-6">
+                    <label for="city" class="form-label"><i class="fa-solid fa-city"></i>&nbsp; City</label>
+                    <select id="city" class="form-select" @bind="propertySearchDto.CityId">
+                        <option value="">-- Select City --</option>
+                        @foreach (var city in cities)
+                        {
+                            <option value="@city.Id">@city.CityName</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="category" class="form-label"><i class="fa-solid fa-list"></i>&nbsp; Category</label>
+                    <select id="category" class="form-select" @bind="propertySearchDto.CategoryId">
+                        <option value="">-- Select Category --</option>
+                        @foreach (var category in categories)
+                        {
+                            <option value="@category.Id">@category.CategoryName</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-12 text-center">
+                    <button type="button" class="btn btn-primary" @onclick="GetPropertiesBySearch"><i class="fa-solid fa-magnifying-glass"></i>&nbsp; Search</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (isLoading)
+    {
+        <p class="text-center">Loading properties...</p>
+    }
+    else if (!properties.Any())
+    {
+        <p class="text-center">No properties available at the moment.</p>
+    }
+    else
+    {
+        <div class="row g-4">
+            @foreach (var property in properties)
+            {
+                <div class="col-12">
+                    <div class="card shadow-sm h-100">
+                        <div class="row g-0">
+                            <div class="col-md-4">
+                                <img src="@(property.ImageUrls?.FirstOrDefault())" class="img-fluid rounded-start" alt="Property Image">
+                            </div>
+                            <div class="col-md-8">
+                                <div class="card-body">
+                                    <h5 class="card-title">@property.Address</h5>
+                                    <p class="card-text text-muted">@property.CityName</p>
+                                    <p class="card-text"><strong>Living Area:</strong> @property.LivingAreaKvm m²</p>
+                                    <p class="card-text"><strong>Total Costs:</strong> $@(property.Price + property.MonthlyFee + property.YearlyFee)</p>
+                                    <button class="btn btn-primary" @onclick="() => NavigateToDetails(property.Id)">Read More</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private List<Services.PropertyReadDto>? properties = new();
+    private List<Services.CityReadDto>? cities = new();
+    private List<Services.CategoryReadDto>? categories = new();
+    private Services.PropertySearchDto propertySearchDto = new();
+    private bool isLoading = false;
+    private bool isSearchAreaVisible = false;
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            try
+            {
+                var propertyResponse = await PropertyService.GetAllPropertiesAsync();
+                var cityResponse = await CityService.GetAllCities();
+                var categoryResponse = await CategoryService.GetAllCategories();
+
+                //Check if the property response was successful
+                properties = propertyResponse.Success ? propertyResponse.Data : new List<Services.PropertyReadDto>();
+                if (!propertyResponse.Success)
+                {
+                    Debug.WriteLine($"Error fetching realtors: {propertyResponse}");
+                }
+                // Check if the category response was successful
+                categories = categoryResponse.Success ? categoryResponse.Data : new List<Services.CategoryReadDto>();
+                if (!categoryResponse.Success)
+                {
+                    Debug.WriteLine($"Error fetching categories: {categoryResponse}");
+                }
+                // Check if the city response was successful
+                cities = cityResponse.Success ? cityResponse.Data : new List<Services.CityReadDto>();
+                if (!cityResponse.Success)
+                {
+                    Debug.WriteLine($"Error fetching cities: {cityResponse}");
+                }
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error fetching data: {ex.Message}");
+            }
+        }
+    }
+    
+
+    private async Task GetPropertiesBySearch()
+    {
+        isLoading = true;
+
+        try
+        {
+            var response = await PropertyService.GetPropertiesBySearchAsync(propertySearchDto);
+            if (response.Success)
+            {
+                properties = response.Data;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error: {ex.Message}");
+        }
+        finally
+        {
+            isLoading = false;
+        }
+    }
+
+    private void NavigateToDetails(int propertyId)
+    {
+        NavigationManager.NavigateTo($"/propertydetails/{propertyId}");
+    }
+
+    private void ToggleSearchArea()
+    {
+        isSearchAreaVisible = !isSearchAreaVisible;
+    }
+}

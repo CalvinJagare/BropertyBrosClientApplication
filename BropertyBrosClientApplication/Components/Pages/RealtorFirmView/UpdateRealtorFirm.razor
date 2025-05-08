@@ -1,107 +1,136 @@
 ﻿@page "/updaterealtorfirm"
-@using BropertyBrosClientApplication.DTO.RealtorFirm
 @using BropertyBrosClientApplication.Services
-@inject RealtorFirmService RealtorFirmService
+@using BropertyBrosClientApplication.Services.RealtorFirm
+@inject IRealtorFirmService RealtorFirmService
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
 
 @* //Author: Calvin *@
 
-<div class="d-flex justify-content-center align-items-center vh-100">
-    <div class="container">
-        <h1 class="dashboard-title text-center mb-4">Update Realtor Firm</h1>
+<AuthorizeView Roles="Admin" Context="authContext">
+    <Authorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="container">
+                <h1 class="dashboard-title text-center mb-4">Update Realtor Firm</h1>
 
-        <div class="card shadow-sm p-4">
-            @if (realtorFirms == null)
+                <div class="card shadow-sm p-4 gradient-card">
+                    @if (realtorFirms == null)
+                    {
+                        <p class="text-center">@errorMessage ?? "Loading realtor firms..."</p>
+                    }
+                    else
+                    {
+                        <div class="mb-3">
+                            <label for="firmDropdown" class="form-label">Select a Realtor Firm</label>
+                            <select id="firmDropdown" class="form-select" @bind="selectedFirmId">
+                                <option value="">-- Select a Realtor Firm --</option>
+                                @foreach (var firm in realtorFirms)
+                                {
+                                    <option value="@firm.Id">@firm.CompanyName</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="text-center mb-3">
+                            <button class="btn btn-primary" @onclick="LoadFirmDetails">
+                                Select Firm
+                            </button>
+                        </div>
+
+                        @if (firmForm != null)
+                        {
+                            <EditForm Model="firmForm" OnValidSubmit="HandleValidSubmit">
+                                <DataAnnotationsValidator />
+                                <ValidationSummary />
+
+                                <div class="mb-3">
+                                    <label for="companyName" class="form-label">Company Name</label>
+                                    <InputText id="companyName" class="form-control" @bind-Value="firmForm.CompanyName" />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Description</label>
+                                    <InputTextArea id="description" class="form-control" @bind-Value="firmForm.Description" />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="logoUrl" class="form-label">Logo URL</label>
+                                    <InputText id="logoUrl" class="form-control" @bind-Value="firmForm.LogoUrl" />
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="websiteUrl" class="form-label">Website URL</label>
+                                    <InputText id="websiteUrl" class="form-control" @bind-Value="firmForm.WebsiteUrl" />
+                                </div>
+
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-primary">Update</button>
+                                </div>
+                            </EditForm>
+                        }
+                        else if (selectedFirmId != null)
+                        {
+                            <p class="text-center">Please click "Select Firm" to load the details.</p>
+                        }
+                    }
+                </div>
+                <div class="text-center mt-3">
+                    <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+                </div>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="text-center alert alert-danger">
+                <h3>Admins only</h3>
+            </div>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private List<Services.RealtorFirmReadDto>? realtorFirms;
+    private int? selectedFirmId;
+    private Services.RealtorFirmCreateDto? firmForm;
+    private string? errorMessage;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            var response = await RealtorFirmService.GetAllRealtorFirms();
+            if (response.Success)
             {
-                <p class="text-center">Loading realtor firms...</p>
+                realtorFirms = response.Data;
             }
             else
             {
-                <div class="mb-3">
-                    <label for="firmDropdown" class="form-label">Select a Realtor Firm</label>
-                    <select id="firmDropdown" class="form-select" @bind="selectedFirmId">
-                        <option value="">-- Select a Realtor Firm --</option>
-                        @foreach (var firm in realtorFirms)
-                        {
-                            <option value="@firm.Id">@firm.CompanyName</option>
-                        }
-                    </select>
-                </div>
-
-                <div class="text-center mb-3">
-                    <button class="btn btn-primary" @onclick="LoadFirmDetails">
-                        Select Firm
-                    </button>
-                </div>
-
-                @if (firmForm != null)
-                {
-                    <EditForm Model="firmForm" OnValidSubmit="HandleValidSubmit">
-                        <DataAnnotationsValidator />
-                        <ValidationSummary />
-
-                        <div class="mb-3">
-                            <label for="companyName" class="form-label">Company Name</label>
-                            <InputText id="companyName" class="form-control" @bind-Value="firmForm.CompanyName" />
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="description" class="form-label">Description</label>
-                            <InputTextArea id="description" class="form-control" @bind-Value="firmForm.Description" />
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="logoUrl" class="form-label">Logo URL</label>
-                            <InputText id="logoUrl" class="form-control" @bind-Value="firmForm.LogoUrl" />
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="websiteUrl" class="form-label">Website URL</label>
-                            <InputText id="websiteUrl" class="form-control" @bind-Value="firmForm.WebsiteUrl" />
-                        </div>
-
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-primary">Update</button>
-                        </div>
-                    </EditForm>
-                }
-                else if (selectedFirmId != null)
-                {
-                    <p class="text-center">Please click "Select Firm" to load the details.</p>
-                }
+                errorMessage = response.Message ?? "Failed to load realtor firms.";
             }
-        </div>
-        <div class="text-center mt-3">
-            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
-        </div>
-    </div>
-</div>
-
-@code {
-    private List<RealtorFirmReadDto>? realtorFirms;
-    private int? selectedFirmId;
-    private RealtorFirmCreateDto? firmForm;
-
-    protected override async Task OnInitializedAsync()
-    {
-        realtorFirms = await RealtorFirmService.GetAllRealtorFirmsAsync();
+            StateHasChanged();
+        }
     }
 
     private async Task LoadFirmDetails()
     {
         if (selectedFirmId.HasValue)
         {
-            var firm = await RealtorFirmService.GetRealtorFirmByIdAsync(selectedFirmId.Value);
-            if (firm != null)
+            var response = await RealtorFirmService.GetRealtorFirmById(selectedFirmId.Value);
+            if (response.Success)
             {
-                firmForm = new RealtorFirmCreateDto
+                var firm = response.Data;
+                firmForm = new Services.RealtorFirmCreateDto
                     {
                         CompanyName = firm.CompanyName,
                         Description = firm.Description,
                         LogoUrl = firm.LogoUrl,
                         WebsiteUrl = firm.WebsiteUrl
                     };
+            }
+            else
+            {
+                errorMessage = response.Message ?? "Failed to load firm details.";
             }
         }
     }
@@ -110,8 +139,15 @@
     {
         if (selectedFirmId.HasValue && firmForm != null)
         {
-            await RealtorFirmService.UpdateRealtorFirmAsync(selectedFirmId.Value, firmForm);
-            NavigationManager.NavigateTo("/realtorfirmoverview");
+            var response = await RealtorFirmService.UpdateRealtorFirm(selectedFirmId.Value, firmForm);
+            if (response.Success)
+            {
+                NavigationManager.NavigateTo("/realtorfirmoverview");
+            }
+            else
+            {
+                errorMessage = response.Message ?? "Failed to update the realtor firm.";
+            }
         }
     }
 

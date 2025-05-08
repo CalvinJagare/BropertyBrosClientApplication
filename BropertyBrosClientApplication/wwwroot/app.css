@@ -513,3 +513,57 @@ h1:focus {
     object-fit: contain;
     border-radius: 8px;
 }
+
+.login-card {
+    min-width: 800px !important;
+    max-width: 1000px !important;
+    border-radius: 8px;
+    background-color: #ffffff;
+    padding: 2rem;
+}
+
+.vh-100 {
+    min-height: 100vh;
+}
+
+.bg-light {
+    background-color: #f8f9fa !important;
+}
+
+.gradient-card {
+    background: linear-gradient(to bottom, rgb(2, 31, 66), rgb(50, 75, 120));
+    color: white;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.box {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 16px;
+    background-color: #f9f9f9;
+    flex: 1; 
+}
+
+.custom-card-width {
+    width: 100%; 
+}
+
+.card.shadow-lg {
+    margin: 0; 
+    padding: 16px; 
+}
+
+.d-flex.flex-row {
+    gap: 16px; 
+}
+
+.card.shadow-lg {
+    margin: 0 auto; 
+    padding: 16px; 
+    padding-left: 24px; 
+    padding-right: 24px; 
+    max-width: 95%; 
+    box-sizing: border-box; 
+}

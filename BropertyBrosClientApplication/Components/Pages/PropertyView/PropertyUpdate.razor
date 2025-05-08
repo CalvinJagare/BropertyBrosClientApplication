@@ -1,163 +1,227 @@
 ﻿@page "/updateproperty"
-@using BropertyBrosClientApplication.DTO.Properties
-@using BropertyBrosClientApplication.DTO.Realtor
-@using BropertyBrosClientApplication.DTO.City
-@using BropertyBrosClientApplication.DTO.CategoryDto
-@using BropertyBrosClientApplication.Services
-@inject PropertyService PropertyService
-@inject RealtorService RealtorService
-@inject CityService CityService
-@inject CategoryService CategoryService
+@using System.Diagnostics
+@using BropertyBrosClientApplication.Services.City
+@inject IPropertyService PropertyService
+@inject IRealtorService RealtorService
+@inject ICityService CityService
+@inject ICategoryService CategoryService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 
-<div class="d-flex justify-content-center align-items-center vh-100">
-    <div class="container">
-        <h1 class="dashboard-title text-center mb-4">Update Property</h1>
 
-        <div class="card shadow-sm p-4">
-            @if (properties == null)
-            {
-                <p class="text-center">Loading properties...</p>
-            }
-            else
-            {
-                <div class="mb-3">
-                    <label for="propertyDropdown" class="form-label">Select a Property</label>
-                    <select id="propertyDropdown" class="form-select" @bind="selectedPropertyId">
-                        <option value="">-- Select a Property --</option>
-                        @foreach (var property in properties)
+@* Author: Daniel *@
+@* Co-Author: Calvin *@
+
+<AuthorizeView Roles="Admin" Context="authContext">
+    <Authorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="container">
+                <h1 class="dashboard-title text-center mb-4">Update Property</h1>
+
+                <div class="card shadow-sm p-4 gradient-card">
+                    @if (properties == null)
+                    {
+                        <p class="text-center">Loading properties...</p>
+                    }
+                    else
+                    {
+                        <div class="mb-3">
+                            <label for="propertyDropdown" class="form-label">Select a Property</label>
+                            <select id="propertyDropdown" class="form-select" @bind="selectedPropertyId">
+                                <option value="">-- Select a Property --</option>
+                                @foreach (var property in properties)
+                                {
+                                    <option value="@property.Id">@property.Address</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="text-center mb-3">
+                            <button class="btn btn-primary" @onclick="LoadPropertyDetails" disabled="@(selectedPropertyId == null)">
+                                Select Property
+                            </button>
+                        </div>
+
+                        @if (selectedProperty != null)
                         {
-                            <option value="@property.Id">@property.Address</option>
+                            <EditForm Model="selectedProperty" OnValidSubmit="HandleValidSubmit">
+                                <DataAnnotationsValidator />
+                                <ValidationSummary />
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="price" class="form-label">Price</label>
+                                            <InputNumber id="price" class="form-control" @bind-Value="selectedProperty.Price" />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="monthlyFee" class="form-label">Monthly Fee</label>
+                                            <InputNumber id="monthlyFee" class="form-control" @bind-Value="selectedProperty.MonthlyFee" />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="yearlyFee" class="form-label">Yearly Fee</label>
+                                            <InputNumber id="yearlyFee" class="form-control" @bind-Value="selectedProperty.YearlyFee" />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="realtorDropdown" class="form-label">Realtor</label>
+                                            <select id="realtorDropdown" class="form-select" @bind="selectedProperty.RealtorId">
+                                                <option value="">-- Select a Realtor --</option>
+                                                @if (realtors != null)
+                                                {
+                                                    @foreach (var realtor in realtors)
+                                                    {
+                                                        <option value="@realtor.Id">@($"{realtor.FirstName} {realtor.LastName}")</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="cityDropdown" class="form-label">City</label>
+                                            <select id="cityDropdown" class="form-select" @bind="selectedProperty.CityId">
+                                                <option value="">-- Select a City --</option>
+                                                @if (cities != null)
+                                                {
+                                                    @foreach (var city in cities)
+                                                    {
+                                                        <option value="@city.Id">@city.CityName</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="categoryDropdown" class="form-label">Category</label>
+                                            <select id="categoryDropdown" class="form-select" @bind="selectedProperty.CategoryId">
+                                                <option value="">-- Select a Category --</option>
+                                                @if (categories != null)
+                                                {
+                                                    @foreach (var category in categories)
+                                                    {
+                                                        <option value="@category.Id">@category.CategoryName</option>
+                                                    }
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="address" class="form-label">Address</label>
+                                            <InputText id="address" class="form-control" @bind-Value="selectedProperty.Address" />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="livingAreaKvm" class="form-label">Living Area (Kvm)</label>
+                                            <InputNumber id="livingAreaKvm" class="form-control" @bind-Value="selectedProperty.LivingAreaKvm" />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="ancillaryAreaKvm" class="form-label">Ancillary Area (Kvm)</label>
+                                            <InputNumber id="ancillaryAreaKvm" class="form-control" @bind-Value="selectedProperty.AncillaryAreaKvm" />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="landAreaKvm" class="form-label">Land Area (Kvm)</label>
+                                            <InputNumber id="landAreaKvm" class="form-control" @bind-Value="selectedProperty.LandAreaKvm" />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="numberOfRooms" class="form-label">Number of Rooms</label>
+                                            <InputNumber id="numberOfRooms" class="form-control" @bind-Value="selectedProperty.NumberOfRooms" />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="buildYear" class="form-label">Build Year</label>
+                                            <InputNumber id="buildYear" class="form-control" @bind-Value="selectedProperty.BuildYear" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row mt-4">
+                                    <div class="col-md-12">
+                                        <div class="mb-3">
+                                            <label for="description" class="form-label">Description</label>
+                                            <InputTextArea id="description" class="form-control" @bind-Value="selectedProperty.Description" />
+                                        </div>
+                                        <div class="mb-3">
+                                            <label for="imageUrls" class="form-label">Image URLs</label>
+                                            <InputText id="imageUrls" class="form-control" @bind-Value="imageUrls" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-primary">Update</button>
+                                </div>
+                            </EditForm>
                         }
-                    </select>
+                    }
                 </div>
-
-                <div class="text-center mb-3">
-                    <button class="btn btn-primary" @onclick="LoadPropertyDetails" disabled="@(selectedPropertyId == null)">
-                        Select Property
-                    </button>
+                <div class="text-center mt-3">
+                    <button class="btn btn-secondary" @onclick="GoBack">Back</button>
                 </div>
-
-                @if (selectedProperty != null)
-                {
-                    <EditForm Model="selectedProperty" OnValidSubmit="HandleValidSubmit">
-                        <DataAnnotationsValidator />
-                        <ValidationSummary />
-
-                        <div class="mb-3">
-                            <label for="address" class="form-label">Address</label>
-                            <InputText id="address" class="form-control" @bind-Value="selectedProperty.Address" />
-                        </div>
-                        <div class="mb-3">
-                            <label for="price" class="form-label">Price</label>
-                            <InputNumber id="price" class="form-control" @bind-Value="selectedProperty.Price" />
-                        </div>
-                        <div class="mb-3">
-                            <label for="monthlyFee" class="form-label">Monthly Fee</label>
-                            <InputNumber id="monthlyFee" class="form-control" @bind-Value="selectedProperty.MonthlyFee" />
-                        </div>
-                        <div class="mb-3">
-                            <label for="yearlyFee" class="form-label">Yearly Fee</label>
-                            <InputNumber id="yearlyFee" class="form-control" @bind-Value="selectedProperty.YearlyFee" />
-                        </div>
-                        <div class="mb-3">
-                            <label for="livingAreaKvm" class="form-label">Living Area (Kvm)</label>
-                            <InputNumber id="livingAreaKvm" class="form-control" @bind-Value="selectedProperty.LivingAreaKvm" />
-                        </div>
-                        <div class="mb-3">
-                            <label for="ancillaryAreaKvm" class="form-label">Ancillary Area (Kvm)</label>
-                            <InputNumber id="ancillaryAreaKvm" class="form-control" @bind-Value="selectedProperty.AncillaryAreaKvm" />
-                        </div>
-                        <div class="mb-3">
-                            <label for="landAreaKvm" class="form-label">Land Area (Kvm)</label>
-                            <InputNumber id="landAreaKvm" class="form-control" @bind-Value="selectedProperty.LandAreaKvm" />
-                        </div>
-                        <div class="mb-3">
-                            <label for="description" class="form-label">Description</label>
-                            <InputTextArea id="description" class="form-control" @bind-Value="selectedProperty.Description" />
-                        </div>
-                        <div class="mb-3">
-                            <label for="numberOfRooms" class="form-label">Number of Rooms</label>
-                            <InputNumber id="numberOfRooms" class="form-control" @bind-Value="selectedProperty.NumberOfRooms" />
-                        </div>
-                        <div class="mb-3">
-                            <label for="buildYear" class="form-label">Build Year</label>
-                            <InputNumber id="buildYear" class="form-control" @bind-Value="selectedProperty.BuildYear" />
-                        </div>
-                        <div class="mb-3">
-                            <label for="imageUrls" class="form-label">Image URLs</label>
-                            <InputText id="imageUrls" class="form-control" @bind-Value="imageUrls" />
-                        </div>
-                        <div class="mb-3">
-                            <label for="realtorDropdown" class="form-label">Realtor</label>
-                            <select id="realtorDropdown" class="form-select" @bind="selectedProperty.RealtorId">
-                                <option value="">-- Select a Realtor --</option>
-                                @if (realtors != null)
-                                {
-                                    @foreach (var realtor in realtors)
-                                    {
-                                        <option value="@realtor.Id">@($"{realtor.FirstName} {realtor.LastName}")</option>
-                                    }
-                                }
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="cityDropdown" class="form-label">City</label>
-                            <select id="cityDropdown" class="form-select" @bind="selectedProperty.CityId">
-                                <option value="">-- Select a City --</option>
-                                @if (cities != null)
-                                {
-                                    @foreach (var city in cities)
-                                    {
-                                        <option value="@city.Id">@city.CityName</option>
-                                    }
-                                }
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="categoryDropdown" class="form-label">Category</label>
-                            <select id="categoryDropdown" class="form-select" @bind="selectedProperty.CategoryId">
-                                <option value="">-- Select a Category --</option>
-                                @if (categories != null)
-                                {
-                                    @foreach (var category in categories)
-                                    {
-                                        <option value="@category.Id">@category.CategoryName</option>
-                                    }
-                                }
-                            </select>
-                        </div>
-
-                        <div class="text-center">
-                            <button type="submit" class="btn btn-primary">Update</button>
-                        </div>
-                    </EditForm>
-                }
-            }
+            </div>
         </div>
-        <div class="text-center mt-3">
-            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+    </Authorized>
+    <NotAuthorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="text-center alert alert-danger">
+                <h3>Admins and realtors only</h3>
+            </div>
         </div>
-    </div>
-</div>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
-    private List<PropertyReadDto>? properties;
-    private List<RealtorReadDto>? realtors;
-    private List<CityReadDto>? cities;
-    private List<CategoryReadDto>? categories;
+
+
+    private List<Services.PropertyReadDto>? properties;
+    private List<Services.RealtorReadDto>? realtors;
+    private List<Services.CityReadDto>? cities;
+    private List<Services.CategoryReadDto>? categories;
 
     private int? selectedPropertyId;
-    private PropertyCreateDto? selectedProperty;
+    private Services.PropertyCreateDto? selectedProperty;
     private string imageUrls = string.Empty;
 
-    protected override async Task OnInitializedAsync()
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        properties = await PropertyService.GetAllPropertiesAsync();
-        realtors = await RealtorService.GetAllRealtorsAsync();
-        cities = await CityService.GetAllCitiesAsync();
-        categories = await CategoryService.GetAllCategoryAsync();
+        if (firstRender)
+        {
+            try
+            {
+                var propertyResponse = await PropertyService.GetAllPropertiesAsync();
+                var cityResponse = await CityService.GetAllCities();
+                var realtorResponse = await RealtorService.GetAllRealtorsAsync();
+                var categoryResponse = await CategoryService.GetAllCategories();
+
+                //Check if the property response was successful
+                properties = propertyResponse.Success ? propertyResponse.Data : new List<Services.PropertyReadDto>();
+                if (!propertyResponse.Success)
+                {
+                    Debug.WriteLine($"Error fetching realtors: {propertyResponse}");
+                }
+                //Check if the realtor response was successful
+                realtors = realtorResponse.Success ? realtorResponse.Data : new List<Services.RealtorReadDto>();
+                if (!realtorResponse.Success)
+                {
+                    Debug.WriteLine($"Error fetching realtors: {realtorResponse}");
+                }
+                // Check if the category response was successful
+                categories = categoryResponse.Success ? categoryResponse.Data : new List<Services.CategoryReadDto>();
+                if (!categoryResponse.Success)
+                {
+                    Debug.WriteLine($"Error fetching categories: {categoryResponse}");
+                }
+                // Check if the city response was successful
+                cities = cityResponse.Success ? cityResponse.Data : new List<Services.CityReadDto>();
+                if (!cityResponse.Success)
+                {
+                    Debug.WriteLine($"Error fetching cities: {cityResponse}");
+                }
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Error fetching data: {ex.Message}");
+            }
+        }
     }
 
     private async Task LoadPropertyDetails()
@@ -167,24 +231,24 @@
             var property = await PropertyService.GetPropertyByIdAsync(selectedPropertyId.Value);
             if (property != null)
             {
-                selectedProperty = new PropertyCreateDto
+                selectedProperty = new Services.PropertyCreateDto
                     {
-                        Address = property.Address,
-                        Price = property.Price,
-                        MonthlyFee = property.MonthlyFee,
-                        YearlyFee = property.YearlyFee,
-                        LivingAreaKvm = property.LivingAreaKvm,
-                        AncillaryAreaKvm = property.AncillaryAreaKvm,
-                        LandAreaKvm = property.LandAreaKvm,
-                        Description = property.Description,
-                        NumberOfRooms = property.NumberOfRooms,
-                        BuildYear = property.BuildYear,
-                        ImageUrls = property.ImageUrls,
-                        RealtorId = property.RealtorId,
-                        CityId = property.CityId,
-                        CategoryId = property.CategoryId
+                        Address = property.Data.Address,
+                        Price = property.Data.Price,
+                        MonthlyFee = property.Data.MonthlyFee,
+                        YearlyFee = property.Data.YearlyFee,
+                        LivingAreaKvm = property.Data.LivingAreaKvm,
+                        AncillaryAreaKvm = property.Data.AncillaryAreaKvm,
+                        LandAreaKvm = property.Data.LandAreaKvm,
+                        Description = property.Data.Description,
+                        NumberOfRooms = property.Data.NumberOfRooms,
+                        BuildYear = property.Data.BuildYear,
+                        ImageUrls = property.Data.ImageUrls,
+                        RealtorId = property.Data.RealtorId,
+                        CityId = property.Data.CityId,
+                        CategoryId = property.Data.CategoryId
                     };
-                imageUrls = string.Join(", ", property.ImageUrls);
+                imageUrls = string.Join(", ", property.Data.ImageUrls);
             }
         }
     }
@@ -199,8 +263,8 @@
         }
     }
 
-    private void GoBack()
+    private async Task GoBack()
     {
-        NavigationManager.NavigateTo("/admindashboard");
+        await JSRuntime.InvokeVoidAsync("history.back");
     }
 }

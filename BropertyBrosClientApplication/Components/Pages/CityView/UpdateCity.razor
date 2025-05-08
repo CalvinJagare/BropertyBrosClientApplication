@@ -1,0 +1,182 @@
+﻿@page "/updatecity"
+@rendermode InteractiveServer
+@using BropertyBrosClientApplication.DTO.City
+@using BropertyBrosClientApplication.Services
+@using BropertyBrosClientApplication.Services.City
+@inject ICityService cityService
+@inject NavigationManager navManager
+
+@* Author: Arlind *@
+
+<AuthorizeView Roles="Admin" Context="authContext">
+    <Authorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="container">
+                <h1 class="dashboard-title text-center mb-4">Update City</h1>
+
+                <div class="card shadow-sm p-4 gradient-card">
+                    @if (!string.IsNullOrEmpty(message))
+                    {
+                        <div class="alert alert-danger">@message</div>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(successMessage))
+                    {
+                        <div class="alert alert-success">@successMessage</div>
+                        <button class="btn btn-success mt-2" @onclick='() => navManager.NavigateTo("/cityoverview")'>
+                            Go back to city overview
+                        </button>
+                    }
+
+                    @if (cities == null)
+                    {
+                        <p class="text-center">Loading cities...</p>
+                    }
+                    else
+                    {
+                        <div class="mb-3">
+                            <label for="cityDropdown" class="form-label">Select a City</label>
+                            <select id="cityDropdown" class="form-select" @onchange="LoadCityData">
+                                <option value="">-- Select a City --</option>
+                                @foreach (var city in cities)
+                                {
+                                    <option value="@city.Id">@city.CityName</option>
+                                }
+                            </select>
+                        </div>
+                    }
+
+                    <EditForm Model="apiResponse.Data" OnValidSubmit="HandleUpdate">
+                        <DataAnnotationsValidator />
+                        <ValidationSummary />
+
+                        <div class="mb-3">
+                            <label for="cityName" class="form-label">City Name</label>
+                            <InputText id="cityName" class="form-control" @bind-Value="apiResponse.Data.CityName" />
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Update City</button>
+                        </div>
+                    </EditForm>
+                </div>
+
+                <div class="text-center mt-3">
+                    <button class="btn btn-secondary" @onclick='() => navManager.NavigateTo("/admindashboard")'>Back</button>
+                </div>
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="text-center alert alert-danger">
+                <h3>Admins only</h3>
+            </div>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+@code {
+    private ApiResponse<BropertyBrosClientApplication.DTO.City.CityReadDto> apiResponse =
+        new ApiResponse<BropertyBrosClientApplication.DTO.City.CityReadDto>
+            {
+                Data = new DTO.City.CityReadDto { Id = 0, CityName = string.Empty },
+                Success = true
+            };
+
+    private string? message = null;
+    private string? successMessage = null;
+
+    private List<BropertyBrosClientApplication.DTO.City.CityReadDto>? cities;
+    private int? selectedCityId;
+
+    private bool _citiesLoaded = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender && !_citiesLoaded)
+        {
+            var response = await cityService.GetAllCities();
+            if (response != null && response.Success)
+            {
+                cities = response.Data
+                    .Select(c => new BropertyBrosClientApplication.DTO.City.CityReadDto
+                        {
+                            Id = c.Id,
+                            CityName = c.CityName
+                        }).ToList();
+            }
+            else
+            {
+                cities = new List<BropertyBrosClientApplication.DTO.City.CityReadDto>();
+            }
+            _citiesLoaded = true;
+
+            StateHasChanged(); 
+        }
+    }
+
+
+    private async Task LoadCityData(ChangeEventArgs e)
+    {
+        if (int.TryParse(e.Value?.ToString(), out int cityId))
+        {
+            selectedCityId = cityId;
+
+            var city = cities?.FirstOrDefault(c => c.Id == cityId);
+            if (city != null)
+            {
+                apiResponse.Data.Id = city.Id;
+                apiResponse.Data.CityName = city.CityName;
+            }
+        }
+        else
+        {
+            apiResponse.Data = new BropertyBrosClientApplication.DTO.City.CityReadDto
+                {
+                    Id = 0,
+                    CityName = string.Empty
+                };
+        }
+    }
+
+
+    private async Task HandleUpdate()
+    {
+        message = null;
+        successMessage = null;
+
+
+        if (string.IsNullOrWhiteSpace(apiResponse.Data.CityName))
+        {
+            message = "City Name cannot be empty.";
+            return;
+        }
+
+        var updateDto = new BropertyBrosClientApplication.Services.CityCreateDto
+            {
+                CityName = apiResponse.Data.CityName
+            };
+
+
+        Console.WriteLine($"Skickar City ID: {apiResponse.Data.Id}, Namn: {updateDto.CityName}");
+
+        var response = await cityService.UpdateCity(apiResponse.Data.Id, updateDto);
+
+        if (response != null && response.Success)
+        {
+            successMessage = "City updated successfully!";
+            message = null;
+            navManager.NavigateTo("/cityoverview", forceLoad: true);
+        }
+        else
+        {
+            message = response?.Message ?? "Update failed, but no error message was returned.";
+            successMessage = null;
+        }
+
+    }
+
+
+}
