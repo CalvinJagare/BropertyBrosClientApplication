@@ -38,33 +38,32 @@
                 </div>
             }
         </div>
-      
-            <div class="col-md-8">
-                <h4 class="text-center mb-4">Dashboard Options</h4>
-                <div class="d-flex flex-column align-items-center gap-4">
-                    @if (Cards.Count > 0)
+
+        <div class="col-md-8">
+            <h4 class="text-center mb-4">Dashboard Options</h4>
+            <div class="d-flex flex-column align-items-center gap-4">
+                @if (Cards.Count > 0)
+                {
+                    @foreach (var card in Cards)
                     {
-                        @foreach (var card in Cards)
-                        {
-                            <div class="card shadow-sm custom-card-width">
-                                <div class="card-header gradient-header text-white">
-                                    @((MarkupString)card.Header)
-                                </div>
-                                <div class="card-body">
-                                    <ul class="list-group list-group-flush">
-                                        @foreach (var option in card.Options)
-                                        {
-                                            <li class="list-group-item">
-                                                <a href="@option.Href" class="text-decoration-none">@option.Text</a>
-                                            </li>
-                                        }
-                                    </ul>
-                                </div>
+                        <div class="card shadow-sm custom-card-width">
+                            <div class="card-header gradient-header text-white">
+                                @((MarkupString)card.Header)
                             </div>
-                        }
+                            <div class="card-body">
+                                <ul class="list-group list-group-flush">
+                                    @foreach (var option in card.Options)
+                                    {
+                                        <li class="list-group-item">
+                                            <a href="@option.Href" class="text-decoration-none">@option.Text</a>
+                                        </li>
+                                    }
+                                </ul>
+                            </div>
+                        </div>
                     }
-                </div>
-            }
+                }
+            </div>
         </div>
     </div>
 </div>
