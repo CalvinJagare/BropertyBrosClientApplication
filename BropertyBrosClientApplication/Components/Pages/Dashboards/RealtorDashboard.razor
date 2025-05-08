@@ -6,20 +6,34 @@
 @inject ILocalStorageService LocalStorage
 @inject IRealtorService RealtorService
 @inject NavigationManager NavigationManager
+@rendermode InteractiveServer
+
+@if (string.IsNullOrEmpty(errorMessage) == false)
+{
+    <div class="alert alert-danger">
+        <p>@errorMessage</p>
+    </div>
+}
+@if (string.IsNullOrEmpty(responseMessage) == false)
+{
+    <div class="alert alert-success">
+        <p>Realtor Added!</p>
+    </div>
+}
 
 <div class="d-flex justify-content-center align-items-center vh-100">
     <div class="card shadow-lg p-4 w-75">
         <div class="row">
             <div class="col-md-4 text-center">
-                <img src="@user?.ProfileUrl" alt="Profile Picture" class="img-thumbnail profile-picture mb-3" />
-                <h3>@($"{user?.FirstName} {user?.LastName}")</h3>
-                <p><strong>Email:</strong> <a href="mailto:@user?.Email">@user?.Email</a></p>
-                <p><strong>Phone:</strong> @user?.PhoneNumber</p>
-                @if (!string.IsNullOrEmpty(user?.LogoUrl))
+                <img src="@realtor?.ProfileUrl" alt="Profile Picture" class="img-thumbnail profile-picture mb-3" />
+                <h3>@($"{realtor?.FirstName} {realtor?.LastName}")</h3>
+                <p><strong>Email:</strong> <a href="mailto:@realtor?.Email">@realtor?.Email</a></p>
+                <p><strong>Phone:</strong> @realtor?.PhoneNumber</p>
+                @if (!string.IsNullOrEmpty(realtor?.LogoUrl))
                 {
                     <div class="mt-4">
-                        <img src="@user.LogoUrl" alt="Firm Logo" class="img-thumbnail firm-logo" />
-                        <p class="mt-2"><strong>@user.CompanyName</strong></p>
+                        <img src="@realtor.LogoUrl" alt="Firm Logo" class="img-thumbnail firm-logo" />
+                        <p class="mt-2"><strong>@realtor.CompanyName</strong></p>
                     </div>
                 }
             </div>
@@ -52,7 +66,10 @@
 </div>
 
 @code {
-    private RealtorReadDto? user;
+    string? responseMessage;
+    string? errorMessage;
+
+    private RealtorReadDto? realtor;
     private List<Card> Cards = new()
     {
         new Card
@@ -71,7 +88,7 @@
             Header = "<i class='fa-solid fa-person'></i> Manage My Info",
             Options = new List<Option>
             {
-                new Option { Text = "View Profile", Href = "/realtoroverview/{realtorId:int}" },
+                new Option { Text = "View Profile", Href = $"/realtoroverview/" },
                 new Option { Text = "Update Profile", Href = "/updaterealtor" },
                 new Option { Text = "Change Password", Href = "/" }
             }
@@ -91,44 +108,50 @@
     }
 
     // fixa
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        try
+        if (firstRender)
         {
-            // Fetch the token from local storage
-            var token = await LocalStorage.GetItemAsStringAsync("token");
-            if (string.IsNullOrEmpty(token))
+            try
             {
-                NavigationManager.NavigateTo("/users/login");
-                return;
-            }
+                // Fetch the token from local storage
+                var token = await LocalStorage.GetItemAsync<string>("token");
 
-            // Decode the token to extract user ID or email
-            var handler = new JwtSecurityTokenHandler();
-            var jwtToken = handler.ReadJwtToken(token);
-            var userIdClaim = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
+                if (string.IsNullOrEmpty(token))
+                {
+                    NavigationManager.NavigateTo("/users/login");
+                    return;
+                }
 
-            if (int.TryParse(userIdClaim, out var userId))
-            {
+                // Decode the token to extract user ID or email
+                var handler = new JwtSecurityTokenHandler();
+                var jwtToken = handler.ReadJwtToken(token);
+                var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "uid")?.Value;
+
                 // Fetch user details using RealtorService
-                var response = await RealtorService.GetRealtorByIdAsync(userId);
+                var response = await RealtorService.GetRealtorByUserIdAsync(userId);
+
                 if (response.Success)
                 {
-                    user = response.Data;
+                    realtor = response.Data;
+                    responseMessage = response.Message;
+                    var option = Cards
+                        .SelectMany(x => x.Options)
+                        .FirstOrDefault(x => x.Href == "/realtoroverview/");
+
+                    option.Href = $"/realtoroverview/{realtor.Id}";
+
+                    StateHasChanged();
                 }
                 else
                 {
-                    Console.WriteLine($"Error fetching user details: {response.Message}");
+                    errorMessage = response.Message;
                 }
             }
-            else
+            catch (Exception ex)
             {
-                Console.WriteLine("Invalid user ID in token.");
+                errorMessage = ex.Message;
             }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error initializing dashboard: {ex.Message}");
         }
     }
 }

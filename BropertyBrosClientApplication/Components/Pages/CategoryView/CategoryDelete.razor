@@ -8,45 +8,56 @@
 
 @* Author: Calvin *@
 
-<div class="d-flex justify-content-center align-items-center vh-100">
-    <div class="container">
-        <h1 class="dashboard-title text-center mb-4">Delete Category</h1>
+<AuthorizeView Roles="Admin" Context="authContext">
+    <Authorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="container">
+                <h1 class="dashboard-title text-center mb-4">Delete Category</h1>
 
-        <div class="card shadow-sm p-4 gradient-card">
-            @if (categories == null)
-            {
-                <p class="text-center">Loading categories...</p>
-            }
-            else
-            {
-                <div class="mb-3">
-                    <label for="categoryDropdown" class="form-label">Select a Category</label>
-                    <select id="categoryDropdown" class="form-select" @bind="selectedCategoryId">
-                        <option value="">-- Select a Category --</option>
-                        @foreach (var category in categories)
+                <div class="card shadow-sm p-4 gradient-card">
+                    @if (categories == null)
+                    {
+                        <p class="text-center">Loading categories...</p>
+                    }
+                    else
+                    {
+                        <div class="mb-3">
+                            <label for="categoryDropdown" class="form-label">Select a Category</label>
+                            <select id="categoryDropdown" class="form-select" @bind="selectedCategoryId">
+                                <option value="">-- Select a Category --</option>
+                                @foreach (var category in categories)
+                                {
+                                    <option value="@category.Id">@category.CategoryName</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="text-center mb-3">
+                            <button class="btn btn-danger" @onclick="ConfirmDelete">
+                                Delete Selected Category
+                            </button>
+                        </div>
+
+                        @if (deleteMessage != null)
                         {
-                            <option value="@category.Id">@category.CategoryName</option>
+                            <p class="text-danger text-center">@deleteMessage</p>
                         }
-                    </select>
+                    }
                 </div>
-
-                <div class="text-center mb-3">
-                    <button class="btn btn-danger" @onclick="ConfirmDelete">
-                        Delete Selected Category
-                    </button>
+                <div class="text-center mt-3">
+                    <button class="btn btn-secondary" @onclick="GoBack">Back</button>
                 </div>
-
-                @if (deleteMessage != null)
-                {
-                    <p class="text-danger text-center">@deleteMessage</p>
-                }
-            }
+            </div>
         </div>
-        <div class="text-center mt-3">
-            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+    </Authorized>
+    <NotAuthorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="text-center alert alert-danger">
+                <h3>Admins only</h3>
+            </div>
         </div>
-    </div>
-</div>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     private List<Services.CategoryReadDto>? categories;

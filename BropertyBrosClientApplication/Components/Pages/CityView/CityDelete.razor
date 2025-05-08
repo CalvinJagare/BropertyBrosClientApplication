@@ -10,51 +10,62 @@
 
 @* Author: Arlind *@
 
-<div class="d-flex justify-content-center align-items-center vh-100">
-    <div class="container">
-        <h1 class="dashboard-title text-center mb-4">Delete City</h1>
+<AuthorizeView Roles="Admin" Context="authContext">
+    <Authorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="container">
+                <h1 class="dashboard-title text-center mb-4">Delete City</h1>
 
-        <div class="card shadow-sm p-4 gradient-card">
-            @if (cities == null)
-            {
-                <p class="text-center">Loading cities...</p>
-            }
-            else
-            {
-                <div class="mb-3">
-                    <label for="cityDropdown" class="form-label">Select a City</label>
-                    <select id="cityDropdown" class="form-select" @bind="selectedCityId">
-                        <option value="">-- Select a City --</option>
-                        @foreach (var city in cities)
+                <div class="card shadow-sm p-4 gradient-card">
+                    @if (cities == null)
+                    {
+                        <p class="text-center">Loading cities...</p>
+                    }
+                    else
+                    {
+                        <div class="mb-3">
+                            <label for="cityDropdown" class="form-label">Select a City</label>
+                            <select id="cityDropdown" class="form-select" @bind="selectedCityId">
+                                <option value="">-- Select a City --</option>
+                                @foreach (var city in cities)
+                                {
+                                    <option value="@city.Id">@city.CityName</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="text-center mb-3">
+                            <button class="btn btn-danger" @onclick="ConfirmDelete">
+                                Delete Selected City
+                            </button>
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(successMessage))
                         {
-                            <option value="@city.Id">@city.CityName</option>
+                            <p class="text-success text-center">@successMessage</p>
                         }
-                    </select>
+
+                        @if (!string.IsNullOrEmpty(deleteMessage))
+                        {
+                            <p class="text-danger text-center">@deleteMessage</p>
+                        }
+
+                    }
                 </div>
-
-                <div class="text-center mb-3">
-                    <button class="btn btn-danger" @onclick="ConfirmDelete">
-                        Delete Selected City
-                    </button>
+                <div class="text-center mt-3">
+                    <button class="btn btn-secondary" @onclick="GoBack">Back</button>
                 </div>
-
-                @if (!string.IsNullOrEmpty(successMessage))
-                {
-                    <p class="text-success text-center">@successMessage</p>
-                }
-
-                @if (!string.IsNullOrEmpty(deleteMessage))
-                {
-                    <p class="text-danger text-center">@deleteMessage</p>
-                }
-
-            }
+            </div>
         </div>
-        <div class="text-center mt-3">
-            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+    </Authorized>
+    <NotAuthorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="text-center alert alert-danger">
+                <h3>Admins only</h3>
+            </div>
         </div>
-    </div>
-</div>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     private List<Services.CityReadDto>? cities;
@@ -83,10 +94,10 @@
         }
     }
 
-   
+
     private async Task ConfirmDelete()
     {
-        
+
         deleteMessage = null;
         successMessage = null;
 
@@ -103,7 +114,7 @@
             return;
         }
 
-        
+
         var confirm = await JSRuntime.InvokeAsync<bool>("confirm", $"Are you sure you want to delete the city '{city.CityName}'?");
         if (!confirm)
         {
@@ -117,7 +128,7 @@
             successMessage = $"City '{city.CityName}' has been deleted.";
             deleteMessage = null;
 
-            
+
             cities?.Remove(city);
             selectedCityId = null;
         }

@@ -7,42 +7,53 @@
 
 @* Author: Arlind *@
 
-<div class="d-flex justify-content-center align-items-center vh-100">
-    <div class="container">
-        <h1 class="dashboard-title text-center mb-4">Cities Overview</h1>
+<AuthorizeView Roles="Admin" Context="authContext">
+    <Authorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="container">
+                <h1 class="dashboard-title text-center mb-4">Cities Overview</h1>
 
-        @if (Cities == null)
-        {
-            <p class="text-center">Loading...</p>
-        }
-        else if (!Cities.Any())
-        {
-            <p class="text-center">No cities found.</p>
-        }
-        else
-        {
-            <div class="row g-4">
-                @foreach (var city in Cities)
+                @if (Cities == null)
                 {
-                    <div class="col-md-6 col-lg-4">
-                        <div class="card shadow-sm">
-                            <div class="card-body">
-                                <h5 class="card-title text-center">
-                                    <NavLink class="text-decoration-none text-primary" href="@($"/updatecity")">
-                                        @city.CityName
-                                    </NavLink>
-                                </h5>
+                    <p class="text-center">Loading...</p>
+                }
+                else if (!Cities.Any())
+                {
+                    <p class="text-center">No cities found.</p>
+                }
+                else
+                {
+                    <div class="row g-4">
+                        @foreach (var city in Cities)
+                        {
+                            <div class="col-md-6 col-lg-4">
+                                <div class="card shadow-sm">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-center">
+                                            <NavLink class="text-decoration-none text-primary" href="@($"/updatecity")">
+                                                @city.CityName
+                                            </NavLink>
+                                        </h5>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                        }
                     </div>
                 }
+                <div class="text-center mt-3">
+                    <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+                </div>
             </div>
-        }
-        <div class="text-center mt-3">
-            <button class="btn btn-secondary" @onclick="GoBack">Back</button>
         </div>
-    </div>
-</div>
+    </Authorized>
+    <NotAuthorized>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="text-center alert alert-danger">
+                <h3>Admins only</h3>
+            </div>
+        </div>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     private List<Services.CityReadDto>? Cities;
@@ -50,13 +61,13 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if(firstRender)
+        if (firstRender)
         {
             apiResponse = await CityService.GetAllCities();
             if (apiResponse.Success)
             {
                 Cities = apiResponse.Data;
-				StateHasChanged();
+                StateHasChanged();
             }
         }
     }
