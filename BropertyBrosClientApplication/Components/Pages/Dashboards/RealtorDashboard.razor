@@ -41,23 +41,26 @@
             <div class="col-md-8">
                 <h4 class="text-center mb-4">Dashboard Options</h4>
                 <div class="d-flex flex-column align-items-center gap-4">
-                    @foreach (var card in Cards)
+                    @if (Cards.Count > 0)
                     {
-                        <div class="card shadow-sm custom-card-width">
-                            <div class="card-header gradient-header text-white">
-                                @((MarkupString)card.Header)
+                        @foreach (var card in Cards)
+                        {
+                            <div class="card shadow-sm custom-card-width">
+                                <div class="card-header gradient-header text-white">
+                                    @((MarkupString)card.Header)
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-group list-group-flush">
+                                        @foreach (var option in card.Options)
+                                        {
+                                            <li class="list-group-item">
+                                                <a href="@option.Href" class="text-decoration-none">@option.Text</a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
                             </div>
-                            <div class="card-body">
-                                <ul class="list-group list-group-flush">
-                                    @foreach (var option in card.Options)
-                                    {
-                                        <li class="list-group-item">
-                                            <a href="@option.Href" class="text-decoration-none">@option.Text</a>
-                                        </li>
-                                    }
-                                </ul>
-                            </div>
-                        </div>
+                        }
                     }
                 </div>
             </div>
@@ -70,30 +73,7 @@
     string? errorMessage;
 
     private RealtorReadDto? realtor;
-    private List<Card> Cards = new()
-    {
-        new Card
-        {
-            Header = "<i class='fa-solid fa-house-user'></i> Manage My Properties",
-            Options = new List<Option>
-            {
-                new Option { Text = "Property Overview", Href = "/propertyoverview" },
-                new Option { Text = "Create Property", Href = "/createproperty" },
-                new Option { Text = "Update Property", Href = "/updateproperty" },
-                new Option { Text = "Delete Property", Href = "/deleteproperty" }
-            }
-        },
-        new Card
-        {
-            Header = "<i class='fa-solid fa-person'></i> Manage My Info",
-            Options = new List<Option>
-            {
-                new Option { Text = "View Profile", Href = $"/realtoroverview/" },
-                new Option { Text = "Update Profile", Href = "/updaterealtor" },
-                new Option { Text = "Change Password", Href = "/" }
-            }
-        }
-    };
+    private List<Card> Cards = new();
 
     private class Card
     {
@@ -135,11 +115,31 @@
                 {
                     realtor = response.Data;
                     responseMessage = response.Message;
-                    var option = Cards
-                        .SelectMany(x => x.Options)
-                        .FirstOrDefault(x => x.Href == "/realtoroverview/");
 
-                    option.Href = $"/realtoroverview/{realtor.Id}";
+                    Cards = new()
+                        {
+                            new Card
+                            {
+                                Header = "<i class='fa-solid fa-house-user'></i> Manage My Properties",
+                                Options = new List<Option>
+                                {
+                                    new Option { Text = "Property Overview", Href = $"/propertyoverview/{realtor.Id}" },
+                                    new Option { Text = "Create Property", Href = $"/createproperty/{realtor.Id}" },
+                                    new Option { Text = "Update Property", Href = $"/updateproperty/{realtor.Id}" },
+                                    new Option { Text = "Delete Property", Href = $"/deleteproperty/{realtor.Id}" }
+                                }
+                            },
+                            new Card
+                            {
+                                Header = "<i class='fa-solid fa-person'></i> Manage My Info",
+                                Options = new List<Option>
+                                {
+                                    new Option { Text = "View Profile", Href = $"/realtoroverview/{realtor.Id}" },
+                                    new Option { Text = "Update Profile", Href = $"/updaterealtor/{realtor.Id}" },
+                                    new Option { Text = "Change Password", Href = "/" }
+                                }
+                            }
+                        };
 
                     StateHasChanged();
                 }
