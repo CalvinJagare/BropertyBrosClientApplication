@@ -1,0 +1,138 @@
+﻿@page "/realtorprofileupdate"
+@rendermode InteractiveServer
+@using Blazored.LocalStorage
+@using BropertyBrosClientApplication.Services
+@inject IRealtorService realtorService
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider authProvider
+@inject ILocalStorageService localStorage
+
+<h3>Update My Profile</h3>
+
+@if (!string.IsNullOrEmpty(message))
+{
+    <div class="alert alert-danger">@message</div>
+}
+
+@if (!string.IsNullOrEmpty(successMessage))
+{
+    <div class="alert alert-success">@successMessage</div>
+}
+
+@if (realtor != null)
+{
+    <EditForm Model="realtor" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label for="firstName" class="form-label">First Name</label>
+            <InputText id="firstName" class="form-control" @bind-Value="realtor.FirstName" />
+        </div>
+
+        <div class="mb-3">
+            <label for="lastName" class="form-label">Last Name</label>
+            <InputText id="lastName" class="form-control" @bind-Value="realtor.LastName" />
+        </div>
+
+        <div class="mb-3">
+            <label for="phoneNumber" class="form-label">Phone Number</label>
+            <InputText id="phoneNumber" class="form-control" @bind-Value="realtor.PhoneNumber" />
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <InputText id="email" class="form-control" @bind-Value="realtor.Email" disabled />
+        </div>
+
+        <div class="mb-3">
+            <label for="profileUrl" class="form-label">Profile URL</label>
+            <InputText id="profileUrl" class="form-control" @bind-Value="realtor.ProfileUrl" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Update</button>
+    </EditForm>
+}
+else
+{
+    <p>Loading your profile...</p>
+}
+
+<div class="text-center mt-3">
+    <button class="btn btn-secondary" @onclick="GoBack">Back</button>
+</div>
+
+@code {
+    private RealtorCreateDto? realtor;
+    private int? myRealtorId = null;
+
+    private string? message;
+    private string? successMessage;
+
+    private bool isFirstRender = true;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            myRealtorId = await localStorage.GetItemAsync<int?>("realtorId");
+
+            if (myRealtorId == null)
+            {
+                message = "Your Realtor ID could not be determined. Please log in again.";
+                StateHasChanged();
+                return;
+            }
+
+            var response = await realtorService.GetRealtorByIdAsync(myRealtorId.Value);
+
+            if (response.Success && response.Data != null)
+            {
+                realtor = new RealtorCreateDto
+                    {
+                        FirstName = response.Data.FirstName,
+                        LastName = response.Data.LastName,
+                        PhoneNumber = response.Data.PhoneNumber,
+                        Email = response.Data.Email,
+                        ProfileUrl = response.Data.ProfileUrl,
+                        RealtorFirmId = response.Data.RealtorFirmId
+                    };
+            }
+            else
+            {
+                message = "Failed to load your profile data.";
+            }
+
+            StateHasChanged();
+        }
+    }
+
+
+    private async Task HandleValidSubmit()
+    {
+        if (myRealtorId == null)
+        {
+            message = "Realtor ID not found.";
+            return;
+        }
+
+        var updateResponse = await realtorService.UpdateRealtorAsync(myRealtorId.Value, realtor);
+
+        if (updateResponse.Success)
+        {
+            successMessage = "Your profile has been updated.";
+            message = null;
+            NavigationManager.NavigateTo("/realtoroverview", forceLoad: true);
+        }
+        else
+        {
+            message = updateResponse.Message ?? "Update failed.";
+            successMessage = null;
+        }
+    }
+
+    private void GoBack()
+    {
+        NavigationManager.NavigateTo("/realtoroverview");
+    }
+}
