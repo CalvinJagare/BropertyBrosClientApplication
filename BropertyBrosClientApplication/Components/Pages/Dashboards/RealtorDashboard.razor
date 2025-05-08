@@ -23,7 +23,6 @@
 
 <div class="d-flex justify-content-center align-items-center vh-100">
     <div class="card shadow-lg p-4 w-100 d-flex flex-row">
-        <!-- Personal Details Section -->
         <div class="box col-md-4 text-center realtor-dashboard-profile me-4">
             <img src="@realtor?.ProfileUrl" alt="Profile Picture" class="profile-picture mb-3" />
             <h3>@($"{realtor?.FirstName} {realtor?.LastName}")</h3>
@@ -38,7 +37,6 @@
             }
         </div>
 
-        <!-- Cards Section -->
         <div class="col-md-8 d-flex flex-column gap-4">
             @foreach (var card in Cards)
             {
