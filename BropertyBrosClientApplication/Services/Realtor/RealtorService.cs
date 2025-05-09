@@ -4,6 +4,7 @@ using BropertyBrosClientApplication.Services.Auth;
 namespace BropertyBrosClientApplication.Services.Realtor
 {
     //Author: Emil
+    //Co-author: Arlind
     public class RealtorService : BaseHttpService, IRealtorService
     {
         private readonly IClient client;

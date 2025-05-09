@@ -2,6 +2,7 @@
 {
 
     // Author: Emil
+    //Co-author: Arlind
     public interface IRealtorService
     {
         Task<ApiResponse<List<RealtorReadDto>>> GetAllRealtorsAsync();
