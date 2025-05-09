@@ -63,7 +63,6 @@
     public int RealtorId { get; set; }
 
     private List<Services.PropertyReadDto>? properties;
-    private ApiResponse<List<Services.PropertyReadDto>>? apiResponse = new ApiResponse<List<Services.PropertyReadDto>> { Success = true };
     private int? selectedPropertyId;
     private string? deleteMessage;
 
@@ -71,10 +70,10 @@
     {
         if (firstRender)
         {
-            apiResponse = await PropertyService.GetPropertiesByRealtorAsync(RealtorId);
-            if (apiResponse.Success)
+            var response = await PropertyService.GetPropertiesByRealtorAsync(RealtorId);
+            if (response.Success)
             {
-                properties = apiResponse.Data;
+                properties = response.Data;
                 StateHasChanged();
             }
         }
@@ -92,7 +91,11 @@
                 {
                     await PropertyService.DeletePropertyAsync(selectedPropertyId.Value);
                     deleteMessage = $"Property at '{property.Address}' has been deleted.";
-                    apiResponse = await PropertyService.GetAllPropertiesAsync();
+                    var refreshData = await PropertyService.GetAllPropertiesAsync();
+					if (refreshData.Success)
+					{
+						properties = refreshData.Data;
+					}
                     selectedPropertyId = null;
                 }
             }

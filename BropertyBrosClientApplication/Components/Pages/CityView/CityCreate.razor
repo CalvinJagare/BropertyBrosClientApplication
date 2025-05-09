@@ -3,9 +3,11 @@
 @using BropertyBrosClientApplication.Services.City
 @inject ICityService CityService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 
 @* Author: Arlind *@
+@* Co-Author: Calvin *@
 
 <AuthorizeView Roles="Admin" Context="authContext">
     <Authorized>
@@ -24,7 +26,7 @@
                         </div>
 
                         <div class="text-center">
-                            <button type="submit" class="btn btn-primary">Create</button>
+                            <button type="submit" class="btn btn-primary" disabled="@string.IsNullOrWhiteSpace(newCity.CityName)" @onclick="Created">Create</button>
                         </div>
                     </EditForm>
                 </div>
@@ -56,7 +58,6 @@
         var response = await CityService.CreateCity(serviceDto);
         if (response != null && response.Success)
         {
-            // Vänta pyttelite för att låta Blazor slutföra submit.
             await Task.Delay(100);
 
             NavigationManager.NavigateTo("/cityoverview", forceLoad: true);
@@ -72,6 +73,11 @@
     private void GoBack()
     {
         NavigationManager.NavigateTo("/admindashboard");
+    }
+
+    private void Created()
+    {
+        NavigationManager.NavigateTo("/cityoverview");
     }
 }
 
