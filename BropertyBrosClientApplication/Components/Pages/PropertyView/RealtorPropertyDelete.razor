@@ -1,5 +1,6 @@
-﻿@page "/deleteproperty/{realtorId:int}"
+﻿@page "/realtordeleteproperty/"
 @inject IPropertyService PropertyService
+@inject AuthenticationStateProvider authStateProvider
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
@@ -59,18 +60,35 @@
 </AuthorizeView>
 
 @code {
-    [Parameter]
-    public int RealtorId { get; set; }
-
     private List<Services.PropertyReadDto>? properties;
     private int? selectedPropertyId;
     private string? deleteMessage;
+
+    int userRealtorId;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            var response = await PropertyService.GetPropertiesByRealtorAsync(RealtorId);
+            IEnumerable<Claim>? claims = await ((ApiAuthStateProvider)authStateProvider).GetClaims();
+
+            if (claims == null)
+            {
+                NavigationManager.NavigateTo("users/login");
+                return;
+            }
+
+            string? rid = claims.FirstOrDefault(x => x.Type == "rid")?.Value;
+
+            if (rid == null) // In case of admin
+            {
+                return;
+            }
+
+            userRealtorId = Convert.ToInt32(rid);
+
+            var response = await PropertyService.GetPropertiesByRealtorAsync(userRealtorId);
+
             if (response.Success)
             {
                 properties = response.Data;
@@ -91,7 +109,7 @@
                 {
                     await PropertyService.DeletePropertyAsync(selectedPropertyId.Value);
                     deleteMessage = $"Property at '{property.Address}' has been deleted.";
-                    var refreshData = await PropertyService.GetPropertiesByRealtorAsync(RealtorId);
+                    var refreshData = await PropertyService.GetPropertiesByRealtorAsync(userRealtorId);
 					if (refreshData.Success)
 					{
 						properties = refreshData.Data;

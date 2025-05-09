@@ -1,10 +1,11 @@
-﻿@page "/updateproperty/{realtorId:int}"
+﻿@page "/realtorupdateproperty/"
 @using System.Diagnostics
 @using BropertyBrosClientApplication.Services.City
 @inject IPropertyService PropertyService
 @inject IRealtorService RealtorService
 @inject ICityService CityService
 @inject ICategoryService CategoryService
+@inject AuthenticationStateProvider authStateProvider
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
@@ -155,9 +156,6 @@
 </AuthorizeView>
 
 @code {
-    [Parameter]
-    public int RealtorId { get; set; }
-
     private List<Services.PropertyReadDto>? properties;
     private List<Services.CityReadDto>? cities;
     private List<Services.CategoryReadDto>? categories;
@@ -173,7 +171,22 @@
         {
             try
             {
-                var propertyResponse = await PropertyService.GetPropertiesByRealtorAsync(RealtorId);
+                IEnumerable<Claim>? claims = await ((ApiAuthStateProvider)authStateProvider).GetClaims();
+
+                if (claims == null)
+                {
+                    NavigationManager.NavigateTo("users/login");
+                    return;
+                }
+
+                string? rid = claims.FirstOrDefault(x => x.Type == "rid")?.Value;
+
+                if (rid == null) // In case of admin
+                {
+                    return;
+                }
+
+                var propertyResponse = await PropertyService.GetPropertiesByRealtorAsync(Convert.ToInt32(rid));
                 var cityResponse = await CityService.GetAllCities();
                 var categoryResponse = await CategoryService.GetAllCategories();
 
