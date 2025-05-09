@@ -178,7 +178,6 @@
                newProperty.CategoryId <= 0 ||
                newProperty.LivingAreaKvm <= 0 ||
                newProperty.AncillaryAreaKvm <= 0 ||
-               newProperty.LandAreaKvm <= 0 ||
                newProperty.NumberOfRooms <= 0 ||
                newProperty.BuildYear <= 0 ||
                string.IsNullOrWhiteSpace(newProperty.Description) ||
@@ -187,8 +186,8 @@
                newProperty.YearlyFee < 0;
     }
 
-    private async Task Created()
+    private void Created()
     {
-        await JSRuntime.InvokeVoidAsync("history.back");
+        NavigationManager.NavigateTo("/realtordashboard");
     }
 }
