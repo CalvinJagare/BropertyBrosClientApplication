@@ -18,6 +18,12 @@
                 <h1 class="dashboard-title text-center mb-4">Create Property</h1>
 
                 <div class="card shadow-sm p-4 gradient-card">
+                    @if (!string.IsNullOrEmpty(successMessage))
+                    {
+                        <div class="alert alert-success text-center">
+                            @successMessage
+                        </div>
+                    }
                     <EditForm Model="newProperty" OnValidSubmit="HandleValidSubmit">
                         <DataAnnotationsValidator />
                         <ValidationSummary />
@@ -132,6 +138,7 @@
 
     private Services.PropertyCreateDto newProperty = new();
     private string imageUrls = string.Empty;
+    private string successMessage = string.Empty;
 
     private List<Services.CityReadDto>? cities;
     private List<Services.CategoryReadDto>? categories;
@@ -162,6 +169,7 @@
         newProperty.RealtorId = RealtorId;
         newProperty.ImageUrls = imageUrls.Split(',').Select(url => url.Trim()).ToList();
         await PropertyService.CreatePropertyAsync(newProperty);
+        await Task.Delay(1000);
         await JSRuntime.InvokeVoidAsync("history.back");
     }
 
@@ -177,7 +185,6 @@
                newProperty.CityId <= 0 ||
                newProperty.CategoryId <= 0 ||
                newProperty.LivingAreaKvm <= 0 ||
-               newProperty.AncillaryAreaKvm <= 0 ||
                newProperty.NumberOfRooms <= 0 ||
                newProperty.BuildYear <= 0 ||
                string.IsNullOrWhiteSpace(newProperty.Description) ||
@@ -188,6 +195,6 @@
 
     private void Created()
     {
-        NavigationManager.NavigateTo("/realtordashboard");
+        successMessage = "Property created successfully! You are beeing redirected.";
     }
 }
