@@ -3,6 +3,7 @@
 @using BropertyBrosClientApplication.Services.Category
 @inject ICategoryService CategoryService
 @inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 
 @* Author: Calvin *@
@@ -24,8 +25,9 @@
                         </div>
 
                         <div class="text-center">
-                            <button type="submit" class="btn btn-primary" @onclick="Created">Create</button>
+                            <button type="submit" class="btn btn-primary" disabled="@string.IsNullOrWhiteSpace(newCategory.CategoryName)" @onclick="Created">Create</button>
                         </div>
+
                     </EditForm>
                 </div>
                 <div class="text-center mt-3">
@@ -43,8 +45,13 @@
     </NotAuthorized>
 </AuthorizeView>
 
+<div class="text-center text-danger" style="display: @(string.IsNullOrEmpty(errorMessage) ? "none" : "block")">
+    @errorMessage
+</div>
+
 @code {
     private Services.CategoryCreateDto newCategory = new();
+    private string? errorMessage;
 
     private async Task HandleValidSubmit()
     {
@@ -53,14 +60,18 @@
         {
             NavigationManager.NavigateTo("/categoryoverview");
         }
+        else
+        {
+            errorMessage = "Failed to create category. Please try again.";
+        }
     }
 
-    private void GoBack()
+    private async Task GoBack()
     {
-        NavigationManager.NavigateTo("/admindashboard");
+        await JSRuntime.InvokeVoidAsync("history.back");
     }
     private void Created()
-    {
+    {        
         NavigationManager.NavigateTo("/categoryoverview");
     }
 }

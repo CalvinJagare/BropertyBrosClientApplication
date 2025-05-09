@@ -1,5 +1,6 @@
-﻿@page "/deleteproperty/{realtorId:int}"
+﻿@page "/realtordeleteproperty/"
 @inject IPropertyService PropertyService
+@inject AuthenticationStateProvider authStateProvider
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
@@ -59,22 +60,38 @@
 </AuthorizeView>
 
 @code {
-    [Parameter]
-    public int RealtorId { get; set; }
-
     private List<Services.PropertyReadDto>? properties;
-    private ApiResponse<List<Services.PropertyReadDto>>? apiResponse = new ApiResponse<List<Services.PropertyReadDto>> { Success = true };
     private int? selectedPropertyId;
     private string? deleteMessage;
+
+    int userRealtorId;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            apiResponse = await PropertyService.GetPropertiesByRealtorAsync(RealtorId);
-            if (apiResponse.Success)
+            IEnumerable<Claim>? claims = await ((ApiAuthStateProvider)authStateProvider).GetClaims();
+
+            if (claims == null)
             {
-                properties = apiResponse.Data;
+                NavigationManager.NavigateTo("users/login");
+                return;
+            }
+
+            string? rid = claims.FirstOrDefault(x => x.Type == "rid")?.Value;
+
+            if (rid == null) // In case of admin
+            {
+                return;
+            }
+
+            userRealtorId = Convert.ToInt32(rid);
+
+            var response = await PropertyService.GetPropertiesByRealtorAsync(userRealtorId);
+
+            if (response.Success)
+            {
+                properties = response.Data;
                 StateHasChanged();
             }
         }
@@ -92,8 +109,13 @@
                 {
                     await PropertyService.DeletePropertyAsync(selectedPropertyId.Value);
                     deleteMessage = $"Property at '{property.Address}' has been deleted.";
-                    apiResponse = await PropertyService.GetAllPropertiesAsync();
+                    var refreshData = await PropertyService.GetPropertiesByRealtorAsync(userRealtorId);
+					if (refreshData.Success)
+					{
+						properties = refreshData.Data;
+					}
                     selectedPropertyId = null;
+                    
                 }
             }
         }

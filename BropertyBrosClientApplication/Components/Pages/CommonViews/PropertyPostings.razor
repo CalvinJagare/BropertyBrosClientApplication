@@ -9,7 +9,7 @@
 @rendermode InteractiveServer
 
 @*Author: Emil, Calvin*@
-@* Co-Author: Daniel *@
+@* Co-Author: Daniel, Arlind *@
 
 <div class="container py-5">
     <h1 class="dashboard-title text-center mb-4">Available Properties</h1>
@@ -73,14 +73,14 @@
     {
         <p class="text-center">Loading properties...</p>
     }
-    else if (!properties.Any())
+    else if (!pagedProperties.Any())
     {
         <p class="text-center">No properties available at the moment.</p>
     }
     else
     {
         <div class="row g-4">
-            @foreach (var property in properties)
+            @foreach (var property in pagedProperties)
             {
                 <div class="col-12">
                     <div class="card shadow-sm h-100">
@@ -102,17 +102,37 @@
                 </div>
             }
         </div>
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                    <button class="page-link" @onclick="() => ChangePage(currentPage - 1)">Previous</button>
+                </li>
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    <li class="page-item @(currentPage == i ? "active" : "")">
+                        <button class="page-link" @onclick="() => ChangePage(i)">@i</button>
+                    </li>
+                }
+                <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                    <button class="page-link" @onclick="() => ChangePage(currentPage + 1)">Next</button>
+                </li>
+            </ul>
+        </nav>
     }
 </div>
 
 @code {
     private List<Services.PropertyReadDto>? properties = new();
+    private List<Services.PropertyReadDto>? pagedProperties = new();
     private List<Services.CityReadDto>? cities = new();
     private List<Services.CategoryReadDto>? categories = new();
     private Services.PropertySearchDto propertySearchDto = new();
     private bool isLoading = false;
     private bool isSearchAreaVisible = false;
 
+    private int currentPage = 1;
+    private int totalPages = 1;
+    private const int PageSize = 10;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -142,6 +162,7 @@
                 {
                     Debug.WriteLine($"Error fetching cities: {cityResponse}");
                 }
+                UpdatePagination();
                 StateHasChanged();
             }
             catch (Exception ex)
@@ -162,6 +183,7 @@
             if (response.Success)
             {
                 properties = response.Data;
+                UpdatePagination();
             }
         }
         catch (Exception ex)
@@ -174,6 +196,18 @@
         }
     }
 
+    private void UpdatePagination()
+    {
+        totalPages = (int)Math.Ceiling((double)(properties?.Count ?? 0) / PageSize);
+        currentPage = Math.Min(currentPage, totalPages);
+        pagedProperties = properties?.Skip((currentPage - 1) * PageSize).Take(PageSize).ToList();
+    }
+
+    private void ChangePage(int page)
+    {
+        currentPage = page;
+        UpdatePagination();
+    }
     private void NavigateToDetails(int propertyId)
     {
         NavigationManager.NavigateTo($"/propertydetails/{propertyId}");

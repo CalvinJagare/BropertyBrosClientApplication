@@ -1,63 +1,65 @@
-﻿@page "/realtorprofileupdate"
-@rendermode InteractiveServer
+﻿@page "/updaterealtorprofile"
 @using Blazored.LocalStorage
 @using BropertyBrosClientApplication.Services
 @inject IRealtorService realtorService
 @inject NavigationManager NavigationManager
-@inject AuthenticationStateProvider authProvider
 @inject ILocalStorageService localStorage
+@rendermode InteractiveServer
 
 @* Author: Arlind *@
-<h3>Update My Profile</h3>
+<h1 class="dashboard-title text-center mb-4">Update My Profile</h1>
 
-@if (!string.IsNullOrEmpty(message))
-{
-    <div class="alert alert-danger">@message</div>
-}
+<div class="card shadow-sm p-4">
 
-@if (!string.IsNullOrEmpty(successMessage))
-{
-    <div class="alert alert-success">@successMessage</div>
-}
+    @if (!string.IsNullOrEmpty(message))
+    {
+        <div class="alert alert-danger">@message</div>
+    }
 
-@if (realtor != null)
-{
-    <EditForm Model="realtor" OnValidSubmit="HandleValidSubmit">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
+    @if (!string.IsNullOrEmpty(successMessage))
+    {
+        <div class="alert alert-success">@successMessage</div>
+    }
 
-        <div class="mb-3">
-            <label for="firstName" class="form-label">First Name</label>
-            <InputText id="firstName" class="form-control" @bind-Value="realtor.FirstName" />
-        </div>
+    @if (realtor != null)
+    {
+        <EditForm Model="realtor" OnValidSubmit="HandleValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
 
-        <div class="mb-3">
-            <label for="lastName" class="form-label">Last Name</label>
-            <InputText id="lastName" class="form-control" @bind-Value="realtor.LastName" />
-        </div>
+            <div class="mb-3">
+                <label for="firstName" class="form-label">First Name</label>
+                <InputText id="firstName" class="form-control" @bind-Value="realtor.FirstName" />
+            </div>
 
-        <div class="mb-3">
-            <label for="phoneNumber" class="form-label">Phone Number</label>
-            <InputText id="phoneNumber" class="form-control" @bind-Value="realtor.PhoneNumber" />
-        </div>
+            <div class="mb-3">
+                <label for="lastName" class="form-label">Last Name</label>
+                <InputText id="lastName" class="form-control" @bind-Value="realtor.LastName" />
+            </div>
 
-        <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <InputText id="email" class="form-control" @bind-Value="realtor.Email" disabled />
-        </div>
+            <div class="mb-3">
+                <label for="phoneNumber" class="form-label">Phone Number</label>
+                <InputText id="phoneNumber" class="form-control" @bind-Value="realtor.PhoneNumber" />
+            </div>
 
-        <div class="mb-3">
-            <label for="profileUrl" class="form-label">Profile URL</label>
-            <InputText id="profileUrl" class="form-control" @bind-Value="realtor.ProfileUrl" />
-        </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <InputText id="email" class="form-control" @bind-Value="realtor.Email" disabled />
+            </div>
 
-        <button type="submit" class="btn btn-primary">Update</button>
-    </EditForm>
-}
-else
-{
-    <p>Loading your profile...</p>
-}
+            <div class="mb-3">
+                <label for="profileUrl" class="form-label">Profile URL</label>
+                <InputText id="profileUrl" class="form-control" @bind-Value="realtor.ProfileUrl" />
+            </div>
+
+            <button type="submit" class="btn btn-primary">Update Profile</button>
+        </EditForm>
+    }
+    else
+    {
+        <p>Loading your profile...</p>
+    }
+</div>
 
 <div class="text-center mt-3">
     <button class="btn btn-secondary" @onclick="GoBack">Back</button>
@@ -74,8 +76,10 @@ else
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (firstRender && isFirstRender)
         {
+            isFirstRender = false;
+
             myRealtorId = await localStorage.GetItemAsync<int?>("realtorId");
 
             if (myRealtorId == null)
@@ -108,7 +112,6 @@ else
         }
     }
 
-
     private async Task HandleValidSubmit()
     {
         if (myRealtorId == null)
@@ -137,3 +140,4 @@ else
         NavigationManager.NavigateTo("/realtoroverview");
     }
 }
+

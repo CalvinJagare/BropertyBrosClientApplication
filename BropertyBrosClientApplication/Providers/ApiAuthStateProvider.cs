@@ -65,9 +65,15 @@ namespace BropertyBrosClientApplication.Providers
             NotifyAuthenticationStateChanged(authState);
         }
 
-        private async Task<IEnumerable<Claim>?> GetClaims()
+        public async Task<IEnumerable<Claim>?> GetClaims()
         {
             var savedToken = await localStorage.GetItemAsync<string>("token");
+
+            if (savedToken == null)
+            {
+                return null;
+            }
+
             var tokenContent = jwtSecurityToken.ReadJwtToken(savedToken);
             var claims = tokenContent.Claims.ToList();
             claims.Add(new Claim(ClaimTypes.Name, tokenContent.Subject));

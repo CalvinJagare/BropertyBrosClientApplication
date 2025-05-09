@@ -67,14 +67,6 @@
         </AuthorizeView>
 
         <AuthorizeView>
-            @* ta bort inlogg och BARA login, lämna logout*@
-            <NotAuthorized>                
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="/users/login">
-                        <span class="" aria-hidden="true"></span> Login
-                    </NavLink>
-                </div>
-            </NotAuthorized>
             <Authorized>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" @onclick="HandleLogout">
