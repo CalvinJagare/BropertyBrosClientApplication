@@ -40,14 +40,14 @@
 	</EditForm>
 </div>
 @code {
-	UserDto RegistrationUserModel = new UserDto();
+	RegisterRealtorDto RegistrationUserModel = new RegisterRealtorDto();
 	string message = string.Empty;
 
 	private async Task HandleRegistration()
 	{
 		try
 		{
-			await httpClient.RegisterAsync(RegistrationUserModel);
+			await httpClient.RegisterRealtorAsync(RegistrationUserModel);
 			NavigationManager.NavigateTo("/users/login");
 		}
 		catch(ApiException aex)

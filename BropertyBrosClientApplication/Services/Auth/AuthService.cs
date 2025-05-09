@@ -35,5 +35,17 @@ namespace BropertyBrosClientApplication.Services.Auth
         {
             await ((ApiAuthStateProvider)authenticationStateProvider).LoggedOut();
         }
+        public async Task<bool> ChangePasswordAsync(ChangePasswordDto model)
+        {
+            try
+            {
+                await httpClient.ChangePasswordAsync(model);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
     }
 }
