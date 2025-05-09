@@ -1,5 +1,6 @@
-﻿@page "/deleteproperty/{realtorId:int}"
+﻿@page "/realtordeleteproperty/"
 @inject IPropertyService PropertyService
+@inject AuthenticationStateProvider authStateProvider
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
@@ -59,9 +60,6 @@
 </AuthorizeView>
 
 @code {
-    [Parameter]
-    public int RealtorId { get; set; }
-
     private List<Services.PropertyReadDto>? properties;
     private int? selectedPropertyId;
     private string? deleteMessage;
@@ -70,7 +68,23 @@
     {
         if (firstRender)
         {
-            var response = await PropertyService.GetPropertiesByRealtorAsync(RealtorId);
+            IEnumerable<Claim>? claims = await ((ApiAuthStateProvider)authStateProvider).GetClaims();
+
+            if (claims == null)
+            {
+                NavigationManager.NavigateTo("users/login");
+                return;
+            }
+
+            string? rid = claims.FirstOrDefault(x => x.Type == "rid")?.Value;
+
+            if (rid == null) // In case of admin
+            {
+                return;
+            }
+
+            var response = await PropertyService.GetPropertiesByRealtorAsync(Convert.ToInt32(rid));
+
             if (response.Success)
             {
                 properties = response.Data;

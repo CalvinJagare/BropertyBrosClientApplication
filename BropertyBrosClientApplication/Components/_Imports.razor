@@ -1,4 +1,6 @@
-﻿@using System.Net.Http
+﻿@using System.Security.Claims
+@using System.Diagnostics
+@using System.Net.Http
 @using System.Net.Http.Json
 @using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Forms
@@ -8,9 +10,11 @@
 @using Microsoft.AspNetCore.Components.Web.Virtualization
 @using Microsoft.JSInterop
 @using BropertyBrosClientApplication
+@using BropertyBrosClientApplication.Providers
 @using BropertyBrosClientApplication.Components
 @using BropertyBrosClientApplication.Services
 @using BropertyBrosClientApplication.Services.Realtor
 @using BropertyBrosClientApplication.Services.Property
 @using BropertyBrosClientApplication.Services.Category
 @using BropertyBrosClientApplication.Services.RealtorFirm
+@using BropertyBrosClientApplication.Services.City

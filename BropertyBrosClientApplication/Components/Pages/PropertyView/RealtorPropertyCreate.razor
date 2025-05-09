@@ -1,11 +1,10 @@
-﻿@page "/createproperty/{realtorId:int}"
-@using System.Diagnostics
-@using BropertyBrosClientApplication.Services.City
+﻿@page "/realtorcreateproperty/"
 @inject IPropertyService PropertyService
 @inject ICityService CityService
 @inject ICategoryService CategoryService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
+@inject AuthenticationStateProvider authStateProvider
 @rendermode InteractiveServer
 
 @* Author: Daniel *@
@@ -126,16 +125,13 @@
     <NotAuthorized>
         <div class="d-flex justify-content-center align-items-center vh-100">
             <div class="text-center alert alert-danger">
-                <h3>Admins and realtors only</h3>
+                <h3>Realtors only</h3>
             </div>
         </div>
     </NotAuthorized>
 </AuthorizeView>
 
 @code {
-    [Parameter]
-    public int RealtorId { get; set; }
-
     private Services.PropertyCreateDto newProperty = new();
     private string imageUrls = string.Empty;
     private string successMessage = string.Empty;
@@ -143,12 +139,31 @@
     private List<Services.CityReadDto>? cities;
     private List<Services.CategoryReadDto>? categories;
 
+    int userRealtorId;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
             try
             {
+                IEnumerable<Claim>? claims = await ((ApiAuthStateProvider)authStateProvider).GetClaims();
+
+                if (claims == null)
+                {
+                    NavigationManager.NavigateTo("users/login");
+                    return;
+                }
+
+                string? rid = claims.FirstOrDefault(x => x.Type == "rid")?.Value;
+
+                if (rid == null) // In case of admin
+                {
+                    return;
+                }
+
+                userRealtorId = Convert.ToInt32(rid);
+
                 var cityResponse = await CityService.GetAllCities();
                 var categoryResponse = await CategoryService.GetAllCategories();
 
@@ -166,7 +181,7 @@
 
     private async Task HandleValidSubmit()
     {
-        newProperty.RealtorId = RealtorId;
+        newProperty.RealtorId = userRealtorId;
         newProperty.ImageUrls = imageUrls.Split(',').Select(url => url.Trim()).ToList();
         await PropertyService.CreatePropertyAsync(newProperty);
         await Task.Delay(1000);

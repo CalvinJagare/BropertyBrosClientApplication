@@ -1,6 +1,7 @@
-﻿@page "/propertyoverview/{realtorId:int}"
+﻿@page "/realtorpropertyoverview/"
 @inject IPropertyService PropertyService
 @inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider authStateProvider
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
 
@@ -57,9 +58,6 @@
 </AuthorizeView>
 
 @code {
-    [Parameter]
-    public int RealtorId { get; set; }
-
     private List<Services.PropertyReadDto>? properties;
     private ApiResponse<List<Services.PropertyReadDto>>? apiResponse = new ApiResponse<List<Services.PropertyReadDto>> { Success = true };
 
@@ -67,7 +65,22 @@
     {
         if (firstRender)
         {
-            apiResponse = await PropertyService.GetPropertiesByRealtorAsync(RealtorId);
+            IEnumerable<Claim>? claims = await ((ApiAuthStateProvider)authStateProvider).GetClaims();
+
+            if (claims == null)
+            {
+                NavigationManager.NavigateTo("users/login");
+                return;
+            }
+
+            string? rid = claims.FirstOrDefault(x => x.Type == "rid")?.Value;
+
+            if (rid == null) // In case of admin
+            {
+                return;
+            }
+
+            apiResponse = await PropertyService.GetPropertiesByRealtorAsync(Convert.ToInt32(rid));
             if (apiResponse.Success)
             {
                 properties = apiResponse.Data;
