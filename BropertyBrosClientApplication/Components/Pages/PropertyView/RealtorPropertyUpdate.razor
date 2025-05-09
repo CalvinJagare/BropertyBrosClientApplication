@@ -240,7 +240,7 @@
         {
             selectedProperty.ImageUrls = imageUrls.Split(',').Select(url => url.Trim()).ToList();
             await PropertyService.UpdatePropertyAsync(selectedPropertyId.Value, selectedProperty);
-            NavigationManager.NavigateTo("/propertyoverview");
+            await JSRuntime.InvokeVoidAsync("history.back");
         }
     }
 
