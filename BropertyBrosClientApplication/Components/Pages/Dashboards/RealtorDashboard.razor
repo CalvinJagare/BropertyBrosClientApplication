@@ -3,7 +3,7 @@
 @using System.Security.Claims
 @using Blazored.LocalStorage
 @using BropertyBrosClientApplication.Services.Realtor
-@inject ILocalStorageService LocalStorage
+@inject AuthenticationStateProvider authStateProvider
 @inject IRealtorService RealtorService
 @inject NavigationManager NavigationManager
 @rendermode InteractiveServer
@@ -74,7 +74,29 @@
     string? errorMessage;
 
     private RealtorReadDto? realtor;
-    private List<Card> Cards = new();
+    private List<Card> Cards = new()
+            {
+                new Card
+                {
+                    Header = "<i class='fa-solid fa-house-user'></i> Manage My Properties",
+                    Options = new List<Option>
+                    {
+                        new Option { Text = "Property Overview", Href = $"/realtorpropertyoverview/" },
+                        new Option { Text = "Create Property", Href = $"/realtorcreateproperty/" },
+                        new Option { Text = "Update Property", Href = $"/realtorupdateproperty/" },
+                        new Option { Text = "Delete Property", Href = $"/realtordeleteproperty/" }
+                    }
+                },
+                new Card
+                {
+                    Header = "<i class='fa-solid fa-person'></i> Manage My Info",
+                    Options = new List<Option>
+                    {
+                        new Option { Text = "My Profile", Href = $"/realtorrealtordetails/" },
+                        new Option { Text = "Change Password", Href = "/" }
+                    }
+                }
+            };
 
     private class Card
     {
@@ -95,62 +117,35 @@
         {
             try
             {
-                // Fetch the token from local storage
-                var token = await LocalStorage.GetItemAsync<string>("token");
+                IEnumerable<Claim>? claims = await ((ApiAuthStateProvider)authStateProvider).GetClaims();
 
-                if (string.IsNullOrEmpty(token))
+                if (claims == null)
                 {
-                    NavigationManager.NavigateTo("/users/login");
+                    NavigationManager.NavigateTo("users/login");
                     return;
                 }
 
-                // Decode the token to extract user ID or email
-                var handler = new JwtSecurityTokenHandler();
-                var jwtToken = handler.ReadJwtToken(token);
-                var userId = jwtToken.Claims.FirstOrDefault(c => c.Type == "uid")?.Value;
+                string? realtorId = claims.FirstOrDefault(x => x.Type == "rid")?.Value;
 
-                // Fetch user details using RealtorService
-                var response = await RealtorService.GetRealtorByUserIdAsync(userId);
+                var response = await RealtorService.GetRealtorByIdAsync(Convert.ToInt32(realtorId));
 
                 if (response.Success)
                 {
                     realtor = response.Data;
                     responseMessage = response.Message;
 
-                    Cards = new()
-                        {
-                            new Card
-                            {
-                                Header = "<i class='fa-solid fa-house-user'></i> Manage My Properties",
-                                Options = new List<Option>
-                                {
-                                    new Option { Text = "Property Overview", Href = $"/propertyoverview/{realtor.Id}" },
-                                    new Option { Text = "Create Property", Href = $"/createproperty/{realtor.Id}" },
-                                    new Option { Text = "Update Property", Href = $"/updateproperty/{realtor.Id}" },
-                                    new Option { Text = "Delete Property", Href = $"/deleteproperty/{realtor.Id}" }
-                                }
-                            },
-                            new Card
-                            {
-                                Header = "<i class='fa-solid fa-person'></i> Manage My Info",
-                                Options = new List<Option>
-                                {
-                                    new Option { Text = "My Profile", Href = $"/realtordetails/{realtor.Id}" },
-                                    new Option { Text = "Change Password", Href = "/" }
-                                }
-                            }
-                        };
-
                     StateHasChanged();
                 }
                 else
                 {
                     errorMessage = response.Message;
+                    StateHasChanged();
                 }
             }
             catch (Exception ex)
             {
                 errorMessage = ex.Message;
+                StateHasChanged();
             }
         }
     }
