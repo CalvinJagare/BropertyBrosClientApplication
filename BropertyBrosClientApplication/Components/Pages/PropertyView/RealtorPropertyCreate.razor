@@ -187,8 +187,8 @@
                newProperty.YearlyFee < 0;
     }
 
-    public void Created()
+    private async Task Created()
     {
-        NavigationManager.NavigateTo("/propertyoverview/{realtorId:int}");
+        await JSRuntime.InvokeVoidAsync("history.back");
     }
 }
