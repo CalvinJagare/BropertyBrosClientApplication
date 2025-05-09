@@ -64,6 +64,8 @@
     private int? selectedPropertyId;
     private string? deleteMessage;
 
+    int userRealtorId;
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -83,7 +85,9 @@
                 return;
             }
 
-            var response = await PropertyService.GetPropertiesByRealtorAsync(Convert.ToInt32(rid));
+            userRealtorId = Convert.ToInt32(rid);
+
+            var response = await PropertyService.GetPropertiesByRealtorAsync(userRealtorId);
 
             if (response.Success)
             {
@@ -105,7 +109,7 @@
                 {
                     await PropertyService.DeletePropertyAsync(selectedPropertyId.Value);
                     deleteMessage = $"Property at '{property.Address}' has been deleted.";
-                    var refreshData = await PropertyService.GetPropertiesByRealtorAsync(RealtorId);
+                    var refreshData = await PropertyService.GetPropertiesByRealtorAsync(userRealtorId);
 					if (refreshData.Success)
 					{
 						properties = refreshData.Data;
