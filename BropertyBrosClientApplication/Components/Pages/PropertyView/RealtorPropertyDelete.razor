@@ -91,7 +91,7 @@
                 {
                     await PropertyService.DeletePropertyAsync(selectedPropertyId.Value);
                     deleteMessage = $"Property at '{property.Address}' has been deleted.";
-                    var refreshData = await PropertyService.GetAllPropertiesAsync();
+                    var refreshData = await PropertyService.GetPropertiesByRealtorAsync(RealtorId);
 					if (refreshData.Success)
 					{
 						properties = refreshData.Data;
