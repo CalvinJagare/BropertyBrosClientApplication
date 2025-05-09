@@ -125,9 +125,14 @@
                     return;
                 }
 
-                string? realtorId = claims.FirstOrDefault(x => x.Type == "rid")?.Value;
+                string? rid = claims.FirstOrDefault(x => x.Type == "rid")?.Value;
 
-                var response = await RealtorService.GetRealtorByIdAsync(Convert.ToInt32(realtorId));
+                if (rid == null) // In case of admin
+                {
+                    return;
+                }
+
+                var response = await RealtorService.GetRealtorByIdAsync(Convert.ToInt32(rid));
 
                 if (response.Success)
                 {
