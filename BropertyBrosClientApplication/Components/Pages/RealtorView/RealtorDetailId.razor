@@ -6,43 +6,44 @@
 @rendermode InteractiveServer
 
 @* Author: Emil, Calvin *@
-@if (string.IsNullOrEmpty(errorMessage) == false)
+
+@if (!string.IsNullOrEmpty(errorMessage))
 {
     <div class="alert alert-danger">
         <p>@errorMessage</p>
     </div>
 }
-@if (string.IsNullOrEmpty(responseMessage) == false)
+@if (!string.IsNullOrEmpty(responseMessage))
 {
     <div class="alert alert-success">
-        <p>Realtor Added!</p>
+        <p>@responseMessage</p>
     </div>
 }
 
 <AuthorizeView Roles="User" Context="authContext">
     <Authorized>
-        <div class="container">
-            <div class="d-flex justify-content-center align-items-center vh-100">
-                <div class="container">
-                    <h1 class="dashboard-title text-center mb-4">@realtor.FirstName @realtor.LastName</h1>
-                    <div class="card shadow-sm p-4">
-                        <div class="d-flex flex-row">
-                            <div class="d-flex flex-column w-50">
-                                <img src="@realtor.ProfileUrl" height="400" class="align-self-center" />
-                            </div>
-                            <div class="d-flex flex-column w-50 text-center justify-content-between">
-                                <div>
-                                    <p>@realtor.PhoneNumber</p>
-                                    <p>@realtor.Email</p>
-                                    <p>@realtor.CompanyName</p>
-                                </div>
-                                <a href="@realtor.WebsiteUrl">
-                                    <img src="@realtor.LogoUrl" height="200" class="align-self-center" />
-                                </a>
-                            </div>
+        <div class="d-flex justify-content-center align-items-center vh-100">
+            <div class="card shadow-lg p-4 w-100 d-flex flex-row">
+                <div class="box col-md-4 text-center realtor-dashboard-profile me-4">
+                    <img src="@realtor.ProfileUrl" alt="Profile Picture" class="profile-picture mb-3" />
+                    <h3>@($"{realtor.FirstName} {realtor.LastName}")</h3>
+                    <p><strong>Email:</strong> <a href="mailto:@realtor.Email">@realtor.Email</a></p>
+                    <p><strong>Phone:</strong> @realtor.PhoneNumber</p>
+                    @if (!string.IsNullOrEmpty(realtor.LogoUrl))
+                    {
+                        <div class="mt-4">
+                            <img src="@realtor.LogoUrl" alt="Firm Logo" class="img-thumbnail firm-logo" />
+                            <p class="mt-2"><strong>@realtor.CompanyName</strong></p>
+                            <p><strong>Website:</strong> <a href="@realtor.WebsiteUrl" target="_blank">@realtor.WebsiteUrl</a></p>
                         </div>
+                    }
+                    <div class="text-center mt-4">
+                        <button class="btn btn-secondary" @onclick="GoBack">Back</button>
                     </div>
+                </div>
 
+                <div class="col-md-8">
+                    <h4 class="text-center mb-4">Update My Info</h4>
                     <EditForm Model="dto" OnValidSubmit="HandleValidSubmit">
                         <DataAnnotationsValidator />
                         <ValidationSummary />
@@ -51,36 +52,26 @@
                             <label for="firstName" class="form-label">First Name</label>
                             <InputText id="firstName" class="form-control" @bind-Value="dto.FirstName" />
                         </div>
-
                         <div class="mb-3">
                             <label for="lastName" class="form-label">Last Name</label>
                             <InputText id="lastName" class="form-control" @bind-Value="dto.LastName" />
                         </div>
-
                         <div class="mb-3">
                             <label for="phoneNumber" class="form-label">Phone Number</label>
                             <InputText id="phoneNumber" class="form-control" @bind-Value="dto.PhoneNumber" />
                         </div>
-
                         <div class="mb-3">
                             <label for="email" class="form-label">Email</label>
                             <InputText id="email" class="form-control" @bind-Value="dto.Email" />
                         </div>
-
                         <div class="mb-3">
                             <label for="profileUrl" class="form-label">Profile URL</label>
                             <InputText id="profileUrl" class="form-control" @bind-Value="dto.ProfileUrl" />
                         </div>
-
                         <div class="text-center">
                             <button type="submit" class="btn btn-primary">Update</button>
                         </div>
                     </EditForm>
-
-
-                    <div class="text-center mt-3">
-                        <button class="btn btn-secondary" @onclick="GoBack">Back</button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -97,13 +88,8 @@
 @code {
     private RealtorReadDto realtor = new();
     private RealtorCreateDto dto = new();
-    private List<PropertyReadDto>? properties = new();
-    private PropertyReadDto? selectedProperty;
-    private int currentSlideIndex = 0; private int? imgIndex;
-
     string? responseMessage;
     string? errorMessage;
-
     int userRealtorId;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -120,7 +106,7 @@
 
             string? rid = claims.FirstOrDefault(x => x.Type == "rid")?.Value;
 
-            if (rid == null) // In case of admin
+            if (rid == null)
             {
                 return;
             }
