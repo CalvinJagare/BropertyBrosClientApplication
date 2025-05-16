@@ -23,6 +23,10 @@
         </div>
         <div class="card-body collapse @(isSearchAreaVisible ? "show" : "")" id="searchArea">
             <form class="row g-3">
+                <div class="col-md-12">
+                    <label for="address" class="form-label"><i class="fa-solid fa-magnifying-glass"></i>&nbsp; Address</label>
+                    <input type="text" id="address" class="form-control" @bind="propertySearchDto.Address" placeholder="Enter address" />
+                </div>
                 <div class="col-md-6">
                     <label for="minPrice" class="form-label"><i class="fa-solid fa-hand-holding-dollar"></i>&nbsp; Min Price</label>
                     <input type="number" id="minPrice" class="form-control" @bind="propertySearchDto.MinPrice" placeholder="Enter minimum price" />
@@ -183,6 +187,7 @@
             if (response.Success)
             {
                 properties = response.Data;
+                currentPage = 1;
                 UpdatePagination();
             }
         }
@@ -199,8 +204,16 @@
     private void UpdatePagination()
     {
         totalPages = (int)Math.Ceiling((double)(properties?.Count ?? 0) / PageSize);
-        currentPage = Math.Min(currentPage, totalPages);
-        pagedProperties = properties?.Skip((currentPage - 1) * PageSize).Take(PageSize).ToList();
+
+        if (currentPage > totalPages)
+            currentPage = totalPages;
+        if (currentPage < 1)
+            currentPage = 1;
+
+        pagedProperties = properties?
+            .Skip((currentPage - 1) * PageSize)
+            .Take(PageSize)
+            .ToList() ?? new List<Services.PropertyReadDto>();
     }
 
     private void ChangePage(int page)
