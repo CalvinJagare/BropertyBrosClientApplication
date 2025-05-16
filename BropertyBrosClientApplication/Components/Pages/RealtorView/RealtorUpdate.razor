@@ -1,5 +1,6 @@
 ﻿@page "/updaterealtor"
 @inject IRealtorService realtorService
+@inject IRealtorFirmService realtorFirmService
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JSRuntime
 @rendermode InteractiveServer
@@ -62,8 +63,16 @@
                             </div>
 
                             <div class="mb-3">
-                                <label for="realtorFirmId" class="form-label">Realtor Firm ID</label>
-                                <InputNumber id="realtorFirmId" class="form-control" @bind-Value="realtor.RealtorFirmId" />
+                                <label for="realtorFirmDropdown" class="form-label">Realtor Firm</label>
+                                <select id="realtorFirmDropdown" class="form-select" @bind="realtor.RealtorFirmId">
+                                    @if (realtorFirms.Count > 0)
+                                    {
+                                        @foreach (var r in realtorFirms)
+                                        {
+                                            <option value="@r.Id">@($"{r.CompanyName}")</option>
+                                        }
+                                    }
+                                </select>
                             </div>
 
                             <div class="text-center">
@@ -91,6 +100,7 @@
 @code {
     public int? realtorId { get; set; } = null;
     private List<RealtorReadDto>? realtors = new();
+    private List<RealtorFirmReadDto>? realtorFirms = new();
     private RealtorCreateDto? realtor;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -102,8 +112,16 @@
             if (realtorsResponse.Success)
             {
                 realtors = realtorsResponse.Data;
-                StateHasChanged();
             }
+
+            var realtorFirmsResponse = await realtorFirmService.GetAllRealtorFirms();
+
+            if (realtorFirmsResponse.Success)
+            {
+                realtorFirms = realtorFirmsResponse.Data!;
+            }
+
+            StateHasChanged();
         }
     }
 
@@ -122,8 +140,11 @@
                         LastName = realtorResponse.Data.LastName,
                         PhoneNumber = realtorResponse.Data.PhoneNumber,
                         Email = realtorResponse.Data.Email,
-                        ProfileUrl = realtorResponse.Data.ProfileUrl
+                        ProfileUrl = realtorResponse.Data.ProfileUrl,
+                        RealtorFirmId = realtorResponse.Data.RealtorFirmId
                     };
+
+                StateHasChanged();
             }
         }
     }
