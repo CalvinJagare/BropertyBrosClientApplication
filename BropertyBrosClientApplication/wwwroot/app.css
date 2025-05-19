@@ -567,3 +567,9 @@ h1:focus {
     max-width: 95%; 
     box-sizing: border-box; 
 }
+
+.auto-resize-textarea {
+    overflow-y: hidden;
+    min-height: 38px; 
+    resize: none;
+}

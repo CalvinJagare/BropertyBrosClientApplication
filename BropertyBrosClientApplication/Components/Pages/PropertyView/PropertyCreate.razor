@@ -115,7 +115,7 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="imageUrls" class="form-label">Image URLs (separate all URLs with a comma)</label>
-                                    <InputText id="imageUrls" class="form-control" @bind-Value="imageUrls" />
+                                    <InputTextArea id="imageUrls" class="form-control" @bind-Value="imageUrls" />
                                 </div>
                             </div>
                         </div>
@@ -195,7 +195,6 @@
                 newProperty.BuildYear <= 0 ||
                 string.IsNullOrWhiteSpace(newProperty.Description) ||
                 string.IsNullOrWhiteSpace(imageUrls) ||
-                newProperty.MonthlyFee < 0 ||
                 newProperty.YearlyFee < 0;
     }
 
